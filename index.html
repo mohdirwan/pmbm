@@ -14,11 +14,10 @@
 
 <body>
 
-    <!-- Premium Dark Background with Antigravity Particles -->
+    <!-- Premium Background -->
     <div class="bg-decor">
-        <canvas id="particle-canvas"></canvas>
-        <div class="bg-image"></div>
-        <div class="bg-overlay"></div>
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; background: var(--secondary); opacity: 0.02;"></div>
     </div>
 
     <!-- Progress Tracking -->
@@ -42,24 +41,87 @@
     <!-- Slide Presentation Container -->
     <main class="slide-container">
 
-        <!-- Slide 1: Welcome -->
-        <section class="slide active" id="s1">
+        <!-- Slide 1: Company Profile -->
+        <section class="slide active" id="s_intro">
             <div class="slide-num">01</div>
             <div class="container">
-                <div class="hero-content" style="margin: 0 auto; text-align: center;">
-                    <span class="badge stagger stagger-1">Penerimaan Siswa Masa Depan</span>
-                    <h1 class="stagger stagger-2">Sistem PMBM Digital Terintegrasi</h1>
-                    <p class="stagger stagger-3" style="margin: 0 auto;">Platform satu pintu yang menyederhanakan proses
-                        pendaftaran hingga
-                        laporan akhir secara profesional dan otomatis.</p>
+                <div class="hero-grid"
+                    style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; align-items: center; text-align: left;">
+                    <div class="hero-content" style="padding-left: 0;">
+                        <span class="badge stagger stagger-1">Solusi Digital Terpercaya</span>
+                        <h1 class="stagger stagger-2">PT. IMSOFTDEV SOLUSI DIGITAL</h1>
+                        <p class="stagger stagger-3">Mitra strategis dalam transformasi digital, menghadirkan solusi
+                            teknologi inovatif dan sistem terintegrasi untuk kemajuan institusi Anda.</p>
 
+                    </div>
+                    <div class="hero-image-wrapper stagger stagger-3">
+                        <img src="./mascot.png" alt="Mascot IMSOFTDEV"
+                            style="max-height: 500px; width: auto; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));">
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Slide 2: Aesthetics -->
-        <section class="slide" id="s2">
+        <!-- Slide 2: Partners -->
+        <section class="slide" id="s1">
             <div class="slide-num">02</div>
+            <div class="container">
+                <div style="text-align: center; max-width: 900px; margin: 0 auto;">
+                    <!-- Partner Section -->
+                    <div class="glass-card-light stagger stagger-3" style="padding: 3rem; width: 100%;">
+                        <h3
+                            style="margin-bottom: 3rem; text-align: center; color: var(--primary-dark); font-size: 2.5rem;">
+                            Mitra Kami</h3>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 2rem; align-items: center; justify-items: center;">
+                            <img src="./partner1.png" alt="Partner 1" class="partner-logo"
+                                style="animation-delay: 0.1s; width: 100px;">
+                            <img src="./partner2.png" alt="Partner 2" class="partner-logo"
+                                style="animation-delay: 0.2s; width: 100px;">
+                            <img src="./partner3.png" alt="Partner 3" class="partner-logo"
+                                style="animation-delay: 0.3s; width: 100px;">
+                            <img src="./partner4.png" alt="Partner 4" class="partner-logo"
+                                style="animation-delay: 0.4s; width: 100px;">
+                            <img src="./partner5.png" alt="Partner 5" class="partner-logo"
+                                style="animation-delay: 0.5s; width: 100px;">
+                            <img src="./partner6.png" alt="Partner 6" class="partner-logo"
+                                style="animation-delay: 0.6s; width: 100px;">
+                            <img src="./partner7.png" alt="Partner 7" class="partner-logo"
+                                style="animation-delay: 0.7s; width: 100px;">
+                            <img src="./partner8.png" alt="Partner 8" class="partner-logo"
+                                style="animation-delay: 0.8s; width: 100px;">
+                            <img src="./partner9.png" alt="Partner 9" class="partner-logo"
+                                style="animation-delay: 0.9s; width: 100px;">
+                            <img src="./partner10.png" alt="Partner 10" class="partner-logo"
+                                style="animation-delay: 1.0s; width: 100px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Welcome (System Intro) -->
+        <section class="slide" id="s2">
+            <div class="slide-num">03</div>
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content">
+                        <span class="badge stagger stagger-1">Penerimaan Siswa Masa Depan</span>
+                        <h1 class="stagger stagger-2">Sistem PMBM Digital Terintegrasi</h1>
+                        <p class="stagger stagger-3">Platform satu pintu yang menyederhanakan proses pendaftaran hingga
+                            laporan akhir secara profesional dan otomatis.</p>
+                    </div>
+                    <div class="hero-image-wrapper stagger stagger-3">
+                        <img src="./mascot_laptop.png" alt="Sistem PMBM"
+                            style="max-height: 500px; width: auto; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Aesthetics -->
+        <section class="slide" id="s3">
+            <div class="slide-num">04</div>
             <div class="container">
                 <div style="text-align: center; margin-bottom: 4rem;">
                     <span class="badge stagger stagger-1">Premium UX</span>
@@ -87,34 +149,33 @@
             </div>
         </section>
 
-        <!-- Slide 3: WhatsApp Gateway -->
-        <section class="slide" id="s3">
-            <div class="slide-num">03</div>
+        <!-- Slide 5: WhatsApp Gateway -->
+        <section class="slide" id="s4">
+            <div class="slide-num">05</div>
             <div class="container">
-                <div class="hero-content" style="margin: 0 auto; text-align: center;">
-                    <span class="badge stagger stagger-1">Auto-Communication</span>
-                    <h2 class="stagger stagger-2">WhatsApp Gateway Otomatis</h2>
-                    <p class="stagger stagger-3" style="margin: 0 auto;">Komunikasi instan yang meningkatkan rasa
-                        percaya dan
-                        profesionalitas sekolah di mata masyarakat.</p>
-                    <div class="features-grid" style="margin-top: 3rem;">
-                        <div class="glass-card stagger stagger-2" style="padding: 1.5rem;">
-                            <i data-lucide="check-circle-2" style="color: var(--primary-light);"></i> Notifikasi Instan
-                        </div>
-                        <div class="glass-card stagger stagger-3" style="padding: 1.5rem;">
-                            <i data-lucide="check-circle-2" style="color: var(--primary-light);"></i> Akun via WhatsApp
-                        </div>
-                        <div class="glass-card stagger stagger-4" style="padding: 1.5rem;">
-                            <i data-lucide="check-circle-2" style="color: var(--primary-light);"></i> Efisiensi Admin
-                        </div>
+                <div class="hero-grid">
+                    <div class="hero-image-wrapper stagger stagger-2">
+                        <img src="./mascot_hp.png" alt="WhatsApp Auto Gateway"
+                            style="max-height: 500px; width: auto; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));">
+                    </div>
+                    <div class="split-content">
+                        <span class="badge stagger stagger-1">Auto-Communication</span>
+                        <h2 class="stagger stagger-2">WhatsApp Gateway Otomatis</h2>
+                        <p class="stagger stagger-3">Komunikasi instan yang meningkatkan rasa percaya dan
+                            profesionalitas sekolah di mata masyarakat.</p>
+                        <ul class="stagger stagger-4">
+                            <li><i data-lucide="check-circle-2"></i> Notifikasi instan pasca pendaftaran</li>
+                            <li><i data-lucide="check-circle-2"></i> Pengiriman akun (Login) via WhatsApp</li>
+                            <li><i data-lucide="check-circle-2"></i> Meminimalisir input data manual</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Slide 4: End-to-End -->
-        <section class="slide" id="s4">
-            <div class="slide-num">04</div>
+        <!-- Slide 6: End-to-End -->
+        <section class="slide" id="s5">
+            <div class="slide-num">06</div>
             <div class="container">
                 <div style="text-align: center; margin-bottom: 4rem;">
                     <span class="badge stagger stagger-1">Digital Workflow</span>
@@ -143,37 +204,36 @@
             </div>
         </section>
 
-        <!-- Slide 5: Smart Admin -->
-        <section class="slide" id="s5">
-            <div class="slide-num">05</div>
+        <!-- Slide 7: Smart Admin -->
+        <section class="slide" id="s6">
+            <div class="slide-num">07</div>
             <div class="container">
-                <div class="hero-content" style="margin: 0 auto; text-align: center;">
-                    <span class="badge stagger stagger-1">Admin Intelligence</span>
-                    <h2 class="stagger stagger-2">Administrasi yang Lebih Cerdas</h2>
-                    <p class="stagger stagger-3" style="margin: 0 auto;">Alat bantu untuk panitia dalam mengelola ribuan
-                        pendaftar dengan
-                        kontrol penuh dan akurasi tinggi.</p>
-                    <div class="features-grid" style="margin-top: 3rem;">
-                        <div class="glass-card stagger stagger-2" style="padding: 1.5rem;">
-                            <h4 style="color: var(--secondary);">Manajemen Kuota</h4>
-                            <p style="font-size: 0.9rem;">Atur kapasitas per jalur masuk secara dinamis.</p>
+                <div class="hero-grid">
+                    <div class="split-content">
+                        <span class="badge stagger stagger-1">Admin Intelligence</span>
+                        <h2 class="stagger stagger-2">Administrasi yang Lebih Cerdas</h2>
+                        <p class="stagger stagger-3">Alat bantu untuk panitia dalam mengelola ribuan pendaftar dengan
+                            kontrol penuh dan akurasi tinggi.</p>
+                        <div class="stagger stagger-4" style="margin-top: 2rem;">
+                            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem;">
+                                <strong>Manajemen Kuota</strong>: Atur kapasitas per jalur masuk.
+                            </div>
+                            <div class="glass-card" style="padding: 1.5rem;">
+                                <strong>Verifikasi Bertahap</strong>: Status revisi dokumen pendaftar.
+                            </div>
                         </div>
-                        <div class="glass-card stagger stagger-3" style="padding: 1.5rem;">
-                            <h4 style="color: var(--secondary);">Verifikasi Bertahap</h4>
-                            <p style="font-size: 0.9rem;">Status revisi dokumen dengan feedback instan.</p>
-                        </div>
-                        <div class="glass-card stagger stagger-4" style="padding: 1.5rem;">
-                            <h4 style="color: var(--secondary);">Laporan Otomatis</h4>
-                            <p style="font-size: 0.9rem;">Generate data statistik dalam hitungan detik.</p>
-                        </div>
+                    </div>
+                    <div class="hero-image-wrapper stagger stagger-2">
+                        <img src="./mascot_admin.png" alt="Admin Intelligence"
+                            style="max-height: 500px; width: auto; filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Slide 6: Security -->
-        <section class="slide" id="s6">
-            <div class="slide-num">06</div>
+        <!-- Slide 8: Security -->
+        <section class="slide" id="s7">
+            <div class="slide-num">08</div>
             <div class="container" style="text-align: center;">
                 <span class="badge stagger stagger-1">Report & Security</span>
                 <h2 class="stagger stagger-2">Keamanan & Pelaporan Instan</h2>
@@ -194,9 +254,9 @@
             </div>
         </section>
 
-        <!-- Slide 7: Closing -->
-        <section class="slide" id="s7">
-            <div class="slide-num">07</div>
+        <!-- Slide 9: Closing -->
+        <section class="slide" id="s8">
+            <div class="slide-num">09</div>
             <div class="container" style="text-align: center;">
                 <div class="glass-card stagger stagger-2"
                     style="padding: 5rem; background: var(--primary); color: white;">
