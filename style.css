@@ -388,3 +388,90 @@ p {
     border-color: var(--primary);
     transform: translateY(-3px);
 }
+
+/* CTA Group Layout */
+.cta-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Update Button Base */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    /* Existing styles below are preserved by implied cascade if I just add properties, 
+       but here I am appending to the file so I must not duplicate if I can avoid it, 
+       but adding these helper properties is safe. 
+       Actually, previous definition was:
+       padding: 1.1rem 2.8rem;
+       border-radius: var(--radius-md);
+       font-weight: 800;
+       text-transform: uppercase;
+       letter-spacing: 0.05em;
+       transition: var(--transition);
+    */
+}
+
+/* Secondary Button (Yellow) */
+.btn-secondary {
+    background: var(--secondary);
+    color: var(--background);
+    box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
+}
+
+.btn-secondary:hover {
+    background: var(--secondary-light);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(251, 191, 36, 0.4);
+}
+
+/* Outline Button */
+.btn-outline {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: var(--white);
+}
+
+.btn-outline:hover {
+    border-color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Modern Glow Button */
+.btn-glow {
+    background: var(--white);
+    color: var(--primary);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    border: 2px solid var(--white);
+}
+
+.btn-glow:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.6);
+    color: var(--accent);
+}
+
+.btn-glow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.btn-glow:hover::after {
+    left: 100%;
+    transition: 0.5s ease-in-out;
+}
