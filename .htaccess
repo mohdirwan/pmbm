@@ -1,0 +1,185 @@
+# =====================================================
+# PPDB System - Apache Security Configuration
+# For Production Environment
+# =====================================================
+
+# Enable RewriteEngine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /pmbm/
+    
+    # Force HTTPS (uncomment when SSL is ready)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Prevent access to hidden files (.git, .env, etc.)
+    RewriteRule ^\.(?!well-known/) - [F,L]
+    
+    # Block access to sensitive files
+    RewriteRule ^(includes/config\.php|\.env|composer\.json|composer\.lock)$ - [F,L]
+</IfModule>
+
+# =====================================================
+# Security Headers
+# =====================================================
+
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Permissions Policy
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy (Simplified for hosting compatibility)
+    Header always set Content-Security-Policy "default-src 'self' *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; font-src 'self' data: *; img-src 'self' data: *; connect-src 'self' *;"
+    
+    # HTTPS Strict Transport Security (uncomment when SSL is ready)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Remove server signature
+    Header always unset X-Powered-By
+    Header always unset Server
+</IfModule>
+
+# =====================================================
+# Disable Directory Listing
+# =====================================================
+Options -Indexes
+
+# =====================================================
+# Protect Sensitive Files
+# =====================================================
+
+# Deny access to .htaccess itself
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Deny access to .env files
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to config files
+<FilesMatch "config\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to log files
+<FilesMatch "\.log$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to SQL files
+<FilesMatch "\.(sql|db)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to backup files
+<FilesMatch "\.(bak|old|backup|swp)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# =====================================================
+# File Upload Security
+# =====================================================
+# Note: Upload directory security is handled by uploads/.htaccess
+
+# =====================================================
+# Limit Request Methods
+# =====================================================
+<LimitExcept GET POST HEAD>
+    Order deny,allow
+    Deny from all
+</LimitExcept>
+
+# =====================================================
+# Prevent Script Injection
+# =====================================================
+<IfModule mod_rewrite.c>
+    # Block requests with suspicious query strings
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} base64_encode.*\(.*\) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} mosConfig_[a-zA-Z_]{1,21}(=|\%3D) [OR]
+    # Penyesuaian: Menggunakan kata kunci yang lebih spesifik agar tidak memblokir kata normal
+    RewriteCond %{QUERY_STRING} (\bunion\b|\bselect\b|\binsert\b|\bdrop\b|\bdelete\b|\bupdate\b|\bcast\b|\bcreate\b|\bchar\b|\bconvert\b|\balter\b|\bdeclare\b|\bexec\b|\bscript\b|\bset\b|md5|benchmark) [NC]
+    RewriteRule ^.*$ - [F,L]
+</IfModule>
+
+# =====================================================
+# Compression & Performance (Optional)
+# =====================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# =====================================================
+# Cache Control for Static Assets
+# =====================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/pdf "access plus 1 month"
+</IfModule>
+
+# =====================================================
+# PHP Security Settings
+# =====================================================
+<IfModule mod_php7.c>
+    # Disable dangerous PHP functions
+    php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source"
+    
+    # Hide PHP version
+    php_flag expose_php off
+    
+    # Limit file upload size (30MB)
+    php_value upload_max_filesize 30M
+    php_value post_max_size 40M
+    
+    # Session security
+    php_value session.cookie_httponly 1
+    php_value session.cookie_secure 1
+    php_value session.use_only_cookies 1
+    php_value session.cookie_samesite Strict
+    
+    # Disable remote file inclusion
+    php_flag allow_url_fopen off
+    php_flag allow_url_include off
+    
+    # Error handling
+    # php_flag display_errors off
+    php_flag log_errors on
+</IfModule>
+
+# =====================================================
+# Custom Error Pages
+# =====================================================
+ErrorDocument 403 /pmbm/error/403.html
+ErrorDocument 404 /pmbm/error/404.html
+ErrorDocument 500 /pmbm/error/500.html
+
+# =====================================================
+# End of Security Configuration
+# =====================================================

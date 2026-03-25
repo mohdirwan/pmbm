@@ -1,0 +1,36 @@
+<!-- Modal Preview Data -->
+<div class="modal fade" id="previewDataModal" tabindex="-1" aria-labelledby="previewDataModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-success text-white rounded-top-4 p-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white bg-opacity-25 p-3 rounded-3 me-3">
+                        <i class="fas fa-eye fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-1" id="previewDataModalLabel">Preview Data Pendaftaran</h5>
+                        <small class="opacity-90">Periksa kembali data Anda sebelum mengirim</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body p-4" id="previewDataContent">
+                <!-- Content will be filled by JavaScript -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Memuat preview data...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-lg btn-secondary rounded-pill px-4" onclick="closePreview()">
+                    <i class="fas fa-edit me-2"></i>Edit Data
+                </button>
+                <button type="button" class="btn btn-lg btn-success rounded-pill px-5" onclick="submitForm()">
+                    <i class="fas fa-paper-plane me-2"></i>Kirim Pendaftaran
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

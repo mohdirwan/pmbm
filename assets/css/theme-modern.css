@@ -1,0 +1,162 @@
+:root {
+    --modern-primary: #8B5CF6;
+    --modern-primary-light: #A78BFA;
+    --modern-secondary: #EC4899;
+    --modern-accent: #3B82F6;
+    --modern-bg-start: #EEF2FF;
+    --modern-bg-end: #FCE7F3;
+    --modern-text: #1F2937;
+    --modern-sidebar: #1E1B4B;
+    --modern-card-bg: rgba(255, 255, 255, 0.8);
+    --modern-glass-bg: rgba(255, 255, 255, 0.7);
+    --modern-radius: 1.5rem;
+}
+
+body.theme-modern {
+    background: linear-gradient(135deg, var(--modern-bg-start), var(--modern-bg-end));
+    background-attachment: fixed;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: var(--modern-text);
+}
+
+/* Sidebar Modern */
+body.theme-modern .sidebar {
+    background: var(--modern-sidebar) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 0 2rem 2rem 0;
+    margin: 10px 0 10px 0;
+    height: calc(100vh - 20px) !important;
+    top: 10px !important;
+}
+
+body.theme-modern .sidebar .nav-link {
+    border-radius: 1rem;
+    margin: 4px 15px;
+    padding: 10px 15px !important;
+    border-left: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.theme-modern .sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    transform: translateX(5px);
+}
+
+body.theme-modern .sidebar .nav-link.active {
+    background: linear-gradient(45deg, var(--modern-primary), var(--modern-secondary)) !important;
+    color: white !important;
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+}
+
+body.theme-modern .sidebar .nav-link i.icon-main {
+    color: inherit !important;
+}
+
+body.theme-modern .sidebar .submenu {
+    background: transparent !important;
+    padding-bottom: 10px;
+}
+
+body.theme-modern .sidebar .submenu .nav-link {
+    padding-left: 50px !important;
+    opacity: 0.7;
+}
+
+body.theme-modern .sidebar .submenu .nav-link.active {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Main Content Modern */
+body.theme-modern .main-content {
+    padding: 40px !important;
+}
+
+body.theme-modern .card {
+    background: var(--modern-card-bg) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: var(--modern-radius) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+body.theme-modern .card-header {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 20px 25px !important;
+}
+
+body.theme-modern .btn-primary {
+    background: linear-gradient(45deg, var(--modern-primary), var(--modern-secondary)) !important;
+    border: none !important;
+    border-radius: 1rem !important;
+    padding: 10px 25px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3) !important;
+    transition: all 0.3s !important;
+}
+
+body.theme-modern .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4) !important;
+}
+
+body.theme-modern .text-primary {
+    color: var(--modern-primary) !important;
+}
+
+body.theme-modern .bg-primary {
+    background: linear-gradient(45deg, var(--modern-primary), var(--modern-primary-light)) !important;
+}
+
+body.theme-modern .bg-success {
+    background: linear-gradient(45deg, #10B981, #34D399) !important;
+}
+
+body.theme-modern .bg-danger {
+    background: linear-gradient(45deg, #EF4444, #F87171) !important;
+}
+
+body.theme-modern .bg-info {
+    background: linear-gradient(45deg, #3B82F6, #60A5FA) !important;
+}
+
+/* Table styling for modern theme */
+body.theme-modern .table thead th {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05) !important;
+    color: var(--modern-text);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+body.theme-modern .table tbody td {
+    padding: 15px 12px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Avatar circle for modern theme */
+body.theme-modern .avatar-circle {
+    background: linear-gradient(45deg, var(--modern-primary), var(--modern-primary-light)) !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Badge styling */
+body.theme-modern .badge {
+    padding: 6px 12px !important;
+    border-radius: 2rem !important;
+    font-weight: 500 !important;
+}
+
+/* Mobile Toggle */
+body.theme-modern .btn-dark.d-lg-none {
+    background: var(--modern-sidebar) !important;
+    border-radius: 1rem !important;
+}

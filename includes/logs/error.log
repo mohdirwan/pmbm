@@ -1,0 +1,44 @@
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 17
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 18
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 19
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 20
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 21
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 24
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 25
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 28
+[2026-02-08 19:10:58] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 29
+[2026-02-08 19:10:58] Error 2: Undefined array key "penghasilan_ibu" in C:\xampp\htdocs\pmbm\process_register.php on line 134
+[2026-02-08 19:10:58] Error 8192: trim(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\pmbm\includes\config.php on line 29
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 17
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 18
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 19
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 20
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 21
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 24
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 25
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 28
+[2026-02-08 19:12:32] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 29
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 17
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 18
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 19
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 20
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 21
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 24
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 25
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 28
+[2026-02-08 19:16:28] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 29
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 17
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 18
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 19
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 20
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 21
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 24
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 25
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 28
+[2026-02-08 19:19:12] Error 2: ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\pmbm\includes\security.php on line 29
+[2026-02-08 19:26:28] Error 2: Undefined array key "penghasilan_ibu" in C:\xampp\htdocs\pmbm\process_register.php on line 142
+[2026-02-08 19:26:28] Error 8192: trim(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\pmbm\includes\config.php on line 29
+[2026-02-10 08:08:30] Error 2: Undefined array key "penghasilan_ibu" in C:\xampp\htdocs\pmbm\process_register.php on line 142
+[2026-02-10 08:08:30] Error 8192: trim(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\pmbm\includes\config.php on line 29
+[2026-02-10 08:23:28] Error 2: Undefined array key "penghasilan_ibu" in C:\xampp\htdocs\pmbm\process_register.php on line 142
+[2026-02-10 08:23:28] Error 8192: trim(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\pmbm\includes\config.php on line 29

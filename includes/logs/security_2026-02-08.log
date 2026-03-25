@@ -1,0 +1,9 @@
+[2026-02-08 15:40:31] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: PDF Preview: preview_1_1770540031.pdf
+[2026-02-08 15:40:36] [INVALID_FILE_UPLOAD] IP: ::1 | Event: INVALID_FILE_UPLOAD | Details: DOCX Template: Invalid file extension. Allowed: jpg, jpeg, png, pdf
+[2026-02-08 15:41:53] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: DOCX Template: template_1_1770540113.docx
+[2026-02-08 15:42:32] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: PDF Preview: preview_2_1770540152.pdf
+[2026-02-08 15:42:37] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: DOCX Template: template_2_1770540157.docx
+[2026-02-08 15:42:45] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: PDF Preview: preview_3_1770540165.pdf
+[2026-02-08 15:42:48] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: DOCX Template: template_3_1770540168.docx
+[2026-02-08 15:42:56] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: PDF Preview: preview_4_1770540176.pdf
+[2026-02-08 15:43:00] [FILE_UPLOAD_SUCCESS] IP: ::1 | Event: FILE_UPLOAD_SUCCESS | Details: DOCX Template: template_4_1770540180.docx

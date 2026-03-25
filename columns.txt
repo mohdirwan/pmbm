@@ -1,0 +1,36 @@
+Array
+(
+    [Field] => id
+    [Type] => int(11)
+    [Null] => NO
+    [Key] => PRI
+    [Default] => 
+    [Extra] => auto_increment
+)
+Array
+(
+    [Field] => nama_jalur
+    [Type] => varchar(50)
+    [Null] => NO
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
+Array
+(
+    [Field] => kuota
+    [Type] => int(11)
+    [Null] => NO
+    [Key] => 
+    [Default] => 0
+    [Extra] => 
+)
+Array
+(
+    [Field] => syarat
+    [Type] => text
+    [Null] => YES
+    [Key] => 
+    [Default] => 
+    [Extra] => 
+)
