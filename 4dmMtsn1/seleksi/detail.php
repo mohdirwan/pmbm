@@ -74,6 +74,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th class="text-center" style="width: 50px;">No</th>
                                 <th>No Pendaftaran</th>
                                 <th>Nama Lengkap</th>
+                                <th class="text-center">JK</th>
                                 <th>Nomor WA Aktif</th>
                                 <th>Jalur</th>
                                 <th>Status Pendaftaran</th>
@@ -89,6 +90,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td>
                                         <div class="fw-bold text-dark"><?= htmlspecialchars($row['nama_lengkap']) ?></div>
                                     </td>
+                                    <td class="text-center"><?= $row['jenis_kelamin'] ?></td>
                                     <td><span class="text-muted fw-500"><i class="fab fa-whatsapp text-success me-1"></i> <?= htmlspecialchars($row['kontak_wa'] ?: '-') ?></span></td>
                                     <td><span class="badge bg-secondary rounded-pill px-3"><?= htmlspecialchars($row['nama_jalur'] ?: 'Umum') ?></span></td>
                                     <td>
