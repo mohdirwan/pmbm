@@ -94,13 +94,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         // 2. Insert Data
-        $no_pendaftaran = 'REG' . date('Ymd') . rand(100, 999);
+        $today = date('Ymd');
+        $stmt_check = $pdo->prepare("SELECT no_pendaftaran FROM pendaftar WHERE no_pendaftaran LIKE ? ORDER BY no_pendaftaran DESC LIMIT 1");
+        $stmt_check->execute([$today . '%']);
+        $last_reg = $stmt_check->fetchColumn();
+
+        if ($last_reg) {
+            // Mengambil 5 karakter terakhir (nomor urut) dan menambah 1
+            $last_num = (int) substr($last_reg, -5);
+            $new_num = $last_num + 1;
+        } else {
+            $new_num = 1;
+        }
+        
+        $no_pendaftaran = $today . str_pad($new_num, 5, '0', STR_PAD_LEFT);
+
+        // --- PASSWORD HANDLING ---
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
+
+        if ($password !== $confirm_password) {
+             die(json_encode(['error' => 'Konfirmasi password tidak cocok!']));
+        }
+        if (strlen($password) < 6) {
+             die(json_encode(['error' => 'Password minimal 6 karakter!']));
+        }
+        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+        // -------------------------
 
         $sql = "INSERT INTO pendaftar (
-            no_pendaftaran, nisn, nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin, agama, 
+            no_pendaftaran, nisn, password, nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin, agama, 
             anak_ke, status_keluarga, hobi, no_hp,
-            alamat, status_tinggal, jarak_sekolah, transportasi_rumah,
-            kecamatan, kabupaten_kota, provinsi,
+            alamat, desa_kelurahan, kecamatan, kabupaten_kota, provinsi,
+            status_tinggal, jarak_sekolah, transportasi_rumah,
             asal_sekolah, npsn_sekolah, alamat_sekolah,
             status_orang_tua,
             nama_ayah, nik_ayah, tempat_lahir_ayah, tanggal_lahir_ayah, pendidikan_ayah, pekerjaan_ayah, penghasilan_ayah, no_hp_ayah, alamat_ayah,
@@ -110,9 +136,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             jalur_id,
             nilai_k4_s1, nilai_k4_s2, nilai_k5_s1, nilai_k5_s2, nilai_k6_s1, nilai_jumlah, nilai_rapor_rata2
         ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
             ?, ?, ?, ?,
-            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?,
             ?, ?, ?,
             ?, ?, ?,
             ?,
@@ -128,6 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([
             $no_pendaftaran,
             clean_input($_POST['nisn']),
+            $password_hashed,
             clean_input($_POST['nik']),
             clean_input($_POST['no_kk']),
             strtoupper(clean_input($_POST['nama_lengkap'])),
@@ -140,12 +167,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($_POST['hobi']),
             clean_input($_POST['no_hp']),
             clean_input($_POST['alamat']),
-            clean_input($_POST['status_tinggal']),
-            clean_input($_POST['jarak_sekolah']),
-            clean_input($_POST['transportasi_rumah']),
+            clean_input($_POST['desa_kelurahan']),
             clean_input($_POST['kecamatan']),
             clean_input($_POST['kabupaten_kota']),
             clean_input($_POST['provinsi']),
+            clean_input($_POST['status_tinggal']),
+            clean_input($_POST['jarak_sekolah']),
+            clean_input($_POST['transportasi_rumah']),
             clean_input($_POST['asal_sekolah']),
             clean_input($_POST['npsn_sekolah']),
             clean_input($_POST['alamat_sekolah']),
@@ -192,150 +220,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get the inserted ID
         $pendaftar_id = $pdo->lastInsertId();
 
-        // 3. Handle Document Uploads with Enhanced Security
-        $uploadDir = 'uploads/';
-        if (!file_exists($uploadDir)) {
-            mkdir($uploadDir, 0755, true); // Secure permissions
-        }
-
-        $allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'image/webp'];
-        $maxFileSize = 2097152; // 2MB
-
-        // List of possible document fields
-        $documentFields = [
-            'foto_siswa',
-            'file_rapor',
-            'file_nilai_rata',
-            'file_ranking',
-            'file_surat_prestasi',
-            'file_sertifikat_prestasi',
-            'file_surat_tahfidz',
-            'file_sertifikat_tahfidz',
-            'file_kk',
-            'file_akta',
-            'file_nisn',
-            'file_pakta'
-        ];
-
-        $uploadedFiles = [];
-        $uploadErrors = [];
-
-        // --- SERVER-SIDE MANDATORY FILE VALIDATION ---
-        $stmt_syarat = $pdo->prepare("SELECT syarat FROM jalur_pendaftaran WHERE id = ?");
-        $stmt_syarat->execute([intval($_POST['jalur_id'])]);
-        $syarat_text = $stmt_syarat->fetchColumn();
-
-        $mandatory_fields = ['foto_siswa'];
-        if (!empty($syarat_text)) {
-            $syarat_list = array_map('trim', explode(',', $syarat_text));
-            $fieldMapping = [
-                'pas foto' => 'foto_siswa',
-                'rapor' => 'file_rapor',
-                'surat keterangan tahfidz' => 'file_surat_tahfidz',
-                'surat keterangan prestasi' => 'file_surat_prestasi',
-                'nilai rata-rata' => 'file_nilai_rata',
-                'rata rata nilai' => 'file_nilai_rata',
-                'ranking' => 'file_ranking',
-                'peringkat' => 'file_ranking',
-                'sertifikat prestasi' => 'file_sertifikat_prestasi',
-                'sertifikat tahfidz' => 'file_sertifikat_tahfidz',
-                'kartu keluarga' => 'file_kk',
-                'kk' => 'file_kk',
-                'pakta integritas' => 'file_pakta',
-                'akta' => 'file_akta',
-                'nisn' => 'file_nisn'
-            ];
-
-            foreach ($syarat_list as $syarat) {
-                if (stripos($syarat, '(wajib)') !== false) {
-                    $syarat_clean = strtolower(trim(preg_replace('/\s*\(.*?\)\s*/', '', $syarat)));
-                    foreach ($fieldMapping as $keyword => $field) {
-                        if (stripos($syarat_clean, $keyword) !== false) {
-                            $mandatory_fields[] = $field;
-                            break;
-                        }
-                    }
-                }
-            }
-        } else {
-            // Default mandatory if syarat is empty
-            $mandatory_fields = ['foto_siswa', 'file_rapor', 'file_kk', 'file_akta'];
-        }
-
-        // Check if mandatory files are missing
-        $missing_files = [];
-        foreach ($mandatory_fields as $m_field) {
-            $inputName = 'document_' . $m_field;
-            if (!isset($_FILES[$inputName]) || $_FILES[$inputName]['error'] === UPLOAD_ERR_NO_FILE) {
-                $missing_files[] = $m_field;
-            }
-        }
-
-        if (!empty($missing_files)) {
-            $pdo->rollBack();
-            log_security_event('MANDATORY_FILE_MISSING', 'Siswa: ' . $_POST['nama_lengkap'] . ' Missing: ' . implode(',', $missing_files));
-            die(json_encode(['error' => 'Dokumen wajib belum diunggah: ' . implode(', ', $missing_files)]));
-        }
-        // --- END VALIDATION ---
-
-        foreach ($documentFields as $field) {
-            $fileInputName = 'document_' . $field;
-
-            if (isset($_FILES[$fileInputName]) && $_FILES[$fileInputName]['error'] !== UPLOAD_ERR_NO_FILE) {
-                // Determine allowed types based on field
-                $isPhoto = ($field === 'foto_siswa');
-                // Expand allowed types for photos to be more bulletproof
-                $currentAllowedTypes = $isPhoto ? ['image/jpeg', 'image/png', 'image/jpg', 'image/pjpeg', 'image/webp'] : ['application/pdf'];
-
-                // Use enhanced file validation
-                $validation = validate_uploaded_file($_FILES[$fileInputName], $currentAllowedTypes, $maxFileSize);
-
-                if (!$validation['valid']) {
-                    // Log security event for invalid upload - useful for debugging
-                    $error_msg = $field . ': ' . implode(', ', $validation['errors']) . ' (Type: ' . $_FILES[$fileInputName]['type'] . ')';
-                    log_security_event('INVALID_FILE_UPLOAD', $error_msg);
-                    error_log("UPLOAD FAIL: " . $error_msg);
-                    $uploadErrors[$field] = $validation['errors'];
-                    continue; // Skip invalid files
-                }
-
-                // Use safe filename from validation
-                $safeFileName = $validation['safe_filename'];
-                $targetPath = $uploadDir . $safeFileName;
-
-                // Move uploaded file
-                if (move_uploaded_file($_FILES[$fileInputName]['tmp_name'], $targetPath)) {
-                    // Set secure file permissions
-                    chmod($targetPath, 0644);
-                    $uploadedFiles[$field] = $safeFileName;
-
-                    // Log successful upload
-                    log_security_event('FILE_UPLOAD_SUCCESS', $field . ': ' . $safeFileName);
-                } else {
-                    log_security_event('FILE_UPLOAD_FAILED', $field . ': move_uploaded_file failed');
-                }
-            }
-        }
-
-        // Update pendaftar with uploaded file names
-        if (!empty($uploadedFiles)) {
-            $updateParts = [];
-            $updateValues = [];
-
-            foreach ($uploadedFiles as $field => $fileName) {
-                $updateParts[] = "$field = ?";
-                $updateValues[] = $fileName;
-            }
-
-            $updateValues[] = $pendaftar_id;
-
-            $updateSql = "UPDATE pendaftar SET " . implode(', ', $updateParts) . " WHERE id = ?";
-            $updateStmt = $pdo->prepare($updateSql);
-            $updateStmt->execute($updateValues);
-        }
-
+        // 3. Document Upload Handling (Moved to Post-Login Dashboard)
         $pdo->commit();
-        error_log("PROCESS: DB Transaction committed successfully");
+        error_log("PROCESS: Database Transaction committed successfully (Initial Registration).");
 
         // === Send WhatsApp Notification ===
         try {
@@ -371,8 +258,8 @@ Halo {$nama_kontak},
 
 Berikut adalah rincian akun login untuk melengkapi berkas di Dashboard Murid:
 Link Login: {$login_url}
-Username: {$no_pendaftaran}
-Password: {$nisn}
+Username: {$nisn} (NISN Ananda)
+Password: [Password yang dibuat saat mendaftar]
 
 Mohon simpan informasi akun ini dengan baik.
 

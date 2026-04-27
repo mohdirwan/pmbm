@@ -4,21 +4,21 @@ require_once 'includes/config.php';
 $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $no_pendaftaran = clean_input($_POST['no_pendaftaran']);
     $nisn = clean_input($_POST['nisn']);
+    $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT * FROM pendaftar WHERE no_pendaftaran = ? AND nisn = ?");
-    $stmt->execute([$no_pendaftaran, $nisn]);
+    $stmt = $pdo->prepare("SELECT * FROM pendaftar WHERE nisn = ?");
+    $stmt->execute([$nisn]);
     $siswa = $stmt->fetch();
 
-    if ($siswa) {
+    if ($siswa && password_verify($password, $siswa['password'])) {
         $_SESSION['siswa_id'] = $siswa['id'];
         $_SESSION['role'] = 'siswa';
         $_SESSION['nama_lengkap'] = $siswa['nama_lengkap'];
         header("Location: siswa/dashboard.php");
         exit();
     } else {
-        $error = "No Pendaftaran atau NISN salah!";
+        $error = "NISN atau Password salah!";
     }
 }
 
@@ -106,7 +106,7 @@ if (!$can_login) {
             <div class="login-form">
                 <div class="text-center mb-4">
                     <h2 class="fw-bold text-success">Login Calon Murid</h2>
-                    <p class="text-muted small">Silakan login menggunakan nomor pendaftaran dan NISN Anda.</p>
+                    <p class="text-muted small">Silakan login menggunakan NISN dan Password yang telah Anda buat saat mendaftar.</p>
                 </div>
 
                 <?php if ($error): ?>
@@ -118,21 +118,21 @@ if (!$can_login) {
 
                 <form method="POST">
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold uppercase">No Pendaftaran</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i
-                                    class="fas fa-id-card text-muted"></i></span>
-                            <input type="text" name="no_pendaftaran" class="form-control border-start-0 bg-light"
-                                placeholder="REG2026..." required <?= !$can_login && $ppdb_status != 'pengumuman' ? 'disabled' : '' ?>>
-                        </div>
-                    </div>
-                    <div class="mb-4">
                         <label class="form-label text-muted small fw-bold uppercase">NISN</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i
-                                    class="fas fa-fingerprint text-muted"></i></span>
-                            <input type="password" name="nisn" class="form-control border-start-0 bg-light"
+                                    class="fas fa-id-card text-muted"></i></span>
+                            <input type="text" name="nisn" class="form-control border-start-0 bg-light"
                                 placeholder="10 Digit NISN" required <?= !$can_login && $ppdb_status != 'pengumuman' ? 'disabled' : '' ?>>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold uppercase">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="fas fa-lock text-muted"></i></span>
+                            <input type="password" name="password" class="form-control border-start-0 bg-light"
+                                placeholder="Password yang Anda buat" required <?= !$can_login && $ppdb_status != 'pengumuman' ? 'disabled' : '' ?>>
                         </div>
                     </div>
 

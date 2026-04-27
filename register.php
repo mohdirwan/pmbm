@@ -96,9 +96,6 @@ $dummy_register = get_setting('dummy_register', '0');
                         <div class="step" id="step4-indicator" title="Rekap Nilai" onclick="goToStep(4)"
                             style="cursor: pointer;"><i class="fas fa-list-ol"></i>
                         </div>
-                        <div class="step" id="step5-indicator" title="Upload Berkas" onclick="goToStep(5)"
-                            style="cursor: pointer;"><i class="fas fa-file-upload"></i>
-                        </div>
                     </div>
 
                     <form action="process_register.php" method="POST" enctype="multipart/form-data" id="pmbmForm">
@@ -138,6 +135,27 @@ $dummy_register = get_setting('dummy_register', '0');
                                         placeholder="16 digit NIK" maxlength="16" inputmode="numeric"
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     <div id="nik_feedback" class="invalid-feedback">NIK ini sudah terdaftar!</div>
+                                </div>
+
+                                <!-- Akun Calon Murid -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Buat Password Login <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" name="password" id="password_input" required placeholder="Minimal 6 karakter">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_input')">
+                                            <i class="fas fa-eye" id="icon_password_input"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" name="confirm_password" id="confirm_password_input" required placeholder="Ulangi password">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirm_password_input')">
+                                            <i class="fas fa-eye" id="icon_confirm_password_input"></i>
+                                        </button>
+                                    </div>
+                                    <div id="password_match_feedback" class="small mt-1"></div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Nama Lengkap Murid <span
@@ -195,10 +213,35 @@ $dummy_register = get_setting('dummy_register', '0');
                                     <input type="text" class="form-control" name="hobi"
                                         placeholder="Contoh: Membaca, Olahraga">
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Provinsi <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="provinsi" id="provinsi" required>
+                                        <option value="">Pilih Provinsi...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kabupaten/Kota <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="kabupaten_kota" id="kabupaten_kota" required disabled>
+                                        <option value="">Pilih Kab/Kota...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kecamatan <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="kecamatan" id="kecamatan" required disabled>
+                                        <option value="">Pilih Kecamatan...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kelurahan/Desa <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="desa_kelurahan" id="desa_kelurahan" required disabled>
+                                        <option value="">Pilih Kelurahan/Desa...</option>
+                                    </select>
+                                </div>
                                 <div class="col-12">
                                     <label class="form-label">Alamat Lengkap <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" name="alamat" rows="2" required></textarea>
+                                    <textarea class="form-control" name="alamat" rows="2" required placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
                                 </div>
+
                                 <div class="col-md-6">
                                     <label class="form-label">Status Tempat Tinggal <span
                                             class="text-danger">*</span></label>
@@ -229,18 +272,6 @@ $dummy_register = get_setting('dummy_register', '0');
                                         <option value="Ojek">Ojek</option>
                                         <option value="Lainnya">Lainnya</option>
                                     </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Kecamatan <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="kecamatan" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Kab/Kota <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="kabupaten_kota" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Provinsi <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="provinsi" required>
                                 </div>
                             </div>
                             <div class="mt-4 text-end">
@@ -682,55 +713,12 @@ $dummy_register = get_setting('dummy_register', '0');
                                 </table>
                             </div>
 
-                            <div class="mt-4 d-flex justify-content-between">
                                 <button type="button" class="btn btn-secondary px-4"
                                     onclick="prevStep(3)">Kembali</button>
-                                <button type="button" class="btn btn-premium px-4" onclick="nextStep(5)">Lanjut <i
-                                        class="fas fa-arrow-right ms-2"></i></button>
-                            </div>
-                        </div>
-
-                        <!-- Step 5: Upload Berkas Persyaratan -->
-                        <div class="form-step d-none" id="step5">
-                            <h4 class="mb-2"><i class="fas fa-file-upload me-2"></i>Upload Berkas Persyaratan</h4>
-                            <p class="text-muted small mb-4">Lengkapi dokumen yang diperlukan sesuai dengan jalur
-                                pendaftaran Anda. Pastikan file dalam format JPG, PNG, atau PDF (Max 2MB per file).</p>
-
-                            <div class="alert alert-info border-0 shadow-sm rounded-4 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-info-circle fa-2x me-3"></i>
-                                    <div>
-                                        <div class="fw-bold">PENTING:</div>
-                                        Pastikan semua dokumen sudah terisi dengan benar. Dokumen yang diperlukan akan
-                                        menyesuaikan dengan <strong>jalur pendaftaran</strong> yang Anda pilih di Step
-                                        1.
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="document-list">
-                                <!-- Document upload fields will be dynamically loaded here based on jalur_id -->
-                            </div>
-
-                            <div class="form-check mt-4 mb-4">
-                                <input class="form-check-input" type="checkbox" required id="checkDocuments" disabled>
-                                <label class="form-check-label fw-bold text-primary" for="checkDocuments">
-                                    Saya menyatakan bahwa semua dokumen yang saya upload adalah asli dan benar. Apabila
-                                    ditemukan pemalsuan dokumen di kemudian hari, saya bersedia dibatalkan kelulusannya.
-                                </label>
-                            </div>
-
-                            <div class="mt-4 d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary px-4"
-                                    onclick="prevStep(4)">Kembali</button>
-                                <button type="button" id="btnPreviewPendaftaran"
-                                    class="btn btn-primary btn-lg px-5 shadow rounded-pill" onclick="handleSubmit()">
+                                <button type="button" class="btn btn-primary btn-lg px-5 shadow rounded-pill" onclick="handleSubmit()">
                                     <i class="fas fa-eye me-2"></i>Preview Pendaftaran
                                 </button>
                             </div>
-
-                            <!-- Hidden field to track pakta status -->
-                            <input type="hidden" id="paktaAccepted" value="0">
                         </div>
 
                     </form>
@@ -956,7 +944,6 @@ $dummy_register = get_setting('dummy_register', '0');
                 if (s === 1 && !validateStepFields('step1')) return;
                 if (s === 2 && !validateStepFields('step2')) return;
                 if (s === 3 && !validateStepFields('step3')) return;
-                if (s === 4 && !validateNilaiStep()) return;
             }
 
             // All validations passed, navigate to the target step
@@ -976,11 +963,6 @@ $dummy_register = get_setting('dummy_register', '0');
                         el.classList.remove('active');
                     }
                 });
-
-                // Load documents if going to step 5
-                if (targetStepNumber === 5) {
-                    loadDocumentUploadFields();
-                }
 
                 // Scroll to top
                 window.scrollTo(0, 0);
@@ -1110,426 +1092,15 @@ $dummy_register = get_setting('dummy_register', '0');
             }
         }
 
-        // Load document upload fields dynamically based on selected jalur
-        function loadDocumentUploadFields() {
-            const jalurSelect = document.querySelector('select[name="jalur_id"]');
-            const jalurId = jalurSelect ? jalurSelect.value : '';
-            const documentList = document.getElementById('document-list');
-
-            if (!jalurId) {
-                documentList.innerHTML = `
-                    <div class="alert alert-warning border-0 rounded-4">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Silakan pilih jalur pendaftaran di Step 1 terlebih dahulu.
-                    </div>
-                `;
-                return;
-            }
-
-            // Show loading
-            documentList.innerHTML = `
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-3 text-muted">Memuat daftar dokumen...</p>
-                </div>
-            `;
-
-            // Fetch documents from API
-            fetch('get_jalur_syarat.php?jalur_id=' + jalurId)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        generateDocumentFields(data.documents, data.jalur.nama_jalur);
-                    } else {
-                        documentList.innerHTML = `
-                            <div class="alert alert-danger border-0 rounded-4">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                Error: ${data.error}
-                            </div>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    documentList.innerHTML = `
-                        <div class="alert alert-danger border-0 rounded-4">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            Gagal memuat daftar dokumen. Silakan coba lagi.
-                        </div>
-                    `;
-                    console.error('Error:', error);
-                });
-        }
-
-        // Generate document upload fields HTML
-        function generateDocumentFields(documents, jalurName) {
-            const documentList = document.getElementById('document-list');
-
-            if (!documents || documents.length === 0) {
-                documentList.innerHTML = `
-                    <div class="alert alert-info border-0 rounded-4">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Tidak ada dokumen yang perlu diupload untuk jalur ini.
-                    </div>
-                `;
-                return;
-            }
-
-            const mandatory = documents.filter(d => d.status === 'wajib');
-            const additional = documents.filter(d => d.status === 'tambahan');
-            const optional = documents.filter(d => d.status === 'pilihan');
-
-            let html = `
-                <div class="alert alert-primary border-0 rounded-4 mb-4">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-route fa-2x me-3"></i>
-                        <div>
-                            <div class="fw-bold mb-1">Jalur Pendaftaran Anda:</div>
-                            <div class="fs-5 fw-semibold text-dark">${jalurName}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // 1. Berkas Wajib
-            if (mandatory.length > 0) {
-                html += `
-                    <h6 class="fw-bold mb-3 text-danger"><i class="fas fa-file-signature me-2"></i>Berkas Wajib</h6>
-                    <div class="row g-3 mb-4">
-                `;
-                mandatory.forEach((doc) => {
-                    const isPhoto = doc.field === 'foto_siswa';
-                    html += `
-                        <div class="col-md-6">
-                            <div class="card border shadow-sm rounded-4 h-100">
-                                <div class="card-body">
-                                    <label class="form-label fw-bold">
-                                        <i class="fas fa-file-alt me-1 text-danger"></i>
-                                        ${doc.label} <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="file" 
-                                           name="document_${doc.field}" 
-                                           id="document_${doc.field}"
-                                           class="form-control mandatory-file-input" 
-                                           accept="${isPhoto ? '.jpg,.jpeg,.png' : '.pdf'}"
-                                           required
-                                           onchange="validateFileSize(this, checkMandatoryFilled)">
-                                    ${doc.field === 'foto_siswa' ? `
-                                    <div class="mt-2 p-2 bg-light rounded-3 border d-flex align-items-center">
-                                        <img src="assets/img/contoh_siswa_merah.png" class="rounded-2 shadow-sm me-3" style="width: 60px; height: 80px; object-fit: cover;">
-                                        <div>
-                                            <div class="fw-bold text-success small"><i class="fas fa-check-circle me-1"></i>Contoh Foto Benar</div>
-                                            <div class="text-muted" style="font-size: 0.75rem;">Latar merah, seragam sekolah, rapi, dan menghadap depan.</div>
-                                        </div>
-                                    </div>
-                                    ` : ''}
-                                    ${doc.field === 'file_nisn' ? `
-                                    <div class="mt-2 p-2 bg-light rounded-3 border">
-                                        <div class="d-flex flex-column">
-                                            <div class="fw-bold text-primary small mb-2"><i class="fas fa-info-circle me-1"></i>Contoh Printout NISN</div>
-                                            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContohNISN_reg" aria-expanded="false" aria-controls="collapseContohNISN_reg">
-                                                <i class="fas fa-image me-1"></i> Lihat Contoh Gambar
-                                            </button>
-                                            <div class="collapse mt-2" id="collapseContohNISN_reg">
-                                                <img src="assets/img/contoh_nisn.png" class="img-fluid rounded shadow-sm border" alt="Contoh Printout NISN">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    ` : ''}
-                                    <div class="form-text small">
-                                        Format: ${isPhoto ? 'JPG, PNG' : 'PDF'} (Max 2MB)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-            }
-
-            // 2. Berkas Pendukung (Bukan wajib, bukan pilihan dropdown)
-            if (additional.length > 0) {
-                html += `
-                    <h6 class="fw-bold mb-3 text-primary"><i class="fas fa-file-medical me-2"></i>Berkas Pendukung</h6>
-                    <div class="row g-3 mb-4">
-                `;
-                additional.forEach((doc) => {
-                    const isPhoto = doc.field === 'foto_siswa';
-                    html += `
-                        <div class="col-md-6">
-                            <div class="card border shadow-sm rounded-4 h-100">
-                                <div class="card-body">
-                                    <label class="form-label fw-bold" style="color: #2c3e50;">
-                                        <i class="fas fa-file-alt me-1 text-primary"></i>
-                                        ${doc.label}
-                                    </label>
-                                    <input type="file" 
-                                           name="document_${doc.field}" 
-                                           id="document_${doc.field}"
-                                           class="form-control" 
-                                           accept="${isPhoto ? '.jpg,.jpeg,.png' : '.pdf'}">
-                                    <div class="form-text small">
-                                        Format: ${isPhoto ? 'JPG, PNG' : 'PDF'} (Max 2MB)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-            }
-
-            // 3. Berkas Pilihan (Dropdown)
-            if (optional.length > 0) {
-                html += `
-                    <div class="card border-primary border-2 shadow-sm rounded-4 mb-4">
-                        <div class="card-header bg-primary text-white py-3">
-                            <h6 class="mb-0 fw-bold"><i class="fas fa-star me-2"></i>Berkas Pilihan (Minimal Unggah 1)</h6>
-                        </div>
-                        <div class="card-body p-4">
-                            <p class="text-muted small mb-4">
-                                <i class="fas fa-info-circle me-1"></i>
-                                <strong>Petunjuk Upload Berkas Pilihan:</strong>
-                            </p>
-                            <ul class="text-muted small mb-4">
-                                <?php foreach ($petunjuk_berkas_pilihan as $baris): ?>
-                                <li><?= $baris ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            
-                            <div id="optional-docs-container">
-                                <div class="row g-3 optional-upload-row mb-3">
-                                    <div class="col-md-5">
-                                        <label class="form-label small fw-bold">Pilih Jenis Dokumen</label>
-                                        <select class="form-select doc-type-selector" onchange="updateOptionalInputName(this)">
-                                            <option value="">-- Pilih Berkas --</option>
-                                            ${optional.map(d => `<option value="${d.field}">${d.label}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label small fw-bold">Upload File</label>
-                                        <input type="file" class="form-control optional-file-input" accept=".jpg,.jpeg,.png,.pdf" disabled>
-                                    </div>
-                                    <div class="col-md-1 d-flex align-items-end">
-                                        <button type="button" class="btn btn-outline-danger w-100" onclick="removeOptionalRow(this)" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill mt-2" onclick="addOptionalRow()">
-                                <i class="fas fa-plus me-1"></i> Tambah Berkas Pilihan Lain
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-
-            html += `
-                <div class="alert alert-info border-0 rounded-4 mt-4">
-                    <div class="d-flex align-items-start">
-                        <i class="fas fa-lightbulb fa-2x me-3 text-warning"></i>
-                        <div>
-                            <div class="fw-bold mb-2">Tips Upload Dokumen:</div>
-                            <ul class="mb-0 small">
-                                <li>Pastikan file terlihat jelas dan tidak blur</li>
-                                <li>Gunakan scan atau foto dengan pencahayaan yang baik</li>
-                                <li>Ukuran file maksimal 2MB per dokumen</li>
-                                <li>Dokumen bertanda <span class="text-danger">*</span> atau di kotak Wajib harus diisi</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            documentList.innerHTML = html;
-        }
-
-        function updateOptionalInputName(select) {
-            const row = select.closest('.optional-upload-row');
-            const input = row.querySelector('.optional-file-input');
-            const helpText = row.querySelector('.form-text') || document.createElement('div');
-            if (!row.querySelector('.form-text')) {
-                helpText.className = 'form-text small mt-1';
-                input.parentNode.appendChild(helpText);
-            }
-
-            if (select.value) {
-                const isPhoto = select.value === 'foto_siswa';
-                input.name = 'document_' + select.value;
-                input.id = 'document_' + select.value;
-                input.disabled = false;
-                input.required = true;
-                input.accept = isPhoto ? '.jpg,.jpeg,.png' : '.pdf';
-                helpText.textContent = `Format: ${isPhoto ? 'JPG, PNG' : 'PDF'} (Max 2MB)`;
-                input.onchange = function () { validateFileSize(this, checkMandatoryFilled); };
-            } else {
-                input.name = '';
-                input.id = '';
-                input.disabled = true;
-                input.required = false;
-                input.accept = '';
-                helpText.textContent = '';
-                input.onchange = null;
-            }
-            checkMandatoryFilled(); // Check status
-        }
-
-        function addOptionalRow() {
-            const container = document.getElementById('optional-docs-container');
-            const firstRow = container.querySelector('.optional-upload-row');
-            const newRow = firstRow.cloneNode(true);
-
-            // Reset values
-            const select = newRow.querySelector('select');
-            const input = newRow.querySelector('input');
-            const deleteBtn = newRow.querySelector('button');
-
-            select.value = '';
-            input.value = '';
-            input.name = '';
-            input.disabled = true;
-            input.required = false;
-            deleteBtn.disabled = false;
-
-            container.appendChild(newRow);
-        }
-
-        function removeOptionalRow(btn) {
-            const row = btn.closest('.optional-upload-row');
-            const container = document.getElementById('optional-docs-container');
-            if (container.querySelectorAll('.optional-upload-row').length > 1) {
-                row.remove();
-            }
-        }
-
-        /**
-         * Validates the selected file size (max 2MB).
-         * If too large, shows a SweetAlert and resets the input.
-         * @param {HTMLInputElement} input - The file input element.
-         * @param {Function} callback - Optional callback to run after validation passes.
-         */
-        function validateFileSize(input, callback) {
-            const maxSize = 2 * 1024 * 1024; // 2MB in bytes
-            if (input.files && input.files[0] && input.files[0].size > maxSize) {
-                const fileSizeMB = (input.files[0].size / 1024 / 1024).toFixed(2);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Terlalu Besar!',
-                    html: `Ukuran file <strong>${input.files[0].name}</strong> adalah <strong>${fileSizeMB} MB</strong>.<br><br>Ukuran maksimal yang diperbolehkan adalah <strong>2 MB</strong>. Silakan kompres atau gunakan file yang lebih kecil.`,
-                    confirmButtonText: 'Oke, Ganti File',
-                    confirmButtonColor: '#dc3545'
-                });
-                input.value = ''; // Reset the input
-                if (typeof callback === 'function') callback();
-                return false;
-            }
-            if (typeof callback === 'function') callback();
-            return true;
-        }
-
-        function toggleDeclarationCheckbox() {
-            const checkbox = document.getElementById('checkDocuments');
-            const isFilled = checkMandatoryFilled();
-            checkbox.disabled = !isFilled;
-            if (!isFilled) checkbox.checked = false;
-        }
-
-        function checkMandatoryFilled() {
-            const mandatoryInputs = document.querySelectorAll('.mandatory-file-input');
-            const checkbox = document.getElementById('checkDocuments');
-
-            let allFilled = true;
-
-            // 1. Check Mandatory
-            mandatoryInputs.forEach(input => {
-                if (!input.files || input.files.length === 0) {
-                    allFilled = false;
-                }
-            });
-
-            // 2. Check Optional (Minimal 1)
-            const optionalContainer = document.getElementById('optional-docs-container');
-            if (allFilled && optionalContainer) {
-                const filledOptional = Array.from(optionalContainer.querySelectorAll('.optional-file-input'))
-                    .filter(input => input.files && input.files.length > 0);
-                if (filledOptional.length === 0) {
-                    allFilled = false;
-                }
-            }
-
-            checkbox.disabled = !allFilled;
-            if (!allFilled) {
-                checkbox.checked = false;
-            }
-
-            return allFilled;
-        }
-
-        // Add validation for optional docs before going to next/preview
-        function validateStep5() {
-            const optionalContainer = document.getElementById('optional-docs-container');
-            if (optionalContainer) {
-                const filledInputs = Array.from(optionalContainer.querySelectorAll('.optional-file-input')).filter(input => input.files.length > 0);
-                if (filledInputs.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Berkas Pilihan Belum Diisi',
-                        text: 'Silakan pilih dan unggah minimal satu dokumen pilihan untuk jalur pendaftaran ini.',
-                        confirmButtonText: 'Siap!'
-                    });
-                    return false;
-                }
-            }
-            return true;
-        }
 
 
 
         // Handle submit button - Show Preview directly
         function handleSubmit() {
-            // 1. Check if declaration checkbox is checked
-            const checkDocs = document.getElementById('checkDocuments');
-            if (!checkDocs.checked) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Pernyataan Keaslian',
-                    text: 'Silakan centang pernyataan keaslian dokumen sebelum melanjutkan.',
-                    confirmButtonText: 'Oke'
-                });
-                return;
-            }
+            // Validate Nilai Step (Step 4) first
+            if (!validateNilaiStep()) return;
 
-            // 2. Validate ALL mandatory docs (Aggressive lock)
-            const mandatoryInputs = document.querySelectorAll('.mandatory-file-input');
-            let missingLabels = [];
-            
-            mandatoryInputs.forEach(input => {
-                if (!input.files || input.files.length === 0) {
-                    // Get label from the closest card or previous element
-                    const label = input.closest('.card')?.querySelector('label')?.innerText.replace('*', '').trim() || input.name;
-                    missingLabels.push(label);
-                }
-            });
-
-            if (missingLabels.length > 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Dokumen Belum Lengkap',
-                    html: `Dokumen berikut <b>wajib</b> diunggah:<br><br><ul class="text-start">${missingLabels.map(l => `<li>${l}</li>`).join('')}</ul>`,
-                    confirmButtonText: 'Lengkapi Sekarang'
-                });
-                return;
-            }
-
-            // 3. Validate optional docs (minimal 1)
-            if (!validateStep5()) {
-                return;
-            }
-
-            // Show preview directly as pakta integrity is now part of uploaded documents
+            // Show preview data
             showPreviewData();
         }
 
@@ -1701,119 +1272,59 @@ $dummy_register = get_setting('dummy_register', '0');
                 </div>
             `;
 
-            // STEP 5: DOKUMEN UPLOAD
-            html += `
-                <div class="card border-0 shadow-sm rounded-4 mb-3">
-                    <div class="card-header bg-secondary text-white p-3">
-                        <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>Dokumen Upload</h5>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3" id="filesPreviewContainer">
-                            <div class="col-12"><p class="text-muted mb-0">Memuat daftar file...</p></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
             // INFO
             html += `
-                <div class="alert alert-info border-0 rounded-4">
+                <div class="alert alert-info border-0 rounded-4 mt-4">
                     <i class="fas fa-info-circle me-2"></i>
-                    <strong>Catatan:</strong> Periksa kembali semua data Anda. Jika ada yang salah, klik "Edit Data" untuk kembali ke form. Jika sudah benar, klik "Kirim Pendaftaran" untuk menyelesaikan proses.
+                    <strong>Catatan: Periksa kembali semua data Anda.</strong>
+                    <br><br>
+                    <i class="fas fa-file-upload me-2 text-warning"></i> <strong>Upload Berkas:</strong> Setelah pendaftaran dikirim, silakan login untuk mengunggah berkas persyaratan di Dashboard Siswa.
                 </div>
             `;
 
             // Insert into modal
             document.getElementById('previewDataContent').innerHTML = html;
 
-            // Generate file previews
-            setTimeout(() => {
-                const fileInputs = document.querySelectorAll('input[type="file"]');
-                const container = document.getElementById('filesPreviewContainer');
-
-                if (fileInputs.length === 0) {
-                    container.innerHTML = '<div class="col-12"><p class="text-muted mb-0">Tidak ada dokumen yang diupload.</p></div>';
-                    return;
-                }
-
-                container.innerHTML = ''; // Clear loading message
-
-                fileInputs.forEach(input => {
-                    const file = input.files[0];
-                    if (file) {
-                        const fileName = file.name;
-                        const fileSize = (file.size / 1024).toFixed(2) + ' KB';
-                        const fileExt = fileName.split('.').pop().toUpperCase();
-                        const isImage = ['JPG', 'JPEG', 'PNG'].includes(fileExt);
-
-                        // Get label
-                        let label = '';
-                        const row = input.closest('.optional-upload-row');
-                        if (row) {
-                            const select = row.querySelector('select');
-                            label = select.options[select.selectedIndex].text;
-                        } else {
-                            label = input.closest('.card')?.querySelector('label')?.textContent.replace('*', '').trim() || input.name;
-                        }
-
-                        let icon = 'fa-file-alt';
-                        let iconColor = 'text-primary';
-                        let bgGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-
-                        if (fileExt === 'PDF') {
-                            icon = 'fa-file-pdf';
-                            iconColor = 'text-danger';
-                            bgGradient = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-                        } else if (isImage) {
-                            icon = 'fa-file-image';
-                            iconColor = 'text-success';
-                            bgGradient = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
-                        }
-
-                        // Create the card element
-                        const col = document.createElement('div');
-                        col.className = 'col-md-6 mb-3';
-                        col.innerHTML = `
-                            <div class="card border-0 shadow-sm h-100" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-start">
-                                        <div class="me-3 img-preview-container d-flex align-items-center justify-content-center rounded" style="width: 80px; height: 80px; background: ${bgGradient}; flex-shrink: 0; overflow: hidden;">
-                                            <i class="fas ${icon} fa-3x text-white icon-placeholder"></i>
-                                        </div>
-                                        <div class="flex-grow-1" style="min-width: 0;">
-                                            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">${label}</div>
-                                            <div class="text-muted small mb-2" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${fileName}</div>
-                                            <div>
-                                                <span class="badge" style="background: ${bgGradient};">${fileExt}</span>
-                                                <span class="badge bg-secondary ms-1">${fileSize}</span>
-                                            </div>
-                                        </div>
-                                        <div class="ms-2">
-                                            <i class="fas fa-check-circle text-success fa-lg"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        container.appendChild(col);
-
-                        // If image, read it and replace placeholder
-                        if (isImage) {
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                const previewContainer = col.querySelector('.img-preview-container');
-                                previewContainer.innerHTML = `<img src="${e.target.result}" class="rounded" style="width: 100%; height: 100%; object-fit: cover;">`;
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    }
-                });
-            }, 200);
 
             // Show modal
    const previewModal = new bootstrap.Modal(document.getElementById('previewDataModal'));
             previewModal.show();
         }
+
+        // Toggle Password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById('icon_' + inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // Real-time password matching
+        const passwordInput = document.getElementById('password_input');
+        const confirmInput = document.getElementById('confirm_password_input');
+        const feedback = document.getElementById('password_match_feedback');
+
+        function checkPasswordMatch() {
+            if (confirmInput.value === '') {
+                feedback.innerHTML = '';
+                return;
+            }
+            if (passwordInput.value === confirmInput.value) {
+                feedback.innerHTML = '<i class="fas fa-check-circle me-1"></i>Password cocok';
+                feedback.className = 'small mt-1 text-success';
+            } else {
+                feedback.innerHTML = '<i class="fas fa-times-circle me-1"></i>Password tidak cocok';
+                feedback.className = 'small mt-1 text-danger';
+            }
+        }
+
+        passwordInput.addEventListener('input', checkPasswordMatch);
+        confirmInput.addEventListener('input', checkPasswordMatch);
 
         // Close preview and go back to edit
         function closePreview() {
@@ -1828,7 +1339,109 @@ $dummy_register = get_setting('dummy_register', '0');
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Apply dummy register settings globally
+            // --- WILAYAH INDONESIA API LOGIC (VIA PROXY) ---
+        const provSelect = document.getElementById('provinsi');
+        const kabSelect = document.getElementById('kabupaten_kota');
+        const kecSelect = document.getElementById('kecamatan');
+        const desaSelect = document.getElementById('desa_kelurahan');
+
+        const proxy = 'includes/proxy_wilayah.php?path=';
+
+        // Load Provinsi
+        fetch(proxy + 'provinces')
+            .then(response => response.json())
+            .then(provinces => {
+                provinces.forEach(prov => {
+                    let option = document.createElement('option');
+                    option.value = prov.name; 
+                    option.dataset.id = prov.id; 
+                    option.textContent = prov.name;
+                    provSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading provinces:', error));
+
+        // Event Provinsi -> Kab
+        provSelect.addEventListener('change', function() {
+            kabSelect.innerHTML = '<option value="">Pilih Kab/Kota...</option>';
+            kecSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
+            desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+            
+            kabSelect.disabled = true;
+            kecSelect.disabled = true;
+            desaSelect.disabled = true;
+
+            const selectedOption = this.options[this.selectedIndex];
+            const provId = selectedOption.dataset.id;
+
+            if (provId) {
+                fetch(proxy + `regencies/${provId}`)
+                    .then(response => response.json())
+                    .then(regencies => {
+                        regencies.forEach(kab => {
+                            let option = document.createElement('option');
+                            option.value = kab.name;
+                            option.dataset.id = kab.id;
+                            option.textContent = kab.name;
+                            kabSelect.appendChild(option);
+                        });
+                        kabSelect.disabled = false;
+                    });
+            }
+        });
+
+        // Event Kab -> Kec
+        kabSelect.addEventListener('change', function() {
+            kecSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
+            desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+            
+            kecSelect.disabled = true;
+            desaSelect.disabled = true;
+
+            const selectedOption = this.options[this.selectedIndex];
+            const kabId = selectedOption.dataset.id;
+
+            if (kabId) {
+                fetch(proxy + `districts/${kabId}`)
+                    .then(response => response.json())
+                    .then(districts => {
+                        districts.forEach(kec => {
+                            let option = document.createElement('option');
+                            option.value = kec.name;
+                            option.dataset.id = kec.id;
+                            option.textContent = kec.name;
+                            kecSelect.appendChild(option);
+                        });
+                        kecSelect.disabled = false;
+                    });
+            }
+        });
+
+        // Event Kec -> Desa
+        kecSelect.addEventListener('change', function() {
+            desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+            desaSelect.disabled = true;
+
+            const selectedOption = this.options[this.selectedIndex];
+            const kecId = selectedOption.dataset.id;
+
+            if (kecId) {
+                fetch(proxy + `villages/${kecId}`)
+                    .then(response => response.json())
+                    .then(villages => {
+                        villages.forEach(desa => {
+                            let option = document.createElement('option');
+                            option.value = desa.name;
+                            option.textContent = desa.name;
+                            desaSelect.appendChild(option);
+                        });
+                        desaSelect.disabled = false;
+                    });
+            }
+        });
+        // --- END WILAYAH API ---
+
+        // Apply dummy register settings globally
             <?php if ($dummy_register == '1'): ?>
                     console.log('Dummy Register mode active. Removing required attributes (Except Files).');
                     var inputs = document.querySelectorAll('form#pmbmForm input:not([type="file"]), form#pmbmForm select, form#pmbmForm textarea');

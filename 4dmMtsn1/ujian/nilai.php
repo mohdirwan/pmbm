@@ -84,12 +84,20 @@ $total_tested = $pdo->query("SELECT COUNT(*) FROM pendaftar WHERE status != 'Dit
                     <p class="text-muted small">Daftar rekapitulasi nilai yang telah di-import dari sistem CBT.</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="index.php" class="btn btn-outline-primary rounded-pill px-4">
-                        <i class="fas fa-file-import me-2"></i> Import Nilai Baru
+                    <a href="integrasi.php" class="btn btn-outline-primary rounded-pill px-4">
+                        <i class="fas fa-file-import me-2"></i> Import Nilai Manual
                     </a>
-                    <button class="btn btn-success rounded-pill px-4">
-                        <i class="fas fa-file-excel me-2"></i> Export Excel
-                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-success rounded-pill px-4 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-file-download me-2"></i> Download Template
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end rounded-4 shadow-lg border-0 py-2">
+                            <li><a class="dropdown-item py-2" href="integrasi.php?template=1"><i class="fas fa-users me-2 text-primary"></i> Semua Calon Murid</a></li>
+                            <li><hr class="dropdown-divider opacity-50"></li>
+                            <li><a class="dropdown-item py-2" href="integrasi.php?template=1&jk=Laki-laki"><i class="fas fa-male me-2 text-info"></i> Murid Laki-laki</a></li>
+                            <li><a class="dropdown-item py-2" href="integrasi.php?template=1&jk=Perempuan"><i class="fas fa-female me-2 text-danger"></i> Murid Perempuan</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 

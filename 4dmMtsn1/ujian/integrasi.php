@@ -114,9 +114,15 @@ if (isset($_GET['template'])) {
 
         // Fetch Real Data (Only Verified)
         $sql = "SELECT no_pendaftaran, nama_lengkap, nisn FROM pendaftar WHERE status = 'Terverifikasi'";
+        $params = [];
+
+        // Filter by Jenis Kelamin
+        if (isset($_GET['jk']) && in_array($_GET['jk'], ['Laki-laki', 'Perempuan'])) {
+            $sql .= " AND jenis_kelamin = ?";
+            $params[] = $_GET['jk'];
+        }
         
         $selected_jalurs = isset($_GET['jalur_ids']) ? $_GET['jalur_ids'] : [];
-        $params = [];
         if (!empty($selected_jalurs)) {
             $ids = [];
             $has_tahfidz_tl = false;

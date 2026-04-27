@@ -93,9 +93,18 @@ if ($is_special) {
                     <h2 class="fw-bold mb-2">Alhamdulillah!</h2>
                     <h5 class="fw-bold text-success mb-4"><?= $success_message ?></h5>
 
+                    <div class="alert alert-warning border-0 rounded-4 mb-4 shadow-sm text-start">
+                        <div class="d-flex">
+                            <i class="fas fa-file-upload fa-lg me-3 mt-1"></i>
+                            <div>
+                                <div class="fw-bold">Langkah Selanjutnya:</div>
+                                <div class="small">Silakan <strong>Login Murid</strong> untuk melengkapi berkas persyaratan (Pas Foto, KK, Rapor, dll) di Dashboard Murid agar dapat diverifikasi oleh admin.</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="text-start mb-4">
-                        <p class="text-center text-muted small mb-4">Gunakan informasi di bawah ini untuk login ke
-                            dashboard murid:</p>
+                        <p class="text-center text-muted small mb-4">Gunakan informasi di bawah ini untuk login ke dashboard murid:</p>
 
                         <div class="login-info-box shadow-sm">
                             <div class="row g-3">
@@ -105,12 +114,12 @@ if ($is_special) {
                                     </div>
                                 </div>
                                 <div class="col-md-6 text-center border-end">
-                                    <div class="info-label">Username (No. Daftar)</div>
-                                    <div class="info-value"><?= htmlspecialchars($no_pendaftaran) ?></div>
+                                    <div class="info-label">Username (Input)</div>
+                                    <div class="info-value"><?= htmlspecialchars($student['nisn']) ?> (NISN)</div>
                                 </div>
                                 <div class=" col-md-6 text-center">
-                                    <div class="info-label">Password (NISN)</div>
-                                    <div class="info-value"><?= htmlspecialchars($student['nisn']) ?></div>
+                                    <div class="info-label">Password</div>
+                                    <div class="info-value" style="font-size: 1.1rem;">Sesuai yang Anda buat</div>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +130,7 @@ if ($is_special) {
                             <div class="col-md-6">
                                 <a href="cetak_bukti.php?reg=<?= $no_pendaftaran ?>" target="_blank"
                                     class="btn btn-primary btn-lg rounded-pill shadow w-100">
-                                    <i class="fas fa-print me-2"></i> Cetak Kartu
+                                    <i class="fas fa-print me-2"></i> Cetak Bukti
                                 </a>
                             </div>
                             <div class="col-md-6">
@@ -136,7 +145,7 @@ if ($is_special) {
                     </div>
 
                     <p class="text-muted small mt-4">
-                        <i class="fas fa-info-circle me-1"></i> Jangan lupa simpan atau screenshot halaman ini.
+                        <i class="fas fa-info-circle me-1"></i> Jangan lupa simpan atau screenshot halaman ini sebagai bukti pendaftaran awal Anda. No. Pendaftaran Anda: <strong><?= $no_pendaftaran ?></strong>
                     </p>
                 </div>
             </div>

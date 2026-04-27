@@ -290,21 +290,13 @@ if (!$student) {
                 </tr>
             </table>
 
-            <div class="photo-box">
-                <?php if (!empty($student['foto_siswa'])): ?>
-                    <img src="<?= BASE_URL ?>uploads/<?= $student['foto_siswa'] ?>" alt="Foto Murid"
-                        style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                <?php else: ?>
-                    Pas Foto<br>3 x 4
-                <?php endif; ?>
-            </div>
         </div>
 
         <div class="login-info">
             <strong>INFORMASI LOGIN</strong>
             <div style="margin-top: 5px;">
-                Username : <?= htmlspecialchars($student['no_pendaftaran']) ?><br>
-                Password : <?= htmlspecialchars($student['nisn']) ?><br>
+                Username : <?= htmlspecialchars($student['nisn']) ?><br>
+                Password : [Sesuai yang Anda buat]<br>
                 <div style="font-size: 11px; margin-top: 5px;">*Gunakan informasi ini untuk melengkapi berkas di
                     dashboard siswa.</div>
             </div>

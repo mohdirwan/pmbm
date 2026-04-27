@@ -328,6 +328,12 @@ if ($favicon = get_setting('school_logo')) {
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?= is_active('test_akademik.php') ?>"
+                                href="<?= BASE_URL . ADMIN_DIR ?>/ujian/test_akademik.php">
+                                <i class="fas fa-microchip me-2"></i> Data Tes Akademik
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?= is_active('integrasi.php') ?>"
                                 href="<?= BASE_URL . ADMIN_DIR ?>/ujian/integrasi.php">
                                 <i class="fas fa-link me-2"></i> Integrasi CBT External
@@ -405,6 +411,10 @@ if ($favicon = get_setting('school_logo')) {
                         <li class="nav-item">
                             <a class="nav-link <?= is_active('settings.php') && strpos($_SERVER['PHP_SELF'], '/' . ADMIN_DIR . '/settings.php') !== false ? 'active' : '' ?>"
                                 href="<?= BASE_URL . ADMIN_DIR ?>/settings.php">Pengaturan Sistem</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= is_active('maintenance.php') ?>"
+                                href="<?= BASE_URL . ADMIN_DIR ?>/maintenance.php">Arsip & Reset Data</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= is_active('log') ?>" href="<?= BASE_URL . ADMIN_DIR ?>/log/index.php">Log
