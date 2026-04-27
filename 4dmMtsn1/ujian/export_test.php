@@ -18,6 +18,8 @@ $data = $stmt->fetchAll();
             <th>NISN</th>
             <th>Hari Test</th>
             <th>Sesi Test</th>
+            <th>Jam Mulai</th>
+            <th>Jam Selesai</th>
         </tr>
     </thead>
     <tbody>
@@ -29,6 +31,8 @@ $data = $stmt->fetchAll();
             <td>'<?= $row['nisn'] ?></td> <!-- Tanda petik agar tidak jadi scientific format di excel -->
             <td><?= $row['test_hari'] ?? '-' ?></td>
             <td><?= $row['test_sesi'] ?? '-' ?></td>
+            <td><?= $row['test_jam_mulai'] ?? '-' ?></td>
+            <td><?= $row['test_jam_selesai'] ?? '-' ?></td>
         </tr>
         <?php endforeach; ?>
     </tbody>

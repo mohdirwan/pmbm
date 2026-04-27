@@ -108,6 +108,9 @@ $school_logo = get_setting('school_logo');
                         <div class="jadwal-box">
                             <small>JADWAL UJIAN:</small>
                             <strong><?= $s['test_hari'] ?> | <?= $s['test_sesi'] ?></strong>
+                            <div style="font-size: 11px; margin-top: 3px; color: #2e7d32; font-weight: bold;">
+                                <i class="far fa-clock"></i> Pukul: <?= $s['test_jam_mulai'] ?> - <?= $s['test_jam_selesai'] ?> WIB
+                            </div>
                         </div>
                     </div>
                 </div>

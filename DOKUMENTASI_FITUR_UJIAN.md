@@ -10,10 +10,10 @@ Fitur ini dirancang untuk mendistribusikan siswa yang telah lolos verifikasi ber
    * *Contoh: Senin, Selasa, Rabu*
 2. **Input Jumlah Sesi**: Tentukan berapa sesi yang akan dilaksanakan dalam satu hari.
    * *Contoh: 3* (Maka dalam sehari akan ada Sesi 1, Sesi 2, dan Sesi 3).
-3. **Input Kapasitas**: Tentukan jumlah maksimal siswa yang dapat ditampung dalam satu sesi (berdasarkan kapasitas Lab Komputer).
-   * *Contoh: 40* (Maka sistem akan mengisi Sesi 1 dengan 40 orang, lalu pindah ke Sesi 2, dst).
-4. **Simpan Pengaturan**: Klik tombol ini untuk mengunci konfigurasi.
-5. **Generate Jadwal Otomatis**: Klik tombol ini untuk menjalankan mesin penjadwalan. Sistem akan memproses seluruh siswa berstatus 'Terverifikasi' dan memberikan mereka jadwal secara berurutan.
+3. **Input Kapasitas**: Tentukan jumlah maksimal siswa yang dapat ditampung dalam satu sesi (berdasarkan kapasitas Lab Komputer). 
+4. **Atur Jam Per Sesi**: Setelah mengisi jumlah sesi, form input jam akan muncul secara otomatis. Isi jam mulai dan jam selesai untuk masing-masing sesi.
+5. **Simpan Pengaturan**: Klik tombol ini untuk mengunci konfigurasi dan jam sesi.
+6. **Generate Jadwal Otomatis**: Klik tombol ini untuk menjalankan mesin penjadwalan. Sistem akan memberikan Hari, Sesi, dan JAM ujian secara otomatis ke seluruh siswa terverifikasi.
 
 > [!TIP]
 > Gunakan tombol **Reset Semua Jadwal** jika ingin mengulang pembagian jadwal dari awal (misal jika ada perubahan hari atau kapasitas mendadak).

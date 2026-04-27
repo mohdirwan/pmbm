@@ -365,6 +365,19 @@ $exam_password = "26" . $student['nisn'];
                 </div>
             </div>
 
+            <?php if (!empty($student['test_hari'])): ?>
+                <div class="jadwal-box-wrapper" style="margin-top: 20px; background: #f0f7f4; border: 2px dashed #198754; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
+                    <div>
+                        <small style="color: #198754; font-weight: 700; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px;">Jadwal Pelaksanaan Ujian:</small>
+                        <h4 style="margin: 0; color: #0b2c24; font-weight: 800;"><?= $student['test_hari'] ?> | <?= $student['test_sesi'] ?></h4>
+                    </div>
+                    <div style="text-align: right;">
+                        <small style="color: #198754; font-weight: 700; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px;">Jam Ujian (WIB):</small>
+                        <h4 style="margin: 0; color: #d32f2f; font-weight: 800;"><i class="far fa-clock me-1"></i> <?= $student['test_jam_mulai'] ?> - <?= $student['test_jam_selesai'] ?></h4>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <div class="account-box">
                 <div class="account-item">
                     <p>Username Ujian</p>

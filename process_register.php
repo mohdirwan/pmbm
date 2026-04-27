@@ -95,8 +95,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // 2. Insert Data
         $today = date('Ymd');
-        $stmt_check = $pdo->prepare("SELECT no_pendaftaran FROM pendaftar WHERE no_pendaftaran LIKE ? ORDER BY no_pendaftaran DESC LIMIT 1");
-        $stmt_check->execute([$today . '%']);
+        // Ambil nomor pendaftaran terakhir secara keseluruhan (global)
+        $stmt_check = $pdo->query("SELECT no_pendaftaran FROM pendaftar ORDER BY id DESC LIMIT 1");
         $last_reg = $stmt_check->fetchColumn();
 
         if ($last_reg) {

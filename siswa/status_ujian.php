@@ -96,11 +96,37 @@ $tutorial_pdf = get_setting('cbt_tutorial_pdf');
                 </div>
             </div>
 
-            <div class="p-4 bg-light rounded-4 border-start border-4 border-primary mb-4">
-                <div class="fs-5 lh-base text-dark">
-                    <?= $narasi_ujian ? nl2br($narasi_ujian) : '<i class="text-muted">Informasi jadwal belum tersedia. Silakan hubungi panitia.</i>' ?>
+            <?php if (!empty($siswa['test_hari'])): ?>
+                <div class="p-4 bg-primary bg-opacity-10 rounded-4 border border-primary border-opacity-25 mb-4 shadow-sm">
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-clock me-2"></i> Jadwal Ujian Anda:</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="p-3 bg-white rounded-4 text-center border">
+                                <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Hari/Tanggal</small>
+                                <span class="fw-bold text-dark"><?= $siswa['test_hari'] ?></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-white rounded-4 text-center border">
+                                <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Sesi</small>
+                                <span class="fw-bold text-dark"><?= $siswa['test_sesi'] ?></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-white rounded-4 text-center border">
+                                <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Jam Pelaksanaan</small>
+                                <span class="fw-bold text-success"><?= $siswa['test_jam_mulai'] ?> - <?= $siswa['test_jam_selesai'] ?> WIB</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            <?php else: ?>
+                <div class="p-4 bg-light rounded-4 border-start border-4 border-primary mb-4">
+                    <div class="fs-5 lh-base text-dark">
+                        <?= $narasi_ujian ? nl2br($narasi_ujian) : '<i class="text-muted">Informasi jadwal belum tersedia. Silakan hubungi panitia.</i>' ?>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <div class="rules-container p-3 rounded-4 bg-white border small text-muted overflow-auto mb-4"
                 style="max-height: 250px;">
