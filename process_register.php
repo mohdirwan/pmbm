@@ -100,14 +100,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $last_reg = $stmt_check->fetchColumn();
 
         if ($last_reg) {
-            // Mengambil 5 karakter terakhir (nomor urut) dan menambah 1
-            $last_num = (int) substr($last_reg, -5);
+            // Mengambil 4 karakter terakhir (nomor urut) dan menambah 1
+            $last_num = (int) substr($last_reg, -4);
             $new_num = $last_num + 1;
         } else {
             $new_num = 1;
         }
         
-        $no_pendaftaran = $today . str_pad($new_num, 5, '0', STR_PAD_LEFT);
+        $no_pendaftaran = $today . str_pad($new_num, 4, '0', STR_PAD_LEFT);
 
         // --- PASSWORD HANDLING ---
         $password = $_POST['password'];

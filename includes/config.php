@@ -286,4 +286,30 @@ function sync_ppdb_status()
 
 // Perform Auto Sync on Config load
 sync_ppdb_status();
-?>
+
+// ============================================
+// GLOBAL MAINTENANCE CHECK (SET OFF)
+// ============================================
+if (get_setting('maintenance_mode', 'off') === 'on') {
+    $current_path = $_SERVER['PHP_SELF'];
+    $is_admin_path = strpos($current_path, '/' . ADMIN_DIR . '/') !== false;
+    $is_admin_login = basename($current_path) === ADMIN_LOGIN_PATH;
+    
+    // Only block if NOT in admin directory and NOT the admin login page
+    if (!$is_admin_path && !$is_admin_login) {
+        $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada info pendaftaran.');
+        $maintenance_view_path = dirname(__DIR__) . '/maintenance_view.php';
+        
+        if (file_exists($maintenance_view_path)) {
+            include $maintenance_view_path;
+            exit;
+        } else {
+            // Fallback if view file is missing
+            die("<div style='text-align:center;margin-top:100px;font-family:sans-serif;'>
+                    <h1>Pemberitahuan</h1>
+                    <p>$maintenance_message</p>
+                 </div>");
+        }
+    }
+}
+?>

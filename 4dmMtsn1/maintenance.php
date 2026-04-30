@@ -12,13 +12,11 @@ $error_msg = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'archive_reset') {
     try {
-        $pdo->beginTransaction();
-
         $year = get_setting('ppdb_year', date('Y'));
         $clean_year = preg_replace('/[^A-Za-z0-9]/', '_', $year);
         $archive_table = "pendaftar_archive_" . $clean_year . "_" . date('Ymd_His');
 
-        // 1. ARCHIVE TABLE
+        // 1. ARCHIVE TABLE (DDL - Implicitly commits in MySQL, no transaction needed)
         // Check if table exists
         $stmt = $pdo->prepare("SHOW TABLES LIKE 'pendaftar'");
         $stmt->execute();
@@ -59,6 +57,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
                 }
             }
         }
+
+        // START TRANSACTION FOR REMAINING OPS
+        $pdo->beginTransaction();
 
         // 3. RESET SETTINGS
         $settings_to_reset = [

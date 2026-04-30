@@ -344,7 +344,7 @@ if ($favicon = get_setting('school_logo')) {
             </li>
         <?php endif; ?>
 
-        <!-- Dropdown: Pasca Seleksi -->
+        <!-- Dropdown: Pasca Seleksi (DISABLED)
         <?php if (has_access('pasca')): ?>
             <li class="nav-item mb-1">
                 <a class="nav-link collapsed" href="#menuPasca" data-bs-toggle="collapse" role="button"
@@ -374,6 +374,7 @@ if ($favicon = get_setting('school_logo')) {
                 </div>
             </li>
         <?php endif; ?>
+        -->
 
         <!-- Dropdown: Sistem -->
         <?php if (has_access('sistem')): ?>
@@ -407,6 +408,10 @@ if ($favicon = get_setting('school_logo')) {
                         <li class="nav-item">
                             <a class="nav-link <?= is_active('dummy_register.php') ?>"
                                 href="<?= BASE_URL . ADMIN_DIR ?>/dummy_register.php">Dummy Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= is_active('website_status.php') ?>"
+                                href="<?= BASE_URL . ADMIN_DIR ?>/website_status.php">Set Off Website</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?= is_active('settings.php') && strpos($_SERVER['PHP_SELF'], '/' . ADMIN_DIR . '/settings.php') !== false ? 'active' : '' ?>"
