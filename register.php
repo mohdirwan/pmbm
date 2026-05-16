@@ -146,6 +146,7 @@ $dummy_register = get_setting('dummy_register', '0');
                                             <i class="fas fa-eye" id="icon_password_input"></i>
                                         </button>
                                     </div>
+                                    <div id="password_length_feedback" class="small mt-1"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
@@ -400,10 +401,43 @@ $dummy_register = get_setting('dummy_register', '0');
                                     <label class="form-label">No HP/WA Ayah <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="no_hp_ayah" required>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label">Alamat Ayah <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" name="alamat_ayah" rows="2" required
-                                        placeholder="Alamat lengkap ayah"></textarea>
+                                <div class="col-12 mt-2">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="sama_alamat_ayah" name="sama_alamat_ayah">
+                                        <label class="form-check-label fw-bold text-primary" for="sama_alamat_ayah">Alamat Ayah sama dengan Alamat Murid</label>
+                                    </div>
+                                </div>
+                                <div id="section_alamat_ayah" class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Provinsi Ayah <span class="text-danger">*</span></label>
+                                            <select class="form-select address-prov" name="provinsi_ayah" id="provinsi_ayah" required>
+                                                <option value="">Pilih Provinsi...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kab/Kota Ayah <span class="text-danger">*</span></label>
+                                            <select class="form-select address-kab" name="kabupaten_kota_ayah" id="kabupaten_kota_ayah" required disabled>
+                                                <option value="">Pilih Kab/Kota...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kecamatan Ayah <span class="text-danger">*</span></label>
+                                            <select class="form-select address-kec" name="kecamatan_ayah" id="kecamatan_ayah" required disabled>
+                                                <option value="">Pilih Kecamatan...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kelurahan/Desa Ayah <span class="text-danger">*</span></label>
+                                            <select class="form-select address-desa" name="desa_kelurahan_ayah" id="desa_kelurahan_ayah" required disabled>
+                                                <option value="">Pilih Kelurahan/Desa...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Alamat Lengkap Ayah <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" name="alamat_ayah" id="alamat_ayah" rows="2" required placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -473,10 +507,43 @@ $dummy_register = get_setting('dummy_register', '0');
                                     <label class="form-label">No HP/WA Ibu <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="no_hp_ibu" required>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label">Alamat Ibu <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" name="alamat_ibu" rows="2" required
-                                        placeholder="Alamat lengkap ibu"></textarea>
+                                <div class="col-12 mt-2">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="sama_alamat_ibu" name="sama_alamat_ibu">
+                                        <label class="form-check-label fw-bold text-primary" for="sama_alamat_ibu">Alamat Ibu sama dengan Alamat Murid</label>
+                                    </div>
+                                </div>
+                                <div id="section_alamat_ibu" class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Provinsi Ibu <span class="text-danger">*</span></label>
+                                            <select class="form-select address-prov" name="provinsi_ibu" id="provinsi_ibu" required>
+                                                <option value="">Pilih Provinsi...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kab/Kota Ibu <span class="text-danger">*</span></label>
+                                            <select class="form-select address-kab" name="kabupaten_kota_ibu" id="kabupaten_kota_ibu" required disabled>
+                                                <option value="">Pilih Kab/Kota...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kecamatan Ibu <span class="text-danger">*</span></label>
+                                            <select class="form-select address-kec" name="kecamatan_ibu" id="kecamatan_ibu" required disabled>
+                                                <option value="">Pilih Kecamatan...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kelurahan/Desa Ibu <span class="text-danger">*</span></label>
+                                            <select class="form-select address-desa" name="desa_kelurahan_ibu" id="desa_kelurahan_ibu" required disabled>
+                                                <option value="">Pilih Kelurahan/Desa...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Alamat Lengkap Ibu <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" name="alamat_ibu" id="alamat_ibu" rows="2" required placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -543,10 +610,37 @@ $dummy_register = get_setting('dummy_register', '0');
                                     <label class="form-label" id="label_no_hp_wali">No HP/WA Wali</label>
                                     <input type="text" class="form-control" name="no_hp_wali" id="no_hp_wali">
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label" id="label_alamat_wali">Alamat Wali</label>
-                                    <textarea class="form-control" name="alamat_wali" id="alamat_wali"
-                                        rows="2"></textarea>
+                                <div id="section_alamat_wali" class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Provinsi Wali</label>
+                                            <select class="form-select address-prov" name="provinsi_wali" id="provinsi_wali">
+                                                <option value="">Pilih Provinsi...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kab/Kota Wali</label>
+                                            <select class="form-select address-kab" name="kabupaten_kota_wali" id="kabupaten_kota_wali" disabled>
+                                                <option value="">Pilih Kab/Kota...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kecamatan Wali</label>
+                                            <select class="form-select address-kec" name="kecamatan_wali" id="kecamatan_wali" disabled>
+                                                <option value="">Pilih Kecamatan...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Kelurahan/Desa Wali</label>
+                                            <select class="form-select address-desa" name="desa_kelurahan_wali" id="desa_kelurahan_wali" disabled>
+                                                <option value="">Pilih Kelurahan/Desa...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label" id="label_alamat_wali">Alamat Lengkap Wali</label>
+                                            <textarea class="form-control" name="alamat_wali" id="alamat_wali" rows="2" placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -716,7 +810,7 @@ $dummy_register = get_setting('dummy_register', '0');
                                 <button type="button" class="btn btn-secondary px-4"
                                     onclick="prevStep(3)">Kembali</button>
                                 <button type="button" class="btn btn-primary btn-lg px-5 shadow rounded-pill" onclick="handleSubmit()">
-                                    <i class="fas fa-eye me-2"></i>Preview Pendaftaran
+                                    <i class="fas fa-paper-plane me-2"></i>Kirim Pendaftaran
                                 </button>
                             </div>
                         </div>
@@ -728,37 +822,6 @@ $dummy_register = get_setting('dummy_register', '0');
     </div>
 
 
-    <!-- Modal Preview Data -->
-    <div class="modal fade" id="previewDataModal" tabindex="-1" aria-labelledby="previewDataModalLabel"
-        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header border-0 bg-success text-white rounded-top-4 p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-white bg-opacity-25 p-3 rounded-3 me-3">
-                            <i class="fas fa-eye fa-2x"></i>
-                        </div>
-                        <div>
-                            <h5 class="modal-title fw-bold mb-1" id="previewDataModalLabel">Preview Data Pendaftaran
-                            </h5>
-                            <small class="opacity-90">Periksa kembali data Anda sebelum mengirim</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-body p-4" id="previewDataContent">
-                    <!-- Content will be filled by JavaScript -->
-                </div>
-                <div class="modal-footer border-0 p-4 pt-0">
-                    <button type="button" class="btn btn-lg btn-secondary rounded-pill px-4" onclick="closePreview()">
-                        <i class="fas fa-edit me-2"></i>Edit Data
-                    </button>
-                    <button type="button" class="btn btn-lg btn-success rounded-pill px-5" onclick="submitForm()">
-                        <i class="fas fa-paper-plane me-2"></i>Kirim Pendaftaran
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         function calculateNilai() {
@@ -813,27 +876,40 @@ $dummy_register = get_setting('dummy_register', '0');
 
             requiredFields.forEach(field => {
                 // Ensure field is visible and not disabled by some logic before enforcing required
-                if (field.offsetParent !== null && !field.disabled && (!field.value || field.value.trim() === '')) {
-                    field.classList.add('is-invalid');
-                    let label = null;
+                if (field.offsetParent !== null && !field.disabled) {
+                    let isInvalid = false;
+                    let errorMessage = "";
 
-                    if (stepId === 'step1') {
-                        label = currentStep.querySelector(`label[for="${field.id}"]`) || field.closest('.col-md-6, .col-md-12, .col-12')?.querySelector('label');
-                    } else if (stepId === 'step2') {
-                        label = currentStep.querySelector(`label[for="${field.id}"]`) || field.closest('.col-md-6, .col-md-8, .col-md-12')?.querySelector('label');
-                    } else if (stepId === 'step3') {
-                        label = currentStep.querySelector(`label[for="${field.id}"]`) || field.closest('.col-md-6, .col-md-12, .col-12, .mb-4')?.querySelector('label');
-                    } else {
-                        label = currentStep.querySelector(`label[for="${field.id}"]`) || field.parentElement.querySelector('label');
+                    if (!field.value || field.value.trim() === '') {
+                        isInvalid = true;
+                    } else if (field.id === 'password_input' && field.value.length < 6) {
+                        isInvalid = true;
+                        errorMessage = "Password minimal 6 karakter";
                     }
 
-                    if (label) {
-                        emptyFields.push(label.textContent.replace('*', '').trim());
+                    if (isInvalid) {
+                        field.classList.add('is-invalid');
+                        let label = null;
+
+                        if (stepId === 'step1') {
+                            label = currentStep.querySelector(`label[for="${field.id}"]`) || field.closest('.col-md-6, .col-md-12, .col-12')?.querySelector('label');
+                        } else if (stepId === 'step2') {
+                            label = currentStep.querySelector(`label[for="${field.id}"]`) || field.closest('.col-md-6, .col-md-8, .col-md-12')?.querySelector('label');
+                        } else if (stepId === 'step3') {
+                            label = currentStep.querySelector(`label[for="${field.id}"]`) || field.closest('.col-md-6, .col-md-12, .col-12, .mb-4')?.querySelector('label');
+                        } else {
+                            label = currentStep.querySelector(`label[for="${field.id}"]`) || field.parentElement.querySelector('label');
+                        }
+
+                        let labelText = label ? label.textContent.replace('*', '').trim() : (field.name || 'Bidang Wajib');
+                        if (errorMessage) {
+                            emptyFields.push(`${labelText} (${errorMessage})`);
+                        } else {
+                            emptyFields.push(labelText);
+                        }
                     } else {
-                        emptyFields.push(field.name || 'Bidang Wajib');
+                        field.classList.remove('is-invalid');
                     }
-                } else {
-                    field.classList.remove('is-invalid');
                 }
             });
 
@@ -1095,200 +1171,37 @@ $dummy_register = get_setting('dummy_register', '0');
 
 
 
-        // Handle submit button - Show Preview directly
+        // Handle submit button - Submit directly with confirmation
         function handleSubmit() {
             // Validate Nilai Step (Step 4) first
             if (!validateNilaiStep()) return;
+            
+            // Password Match Check
+            const pass = document.getElementById('password_input').value;
+            const conf = document.getElementById('confirm_password_input').value;
+            if (pass !== conf) {
+                Swal.fire({ icon: 'error', title: 'Password Tidak Cocok', text: 'Konfirmasi password harus sama dengan password.' });
+                return;
+            }
+            if (pass.length < 6) {
+                Swal.fire({ icon: 'error', title: 'Password Terlalu Pendek', text: 'Password minimal 6 karakter.' });
+                return;
+            }
 
-            // Show preview data
-            showPreviewData();
-        }
-
-
-
-        // Show preview data
-        function showPreviewData() {
-            const form = document.getElementById('pmbmForm');
-            const formData = new FormData(form);
-
-            let html = '';
-
-            // STEP 1: DATA MURID - LENGKAP
-            html += `
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header bg-primary text-white p-3">
-                        <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Data Murid</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped table-hover mb-0">
-                            <tbody>
-                                <tr><th width="35%" class="ps-4">Jalur Pendaftaran</th><td>${document.querySelector('select[name="jalur_id"] option:checked')?.text || '-'}</td></tr>
-                                <tr><th class="ps-4">NISN</th><td>${formData.get('nisn') || '-'}</td></tr>
-                                <tr><th class="ps-4">NIK</th><td>${formData.get('nik') || '-'}</td></tr>
-                                <tr><th class="ps-4">Nama Lengkap</th><td>${formData.get('nama_lengkap') || '-'}</td></tr>
-                                <tr><th class="ps-4">Jenis Kelamin</th><td>${formData.get('jenis_kelamin') === 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
-                                <tr><th class="ps-4">Agama</th><td>${formData.get('agama') || '-'}</td></tr>
-                                <tr><th class="ps-4">Tempat, Tanggal Lahir</th><td>${formData.get('tempat_lahir') || '-'}, ${formData.get('tanggal_lahir') || '-'}</td></tr>
-                                <tr><th class="ps-4">Anak Ke</th><td>${formData.get('anak_ke') || '-'}</td></tr>
-                                <tr><th class="ps-4">Status dlm Keluarga</th><td>${formData.get('status_keluarga') || '-'}</td></tr>
-                                <tr><th class="ps-4">Hobi</th><td>${formData.get('hobi') || '-'}</td></tr>
-                                <tr><th class="ps-4">No. HP Murid</th><td>${formData.get('no_hp') || '-'}</td></tr>
-                                <tr><th class="ps-4">Alamat Lengkap</th><td>${formData.get('alamat') || '-'}</td></tr>
-                                <tr><th class="ps-4">Status Tinggal</th><td>${formData.get('status_tinggal') || '-'}</td></tr>
-                                <tr><th class="ps-4">Jarak ke Sekolah</th><td>${formData.get('jarak_sekolah') || '-'}</td></tr>
-                                <tr><th class="ps-4">Transportasi</th><td>${formData.get('transportasi_rumah') || '-'}</td></tr>
-                                <tr><th class="ps-4">Wilayah</th><td>Kec. ${formData.get('kecamatan') || '-'}, ${formData.get('kabupaten_kota') || '-'}, ${formData.get('provinsi') || '-'}</td></tr>
-                                <tr><th class="ps-4">WhatsApp Notifikasi</th><td><span class="text-success fw-bold">${formData.get('kontak_wa') || '-'}</span> (a.n ${formData.get('nama_kontak_wa') || '-'})</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            // STEP 2: ASAL SEKOLAH
-            html += `
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header bg-info text-white p-3">
-                        <h5 class="mb-0"><i class="fas fa-school me-2"></i>Asal Sekolah</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped table-hover mb-0">
-                            <tbody>
-                                <tr><th width="35%" class="ps-4">Nama Sekolah</th><td>${formData.get('asal_sekolah') || '-'}</td></tr>
-                                <tr><th class="ps-4">NPSN Sekolah</th><td>${formData.get('npsn_sekolah') || '-'}</td></tr>
-                                <tr><th class="ps-4">Alamat Sekolah</th><td>${formData.get('alamat_sekolah') || '-'}</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            // STEP 3: DATA ORANG TUA
-            html += `
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header bg-success text-white p-3">
-                        <h5 class="mb-0"><i class="fas fa-users me-2"></i>Data Orang Tua & Wali</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped table-hover mb-0">
-                            <tbody>
-                                <tr class="table-light"><th colspan="2" class="ps-4 text-primary">Informasi Umum</th></tr>
-                                <tr><th width="35%" class="ps-4">Nomor KK</th><td>${formData.get('no_kk') || '-'}</td></tr>
-                                <tr><th class="ps-4">Status Orang Tua</th><td>${formData.get('status_orang_tua') || '-'}</td></tr>
-                                
-                                <tr class="table-light"><th colspan="2" class="ps-4 text-primary">Data Ayah Kandung</th></tr>
-                                <tr><th class="ps-4">Nama Ayah</th><td>${formData.get('nama_ayah') || '-'}</td></tr>
-                                <tr><th class="ps-4">NIK Ayah</th><td>${formData.get('nik_ayah') || '-'}</td></tr>
-                                <tr><th class="ps-4">TTL / HP Ayah</th><td>${formData.get('tempat_lahir_ayah') || '-'}, ${formData.get('tanggal_lahir_ayah') || '-'} / <span class="text-primary">${formData.get('no_hp_ayah') || '-'}</span></td></tr>
-                                <tr><th class="ps-4">Pendidikan / Pekerjaan</th><td>${formData.get('pendidikan_ayah') || '-'} / ${formData.get('pekerjaan_ayah') || '-'}</td></tr>
-                                <tr><th class="ps-4">Penghasilan Ayah</th><td>${formData.get('penghasilan_ayah') || '-'}</td></tr>
-                                <tr><th class="ps-4">Alamat Ayah</th><td>${formData.get('alamat_ayah') || '(Sama dengan murid)'}</td></tr>
-
-                                <tr class="table-light"><th colspan="2" class="ps-4 text-primary">Data Ibu Kandung</th></tr>
-                                <tr><th class="ps-4">Nama Ibu</th><td>${formData.get('nama_ibu') || '-'}</td></tr>
-                                <tr><th class="ps-4">NIK Ibu</th><td>${formData.get('nik_ibu') || '-'}</td></tr>
-                                <tr><th class="ps-4">TTL / HP Ibu</th><td>${formData.get('tempat_lahir_ibu') || '-'}, ${formData.get('tanggal_lahir_ibu') || '-'} / <span class="text-primary">${formData.get('no_hp_ibu') || '-'}</span></td></tr>
-                                <tr><th class="ps-4">Pendidikan / Pekerjaan</th><td>${formData.get('pendidikan_ibu') || '-'} / ${formData.get('pekerjaan_ibu') || '-'}</td></tr>
-                                <tr><th class="ps-4">Penghasilan Ibu</th><td>${formData.get('penghasilan_ibu') || '-'}</td></tr>
-                                <tr><th class="ps-4">Alamat Ibu</th><td>${formData.get('alamat_ibu') || '(Sama dengan murid)'}</td></tr>
-
-                                <tr class="table-light"><th colspan="2" class="ps-4 text-primary">Data Wali (Opsional)</th></tr>
-                                <tr><th class="ps-4">Nama Wali</th><td>${formData.get('nama_wali') || '-'}</td></tr>
-                                <tr><th class="ps-4">NIK / HP Wali</th><td>${formData.get('nik_wali') || '-'} / <span class="text-primary">${formData.get('no_hp_wali') || '-'}</span></td></tr>
-                                <tr><th class="ps-4">TTL Wali</th><td>${formData.get('tempat_lahir_wali') || '-'}, ${formData.get('tanggal_lahir_wali') || '-'}</td></tr>
-                                <tr><th class="ps-4">Pendidikan / Pekerjaan</th><td>${formData.get('pendidikan_wali') || '-'} / ${formData.get('pekerjaan_wali') || '-'}</td></tr>
-                                <tr><th class="ps-4">Alamat Wali</th><td>${formData.get('alamat_wali') || '-'}</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            // STEP 4: REKAP NILAI
-            html += `
-                <div class="card border-0 shadow-sm rounded-4 mb-3" style="background: linear-gradient(135deg, #ffc107 0%, #ffeb3b 100%);">
-                    <div class="card-header border-0 text-dark p-4">
-                        <h5 class="mb-0 fw-bold"><i class="fas fa-list-ol me-2"></i>Rekap Nilai Rapor</h5>
-                        <small class="text-dark opacity-75">Nilai Pengetahuan Setiap Semester</small>
-                    </div>
-                    <div class="card-body p-4" style="background: white; border-radius: 0 0 1rem 1rem;">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                                    <tr>
-                                        <th class="ps-3" style="border-radius: 0.5rem 0 0 0.5rem;">Kelas</th>
-                                        <th>Semester</th>
-                                        <th class="text-end pe-3" style="border-radius: 0 0.5rem 0.5rem 0;">Nilai</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-bottom">
-                                        <td rowspan="2" class="fw-bold ps-3" style="background: #f8f9fa;">IV (Empat)</td>
-                                        <td>Ganjil (1)</td>
-                                        <td class="text-end pe-3">
-                                            <span class="badge bg-primary fs-6">${formData.get('nilai_k4_s1') || '-'}</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <td>Genap (2)</td>
-                                        <td class="text-end pe-3">
-                                            <span class="badge bg-primary fs-6">${formData.get('nilai_k4_s2') || '-'}</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <td rowspan="2" class="fw-bold ps-3" style="background: #f8f9fa;">V (Lima)</td>
-                                        <td>Ganjil (1)</td>
-                                        <td class="text-end pe-3">
-                                            <span class="badge bg-primary fs-6">${formData.get('nilai_k5_s1') || '-'}</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <td>Genap (2)</td>
-                                        <td class="text-end pe-3">
-                                            <span class="badge bg-primary fs-6">${formData.get('nilai_k5_s2') || '-'}</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-bottom">
-                                        <td class="fw-bold ps-3" style="background: #f8f9fa;">VI (Enam)</td>
-                                        <td>Ganjil (1)</td>
-                                        <td class="text-end pe-3">
-                                            <span class="badge bg-primary fs-6">${formData.get('nilai_k6_s1') || '-'}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
-                                    <tr>
-                                        <th colspan="2" class="ps-3 py-3">Jumlah Nilai:</th>
-                                        <th class="text-end pe-3 py-3"><span class="fs-5">${document.getElementById('jumlah_nilai_display')?.value || '-'}</span></th>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="2" class="ps-3 py-3" style="border-radius: 0 0 0 0.5rem;">Rata-Rata Nilai:</th>
-                                        <th class="text-end pe-3 py-3" style="border-radius: 0 0 0.5rem 0;"><span class="fs-4 fw-bold">${document.getElementById('rata_rata_display')?.value || '-'}</span></th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // INFO
-            html += `
-                <div class="alert alert-info border-0 rounded-4 mt-4">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Catatan: Periksa kembali semua data Anda.</strong>
-                    <br><br>
-                    <i class="fas fa-file-upload me-2 text-warning"></i> <strong>Upload Berkas:</strong> Setelah pendaftaran dikirim, silakan login untuk mengunggah berkas persyaratan di Dashboard Siswa.
-                </div>
-            `;
-
-            // Insert into modal
-            document.getElementById('previewDataContent').innerHTML = html;
-
-
-            // Show modal
-   const previewModal = new bootstrap.Modal(document.getElementById('previewDataModal'));
-            previewModal.show();
+            Swal.fire({
+                title: 'Kirim Pendaftaran?',
+                text: "Pastikan seluruh data sudah benar sebelum mengirim.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Kirim Sekarang',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitForm();
+                }
+            });
         }
 
         // Toggle Password visibility
@@ -1304,10 +1217,30 @@ $dummy_register = get_setting('dummy_register', '0');
             }
         }
 
-        // Real-time password matching
         const passwordInput = document.getElementById('password_input');
         const confirmInput = document.getElementById('confirm_password_input');
         const feedback = document.getElementById('password_match_feedback');
+        const lengthFeedback = document.getElementById('password_length_feedback');
+
+        function checkPasswordLength() {
+            const val = passwordInput.value;
+            if (val === '') {
+                lengthFeedback.innerHTML = '';
+                passwordInput.classList.remove('is-invalid');
+                return;
+            }
+
+            if (val.length < 6) {
+                lengthFeedback.innerHTML = '<i class="fas fa-times-circle me-1"></i>Minimal 6 karakter';
+                lengthFeedback.className = 'small mt-1 text-danger';
+                // passwordInput.classList.add('is-invalid'); // Optional: show red border while typing
+            } else {
+                lengthFeedback.innerHTML = '<i class="fas fa-check-circle me-1"></i>Panjang password cukup';
+                lengthFeedback.className = 'small mt-1 text-success';
+                passwordInput.classList.remove('is-invalid');
+            }
+            checkPasswordMatch();
+        }
 
         function checkPasswordMatch() {
             if (confirmInput.value === '') {
@@ -1317,20 +1250,17 @@ $dummy_register = get_setting('dummy_register', '0');
             if (passwordInput.value === confirmInput.value) {
                 feedback.innerHTML = '<i class="fas fa-check-circle me-1"></i>Password cocok';
                 feedback.className = 'small mt-1 text-success';
+                confirmInput.classList.remove('is-invalid');
             } else {
                 feedback.innerHTML = '<i class="fas fa-times-circle me-1"></i>Password tidak cocok';
                 feedback.className = 'small mt-1 text-danger';
+                // confirmInput.classList.add('is-invalid');
             }
         }
 
-        passwordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordLength);
         confirmInput.addEventListener('input', checkPasswordMatch);
 
-        // Close preview and go back to edit
-        function closePreview() {
-            const previewModal = bootstrap.Modal.getInstance(document.getElementById('previewDataModal'));
-            previewModal.hide();
-        }
 
         // Submit form
         function submitForm() {
@@ -1339,106 +1269,148 @@ $dummy_register = get_setting('dummy_register', '0');
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- WILAYAH INDONESIA API LOGIC (VIA PROXY) ---
-        const provSelect = document.getElementById('provinsi');
-        const kabSelect = document.getElementById('kabupaten_kota');
-        const kecSelect = document.getElementById('kecamatan');
-        const desaSelect = document.getElementById('desa_kelurahan');
-
         const proxy = 'includes/proxy_wilayah.php?path=';
 
-        // Load Provinsi
-        fetch(proxy + 'provinces')
-            .then(response => response.json())
-            .then(provinces => {
-                provinces.forEach(prov => {
-                    let option = document.createElement('option');
-                    option.value = prov.name; 
-                    option.dataset.id = prov.id; 
-                    option.textContent = prov.name;
-                    provSelect.appendChild(option);
+        function initAddressDropdowns(prefix = '') {
+            const provSelect = document.getElementById('provinsi' + prefix);
+            const kabSelect = document.getElementById('kabupaten_kota' + prefix);
+            const kecSelect = document.getElementById('kecamatan' + prefix);
+            const desaSelect = document.getElementById('desa_kelurahan' + prefix);
+
+            if (!provSelect) return;
+
+            // Load Provinces
+            fetch(proxy + 'provinces')
+                .then(res => res.json())
+                .then(provinces => {
+                    provinces.forEach(prov => {
+                        let option = document.createElement('option');
+                        option.value = prov.name;
+                        option.dataset.id = prov.id;
+                        option.textContent = prov.name;
+                        provSelect.appendChild(option);
+                    });
                 });
-            })
-            .catch(error => console.error('Error loading provinces:', error));
 
-        // Event Provinsi -> Kab
-        provSelect.addEventListener('change', function() {
-            kabSelect.innerHTML = '<option value="">Pilih Kab/Kota...</option>';
-            kecSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
-            desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+            // Prov -> Kab
+            provSelect.addEventListener('change', function() {
+                kabSelect.innerHTML = '<option value="">Pilih Kab/Kota...</option>';
+                kecSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
+                desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+                kabSelect.disabled = true; kecSelect.disabled = true; desaSelect.disabled = true;
+
+                const provId = this.options[this.selectedIndex].dataset.id;
+                if (provId) {
+                    fetch(proxy + `regencies/${provId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                let opt = document.createElement('option');
+                                opt.value = item.name; opt.dataset.id = item.id; opt.textContent = item.name;
+                                kabSelect.appendChild(opt);
+                            });
+                            kabSelect.disabled = false;
+                        });
+                }
+            });
+
+            // Kab -> Kec
+            kabSelect.addEventListener('change', function() {
+                kecSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
+                desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+                kecSelect.disabled = true; desaSelect.disabled = true;
+
+                const kabId = this.options[this.selectedIndex].dataset.id;
+                if (kabId) {
+                    fetch(proxy + `districts/${kabId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                let opt = document.createElement('option');
+                                opt.value = item.name; opt.dataset.id = item.id; opt.textContent = item.name;
+                                kecSelect.appendChild(opt);
+                            });
+                            kecSelect.disabled = false;
+                        });
+                }
+            });
+
+            // Kec -> Desa
+            kecSelect.addEventListener('change', function() {
+                desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
+                desaSelect.disabled = true;
+
+                const kecId = this.options[this.selectedIndex].dataset.id;
+                if (kecId) {
+                    fetch(proxy + `villages/${kecId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                let opt = document.createElement('option');
+                                opt.value = item.name; opt.textContent = item.name;
+                                desaSelect.appendChild(opt);
+                            });
+                            desaSelect.disabled = false;
+                        });
+                }
+            });
+        }
+
+        // Initialize all address dropdowns
+        initAddressDropdowns('');
+        initAddressDropdowns('_ayah');
+        initAddressDropdowns('_ibu');
+        initAddressDropdowns('_wali');
+
+        // --- SAMA DENGAN ALAMAT MURID LOGIC ---
+        function syncAddress(parent) {
+            const checkbox = document.getElementById('sama_alamat_' + parent);
+            const section = document.getElementById('section_alamat_' + parent);
+            const inputs = section.querySelectorAll('input, select, textarea');
             
-            kabSelect.disabled = true;
-            kecSelect.disabled = true;
-            desaSelect.disabled = true;
-
-            const selectedOption = this.options[this.selectedIndex];
-            const provId = selectedOption.dataset.id;
-
-            if (provId) {
-                fetch(proxy + `regencies/${provId}`)
-                    .then(response => response.json())
-                    .then(regencies => {
-                        regencies.forEach(kab => {
-                            let option = document.createElement('option');
-                            option.value = kab.name;
-                            option.dataset.id = kab.id;
-                            option.textContent = kab.name;
-                            kabSelect.appendChild(option);
-                        });
-                        kabSelect.disabled = false;
-                    });
+            if (checkbox.checked) {
+                section.classList.add('bg-light', 'p-3', 'rounded-3');
+                section.style.opacity = '0.7';
+                
+                // Disable all inputs in this section to skip validation
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.remove('is-invalid');
+                });
+                
+                // Copy values from student (optional, but good for UI)
+                const prov = document.getElementById('provinsi');
+                if (prov) document.getElementById('provinsi_' + parent).value = prov.value;
+            } else {
+                section.classList.remove('bg-light', 'p-3', 'rounded-3');
+                section.style.opacity = '1';
+                
+                // Enable inputs
+                inputs.forEach(input => {
+                    // Re-enable primary fields, nested ones will be handled by the chained logic
+                    if (input.id === 'provinsi_' + parent || input.id === 'alamat_' + parent) {
+                        input.disabled = false;
+                    } else {
+                        // For nested selects (kab, kec, desa), only enable if parent has value
+                        const provVal = document.getElementById('provinsi_' + parent).value;
+                        if (input.id.includes('kabupaten') && provVal) input.disabled = false;
+                        
+                        const kabVal = document.getElementById('kabupaten_kota_' + parent).value;
+                        if (input.id.includes('kecamatan') && kabVal) input.disabled = false;
+                        
+                        const kecVal = document.getElementById('kecamatan_' + parent).value;
+                        if (input.id.includes('desa') && kecVal) input.disabled = false;
+                    }
+                });
             }
-        });
+        }
 
-        // Event Kab -> Kec
-        kabSelect.addEventListener('change', function() {
-            kecSelect.innerHTML = '<option value="">Pilih Kecamatan...</option>';
-            desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
-            
-            kecSelect.disabled = true;
-            desaSelect.disabled = true;
-
-            const selectedOption = this.options[this.selectedIndex];
-            const kabId = selectedOption.dataset.id;
-
-            if (kabId) {
-                fetch(proxy + `districts/${kabId}`)
-                    .then(response => response.json())
-                    .then(districts => {
-                        districts.forEach(kec => {
-                            let option = document.createElement('option');
-                            option.value = kec.name;
-                            option.dataset.id = kec.id;
-                            option.textContent = kec.name;
-                            kecSelect.appendChild(option);
-                        });
-                        kecSelect.disabled = false;
-                    });
-            }
-        });
-
-        // Event Kec -> Desa
-        kecSelect.addEventListener('change', function() {
-            desaSelect.innerHTML = '<option value="">Pilih Kelurahan/Desa...</option>';
-            desaSelect.disabled = true;
-
-            const selectedOption = this.options[this.selectedIndex];
-            const kecId = selectedOption.dataset.id;
-
-            if (kecId) {
-                fetch(proxy + `villages/${kecId}`)
-                    .then(response => response.json())
-                    .then(villages => {
-                        villages.forEach(desa => {
-                            let option = document.createElement('option');
-                            option.value = desa.name;
-                            option.textContent = desa.name;
-                            desaSelect.appendChild(option);
-                        });
-                        desaSelect.disabled = false;
-                    });
-            }
-        });
+        document.getElementById('sama_alamat_ayah').addEventListener('change', () => syncAddress('ayah'));
+        document.getElementById('sama_alamat_ibu').addEventListener('change', () => syncAddress('ibu'));
+        
+        // Initial sync on load
+        syncAddress('ayah');
+        syncAddress('ibu');
         // --- END WILAYAH API ---
 
         // Apply dummy register settings globally

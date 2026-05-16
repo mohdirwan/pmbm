@@ -338,6 +338,13 @@ $exam_password = "26" . $student['nisn'];
                             </td>
                         </tr>
                         <tr>
+                            <td class="label">Password</td>
+                            <td class="colon">:</td>
+                            <td class="value">
+                                <strong style="color: #d32f2f; font-family: monospace;"><?= htmlspecialchars($student['password_plain'] ?? '********') ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="label">Jalur Pendaftaran</td>
                             <td class="colon">:</td>
                             <td class="value">
@@ -370,6 +377,10 @@ $exam_password = "26" . $student['nisn'];
                     <div>
                         <small style="color: #198754; font-weight: 700; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px;">Jadwal Pelaksanaan Ujian:</small>
                         <h4 style="margin: 0; color: #0b2c24; font-weight: 800;"><?= $student['test_hari'] ?> | <?= $student['test_sesi'] ?></h4>
+                    </div>
+                    <div style="text-align: center; border-left: 1px solid #ddd; border-right: 1px solid #ddd; padding: 0 20px;">
+                        <small style="color: #198754; font-weight: 700; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px;">Lokasi Ujian:</small>
+                        <h4 style="margin: 0; color: #0b2c24; font-weight: 800;"><i class="fas fa-map-marker-alt me-1"></i> <?= $student['test_ruangan'] ?: '-' ?></h4>
                     </div>
                     <div style="text-align: right;">
                         <small style="color: #198754; font-weight: 700; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px;">Jam Ujian (WIB):</small>

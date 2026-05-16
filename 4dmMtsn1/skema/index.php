@@ -210,12 +210,12 @@ $scheme_period_end = get_setting('scheme_period_end', date('Y-m-d', strtotime('+
                                 <div class="row g-2 mt-2">
                                     <div class="col-6">
                                         <label class="form-label small fw-bold">Jam Buka</label>
-                                        <input type="time" class="form-control" name="scheme_2_start_time"
+                                        <input type="text" class="form-control flatpickr-time" name="scheme_2_start_time"
                                             value="<?= get_setting('scheme_2_start_time', '00:01') ?>">
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label small fw-bold">Jam Tutup</label>
-                                        <input type="time" class="form-control" name="scheme_2_end_time"
+                                        <input type="text" class="form-control flatpickr-time" name="scheme_2_end_time"
                                             value="<?= get_setting('scheme_2_end_time', '23:59') ?>">
                                     </div>
                                 </div>
@@ -251,12 +251,12 @@ $scheme_period_end = get_setting('scheme_period_end', date('Y-m-d', strtotime('+
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <label class="form-label small fw-bold">Jam Buka</label>
-                                        <input type="time" class="form-control" name="scheme_period_start_time"
+                                        <input type="text" class="form-control flatpickr-time" name="scheme_period_start_time"
                                             value="<?= get_setting('scheme_period_start_time', '00:01') ?>">
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label small fw-bold">Jam Tutup</label>
-                                        <input type="time" class="form-control" name="scheme_period_end_time"
+                                        <input type="text" class="form-control flatpickr-time" name="scheme_period_end_time"
                                             value="<?= get_setting('scheme_period_end_time', '23:59') ?>">
                                     </div>
                                 </div>

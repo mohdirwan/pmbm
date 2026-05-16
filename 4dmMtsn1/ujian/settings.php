@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'cbt_passing_grade',
             'cbt_announcement_date',
             'cbt_rules',
-            'narasi_info_test_akademik'
+            'cbt_info_visibility'
         ];
 
         $pdo->beginTransaction();
@@ -65,6 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="<?= BASE_URL ?>assets/css/style.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .main-content {
@@ -143,16 +145,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="card card-premium p-4 mb-4">
-                            <h5 class="fw-bold mb-4 text-dark"><i
-                                    class="fas fa-bullhorn me-2 text-primary"></i>Informasi Jadwal & Lokasi Ujian</h5>
+                            <h5 class="fw-bold mb-4 text-dark"><i class="fas fa-eye me-2 text-primary"></i>Visibilitas Panduan PDF</h5>
                             <div class="mb-4">
-                                <label class="form-label-premium">Narasi Jadwal (Tampil di Dashboard Siswa)</label>
-                                <textarea name="narasi_info_test_akademik" class="form-control form-control-premium"
-                                    rows="6"
-                                    placeholder="Contoh: Tes dilaksanakan pada Hari Sabtu, 14 Maret 2026 pukul 08.00 di Gedung A..."><?= get_setting('narasi_info_test_akademik') ?></textarea>
-                                <div class="form-text mt-2">Gunakan bahasa yang jelas agar siswa tidak bingung mengenai
-                                    waktu dan tempat.</div>
+                                <label class="form-label fw-bold">Panduan / Tutorial Ujian (PDF) di Siswa</label>
+                                <select name="cbt_info_visibility" class="form-select form-control-premium">
+                                    <option value="aktif" <?= get_setting('cbt_info_visibility') == 'aktif' ? 'selected' : '' ?>>Aktif (Muncul)</option>
+                                    <option value="tidak_aktif" <?= get_setting('cbt_info_visibility') == 'tidak_aktif' ? 'selected' : '' ?>>Tidak Aktif (Sembunyi)</option>
+                                </select>
+                                <div class="form-text mt-2 text-muted small">Jika diset <b>Tidak Aktif</b>, maka file Panduan PDF akan disembunyikan dari halaman Informasi Ujian siswa. <b>Tata Tertib akan tetap muncul.</b></div>
                             </div>
+
+                            <hr class="my-4 opacity-25">
 
                             <h5 class="fw-bold mt-5 mb-4 text-dark"><i class="fas fa-gavel me-2 text-primary"></i>Tata
                                 Tertib Ujian</h5>
@@ -219,7 +222,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {

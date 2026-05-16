@@ -458,7 +458,12 @@ function get_stage_date_range($stage_key, $default_text)
             $ann_title = "Informasi Tes Akademik";
             $ann_color = "info";
             $ann_icon = "fa-laptop-code";
-            $ann_message = get_setting('narasi_info_test_akademik', "Bagi Ananda yang lulus administrasi, silakan mengikuti tes akademik yang akan dilaksanakan pada hari Sabtu, 14 Maret 2026 pukul 08.00 – 11.00 WIB di MTsN 1 Kota Pekanbaru. Silakan bawa handphone (HP) atau tablet yang terhubung dengan jaringan internet untuk dapat mengikuti tes akademik.");
+            
+            if (!empty($siswa['test_hari'])) {
+                $ann_message = "Alhamdulillah, <strong>jadwal ujian Ananda telah tersedia!</strong><br><br>Silakan klik tombol <strong>Lihat Jadwal Ujian</strong> di bawah untuk melihat detail hari, sesi, jam, serta lokasi labor/ruangan tempat Ananda melaksanakan ujian.";
+            } else {
+                $ann_message = "Jadwal pelaksanaan tes akademik Ananda sedang dalam proses pembagian oleh panitia. Silakan cek kembali halaman ini secara berkala untuk melihat jadwal, sesi, dan lokasi ruangan ujian Anda.";
+            }
         }
     }
 
@@ -530,6 +535,7 @@ function get_stage_date_range($stage_key, $default_text)
                             <?php
                             $is_verified_for_exam = ($siswa['status'] == 'Terverifikasi' || $siswa['status'] == 'Diterima');
                             $needs_exam = !($is_tanpa_tes || ($is_tahfidz && ($siswa['status_tahfidz'] ?? '') == 'Lulus'));
+                            $cbt_visible = (get_setting('cbt_info_visibility', 'aktif') == 'aktif');
 
                             // 1. Button during Exam Phase (Jadwal)
                             if (in_array($ppdb_status, ['pengumuman_adm', 'cbt']) && $is_verified_for_exam && $needs_exam): ?>

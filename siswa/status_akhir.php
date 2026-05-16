@@ -1,6 +1,12 @@
 <?php
 $page_title = "Status Akhir PMBM";
 require_once 'layout_top.php';
+
+// Proteksi: Hanya bisa diakses jika hasil administrasi sudah diumumkan DAN siswa lolos administrasi
+if ($tahap_admin != 'pengumuman' || !$is_verified) {
+    echo "<script>window.location='status_administrasi.php';</script>";
+    exit();
+}
 ?>
 
 <div class="row justify-content-center">

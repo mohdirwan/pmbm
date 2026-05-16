@@ -17,6 +17,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $pdo->beginTransaction();
 
+        // Handle Background Upload
+        if (isset($_FILES['maintenance_bg']) && $_FILES['maintenance_bg']['error'] == 0) {
+            $uploadDir = '../uploads/maintenance/';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+
+            $fileExt = strtolower(pathinfo($_FILES['maintenance_bg']['name'], PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+
+            if (in_array($fileExt, $allowed)) {
+                $fileName = 'bg_' . time() . '.' . $fileExt;
+                $targetFile = $uploadDir . $fileName;
+
+                if (move_uploaded_file($_FILES['maintenance_bg']['tmp_name'], $targetFile)) {
+                    $dbPath = 'uploads/maintenance/' . $fileName;
+                    
+                    // Delete old file if exists
+                    $oldFile = get_setting('maintenance_bg');
+                    if ($oldFile && file_exists('../' . $oldFile)) {
+                        unlink('../' . $oldFile);
+                    }
+
+                    $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('maintenance_bg', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+                    $stmt->execute([$dbPath]);
+                }
+            }
+        }
+
         $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
         
         $stmt->execute(['maintenance_mode', $status]);
@@ -33,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $maintenance_mode = get_setting('maintenance_mode', 'off');
 $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada info pendaftaran.');
+$maintenance_bg = get_setting('maintenance_bg', '');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -47,6 +75,19 @@ $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada in
         .card { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .status-badge { font-size: 0.9rem; padding: 5px 15px; border-radius: 20px; }
         .form-switch .form-check-input { width: 3em; height: 1.5em; cursor: pointer; }
+        .bg-preview { 
+            width: 100%; 
+            height: 150px; 
+            background-size: cover; 
+            background-position: center; 
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 2px dashed #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -83,7 +124,7 @@ $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada in
                 <div class="col-md-7">
                     <div class="card p-4 mb-4">
                         <h5 class="fw-bold mb-4">Konfigurasi Set Off (Maintenance)</h5>
-                        <form method="POST">
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="mb-4">
                                 <label class="form-label fw-bold d-block">Status Website Saat Ini</label>
                                 <div class="d-flex align-items-center p-3 bg-light rounded-4 border">
@@ -94,18 +135,30 @@ $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada in
                                         </label>
                                     </div>
                                 </div>
-                                <div class="form-text mt-2">
-                                    Jika dimatikan (OFF), pengunjung website hanya akan melihat pesan pemberitahuan dan tidak dapat mengakses fitur pendaftaran.
-                                </div>
                             </div>
 
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Pesan Pemberitahuan</label>
-                                <textarea class="form-control" name="maintenance_message" rows="4" placeholder="Contoh: Saat ini belum ada info pendaftaran."><?= htmlspecialchars($maintenance_message) ?></textarea>
-                                <div class="form-text">Pesan ini akan muncul di halaman depan saat website dalam status OFF.</div>
+                                <textarea class="form-control" name="maintenance_message" rows="3" placeholder="Contoh: Saat ini belum ada info pendaftaran."><?= htmlspecialchars($maintenance_message) ?></textarea>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Background Khusus Maintenance</label>
+                                <input type="file" class="form-control" name="maintenance_bg" accept="image/*">
+                                <div class="form-text">Upload gambar untuk latar belakang halaman maintenance (Rekomendasi: 1920x1080).</div>
+                                
+                                <?php if ($maintenance_bg): ?>
+                                    <div class="bg-preview" style="background-image: url('<?= BASE_URL . $maintenance_bg ?>');">
+                                        <span class="badge bg-dark opacity-75">Background Aktif</span>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="bg-preview">
+                                        <span>Belum ada background kustom</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow w-100">
                                 <i class="fas fa-save me-2"></i> Simpan Pengaturan
                             </button>
                         </form>
@@ -114,23 +167,27 @@ $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada in
 
                 <div class="col-md-5">
                     <div class="card p-4 bg-dark text-white h-100">
-                        <h5 class="fw-bold mb-3"><i class="fas fa-info-circle me-2 text-warning"></i> Panduan Penggunaan</h5>
-                        <p class="text-white-50 small">Fitur "Set Off" digunakan untuk menonaktifkan seluruh akses publik ke fitur PMBM sementara waktu. Ini berguna saat:</p>
-                        <ul class="text-white-50 small">
-                            <li>Persiapan tahun ajaran baru.</li>
-                            <li>Pemeliharaan database atau server.</li>
-                            <li>Jeda antar gelombang pendaftaran.</li>
-                        </ul>
-                        <div class="alert alert-warning border-0 small mt-3">
-                            <i class="fas fa-exclamation-circle me-1"></i> <strong>Catatan:</strong> Panel Admin tetap dapat diakses meskipun website dalam status OFF.
-                        </div>
+                        <h5 class="fw-bold mb-3"><i class="fas fa-magic me-2 text-warning"></i> Visual Lebih Wah!</h5>
+                        <p class="text-white-50 small">Dengan mengupload background kustom, tampilan halaman pemberitahuan akan terlihat lebih profesional dan eksklusif.</p>
                         
-                        <div class="mt-auto pt-4 border-top border-secondary">
-                            <h6 class="fw-bold mb-2">Preview Tampilan:</h6>
-                            <div class="p-3 bg-secondary bg-opacity-25 rounded-3 border border-secondary border-opacity-50">
-                                <div class="text-center">
-                                    <i class="fas fa-bullhorn fa-2x mb-2 text-warning"></i>
-                                    <p class="mb-0 small fst-italic">"<?= htmlspecialchars($maintenance_message) ?>"</p>
+                        <div class="alert alert-info border-0 small mt-3 py-2">
+                            <i class="fas fa-lightbulb me-1"></i> <strong>Tips:</strong> Gunakan gambar sekolah atau gradasi warna yang elegan agar pesan tetap terbaca jelas.
+                        </div>
+
+                        <div class="mt-4 pt-4 border-top border-secondary">
+                            <h6 class="fw-bold mb-3">Elemen Visual Terkini:</h6>
+                            <div class="d-flex flex-column gap-2">
+                                <div class="d-flex align-items-center gap-2 small">
+                                    <i class="fas fa-check-circle text-success"></i> Glassmorphism Effect
+                                </div>
+                                <div class="d-flex align-items-center gap-2 small">
+                                    <i class="fas fa-check-circle text-success"></i> Dynamic Background Overlay
+                                </div>
+                                <div class="d-flex align-items-center gap-2 small">
+                                    <i class="fas fa-check-circle text-success"></i> Smooth Micro-animations
+                                </div>
+                                <div class="d-flex align-items-center gap-2 small">
+                                    <i class="fas fa-check-circle text-success"></i> Responsive Layout
                                 </div>
                             </div>
                         </div>
@@ -142,14 +199,9 @@ $maintenance_message = get_setting('maintenance_message', 'Saat ini belum ada in
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Update label text dynamically when switch changes
         document.getElementById('maintenance_mode').addEventListener('change', function() {
             const label = this.nextElementSibling;
-            if(this.checked) {
-                label.innerHTML = '<span class="text-danger">OFF (Maintenance Aktif)</span>';
-            } else {
-                label.innerHTML = '<span class="text-success">ON (Website Normal)</span>';
-            }
+            label.innerHTML = this.checked ? '<span class="text-danger">OFF (Maintenance Aktif)</span>' : '<span class="text-success">ON (Website Normal)</span>';
         });
     </script>
 </body>

@@ -1,4 +1,4 @@
-<?php
+4<?php
 require_once '../../includes/config.php';
 require_once '../../includes/auth_check.php';
 
@@ -86,6 +86,27 @@ function getStatusIcon($status)
         default:
             return 'fa-circle';
     }
+}
+
+function format_indo_date($date_string)
+{
+    if (empty($date_string)) return 'Belum diatur';
+
+    $months = [
+        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+        '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+        '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+    ];
+
+    $timestamp = strtotime($date_string);
+    if (!$timestamp) return $date_string;
+
+    $d = date('d', $timestamp);
+    $m = date('m', $timestamp);
+    $y = date('Y', $timestamp);
+    $t = date('H:i', $timestamp);
+
+    return $d . ' ' . $months[$m] . ' ' . $y . ' - ' . $t;
 }
 
 ?>
@@ -265,7 +286,7 @@ function getStatusIcon($status)
                                                 <label class="small fw-bold text-muted mb-1">Target Buka Pendaftaran</label>
                                                 <input type="text"
                                                     class="form-control form-control-sm bg-light border-0 fw-bold"
-                                                    value="<?= $val_end ?>" readonly>
+                                                    value="<?= format_indo_date($val_end) ?>" readonly>
                                             </div>
                                         <?php elseif ($is_buka): ?>
                                             <div class="alert alert-info py-1 px-2 border-0 rounded-3 mb-2"
@@ -277,13 +298,13 @@ function getStatusIcon($status)
                                                     <label class="small fw-bold text-muted mb-1">Mulai Tanggal & Jam</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm bg-light border-0 fw-bold"
-                                                        value="<?= $val_start ?>" readonly>
+                                                        value="<?= format_indo_date($val_start) ?>" readonly>
                                                 </div>
                                                 <div class="col-6">
                                                     <label class="small fw-bold text-muted mb-1">Sampai Tanggal & Jam</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm bg-light border-0 fw-bold"
-                                                        value="<?= $val_end ?>" readonly>
+                                                        value="<?= format_indo_date($val_end) ?>" readonly>
                                                 </div>
                                             </div>
                                         <?php elseif ($is_verifikasi): ?>
@@ -296,7 +317,7 @@ function getStatusIcon($status)
                                                     <label class="small fw-bold text-muted mb-1">Mulai Tanggal & Jam</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm bg-light border-0 fw-bold"
-                                                        value="<?= $val_start ?>" readonly>
+                                                        value="<?= format_indo_date($val_start) ?>" readonly>
                                                 </div>
                                                 <div class="col-6">
                                                     <label class="small fw-bold text-muted mb-1">Sampai Tanggal & Jam</label>
@@ -315,7 +336,7 @@ function getStatusIcon($status)
                                                     <label class="small fw-bold text-muted mb-1">Mulai Tanggal & Jam</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm bg-light border-0 fw-bold"
-                                                        value="<?= $val_start ?>" readonly>
+                                                        value="<?= format_indo_date($val_start) ?>" readonly>
                                                 </div>
                                                 <div class="col-6">
                                                     <label class="small fw-bold text-muted mb-1">Sampai Tanggal & Jam</label>
@@ -334,7 +355,7 @@ function getStatusIcon($status)
                                                     <label class="small fw-bold text-muted mb-1">Mulai Tanggal & Jam</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm bg-light border-0 fw-bold"
-                                                        value="<?= $val_start ?>" readonly>
+                                                        value="<?= format_indo_date($val_start) ?>" readonly>
                                                 </div>
                                                 <div class="col-6">
                                                     <label class="small fw-bold text-muted mb-1">Sampai Tanggal & Jam</label>

@@ -105,6 +105,7 @@ $students = $stmt->fetchAll();
                 <th>Nama Lengkap</th>
                 <th>Nomor WA Aktif</th>
                 <th>NISN</th>
+                <th>Password</th>
                 <th>JK</th>
                 <th>Asal Sekolah</th>
                 <th>Jalur</th>
@@ -128,6 +129,9 @@ $students = $stmt->fetchAll();
                     </td>
                     <td>
                         <?= $s['nisn'] ?>
+                    </td>
+                    <td>
+                        <?= htmlspecialchars($s['password_plain'] ?? '********') ?>
                     </td>
                     <td>
                         <?= $s['jenis_kelamin'] ?>

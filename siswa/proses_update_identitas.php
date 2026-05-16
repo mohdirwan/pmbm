@@ -15,9 +15,13 @@ $stmt_check->execute([$siswa_id]);
 $current_status = $stmt_check->fetchColumn();
 
 $ppdb_status = get_setting('ppdb_status', 'tutup');
-if ($current_status == 'Terverifikasi' || $current_status == 'Diterima' || $ppdb_status != 'buka') {
-    header("Location: identitas.php");
-    exit();
+$allowed_stages = ['buka', 'verifikasi', 'pengumuman_adm'];
+if (in_array($current_status, ['Terverifikasi', 'Diterima', 'Lulus']) || !in_array($ppdb_status, $allowed_stages)) {
+    // If rejected, they should still be allowed to correct data during verification/announcement stages
+    if ($current_status != 'Ditolak' || !in_array($ppdb_status, ['verifikasi', 'pengumuman_adm'])) {
+        header("Location: identitas.php");
+        exit();
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -89,6 +93,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             pekerjaan_ayah = ?,
             penghasilan_ayah = ?,
             no_hp_ayah = ?,
+            provinsi_ayah = ?,
+            kabupaten_kota_ayah = ?,
+            kecamatan_ayah = ?,
+            desa_kelurahan_ayah = ?,
             alamat_ayah = ?,
             nama_ibu = ?,
             nik_ibu = ?,
@@ -98,6 +106,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             pekerjaan_ibu = ?,
             penghasilan_ibu = ?,
             no_hp_ibu = ?,
+            provinsi_ibu = ?,
+            kabupaten_kota_ibu = ?,
+            kecamatan_ibu = ?,
+            desa_kelurahan_ibu = ?,
             alamat_ibu = ?,
             nama_wali = ?,
             nik_wali = ?,
@@ -107,6 +119,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             pekerjaan_wali = ?,
             penghasilan_wali = ?,
             no_hp_wali = ?,
+            provinsi_wali = ?,
+            kabupaten_kota_wali = ?,
+            kecamatan_wali = ?,
+            desa_kelurahan_wali = ?,
             alamat_wali = ?,
             kontak_wa = ?,
             nama_kontak_wa = ?,
@@ -153,6 +169,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($get_val('pekerjaan_ayah', $old_data['pekerjaan_ayah'])),
             clean_input($get_val('penghasilan_ayah', $old_data['penghasilan_ayah'])),
             clean_input($get_val('no_hp_ayah', $old_data['no_hp_ayah'])),
+            clean_input($get_val('provinsi_ayah', $old_data['provinsi_ayah'])),
+            clean_input($get_val('kabupaten_kota_ayah', $old_data['kabupaten_kota_ayah'])),
+            clean_input($get_val('kecamatan_ayah', $old_data['kecamatan_ayah'])),
+            clean_input($get_val('desa_kelurahan_ayah', $old_data['desa_kelurahan_ayah'])),
             clean_input($get_val('alamat_ayah', $old_data['alamat_ayah'])),
             clean_input($get_val('nama_ibu', $old_data['nama_ibu'])),
             clean_input($get_val('nik_ibu', $old_data['nik_ibu'])),
@@ -162,6 +182,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($get_val('pekerjaan_ibu', $old_data['pekerjaan_ibu'])),
             clean_input($get_val('penghasilan_ibu', $old_data['penghasilan_ibu'])),
             clean_input($get_val('no_hp_ibu', $old_data['no_hp_ibu'])),
+            clean_input($get_val('provinsi_ibu', $old_data['provinsi_ibu'])),
+            clean_input($get_val('kabupaten_kota_ibu', $old_data['kabupaten_kota_ibu'])),
+            clean_input($get_val('kecamatan_ibu', $old_data['kecamatan_ibu'])),
+            clean_input($get_val('desa_kelurahan_ibu', $old_data['desa_kelurahan_ibu'])),
             clean_input($get_val('alamat_ibu', $old_data['alamat_ibu'])),
             clean_input($get_val('nama_wali', $old_data['nama_wali'])),
             clean_input($get_val('nik_wali', $old_data['nik_wali'])),
@@ -171,6 +195,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($get_val('pekerjaan_wali', $old_data['pekerjaan_wali'])),
             clean_input($get_val('penghasilan_wali', $old_data['penghasilan_wali'])),
             clean_input($get_val('no_hp_wali', $old_data['no_hp_wali'])),
+            clean_input($get_val('provinsi_wali', $old_data['provinsi_wali'])),
+            clean_input($get_val('kabupaten_kota_wali', $old_data['kabupaten_kota_wali'])),
+            clean_input($get_val('kecamatan_wali', $old_data['kecamatan_wali'])),
+            clean_input($get_val('desa_kelurahan_wali', $old_data['desa_kelurahan_wali'])),
             clean_input($get_val('alamat_wali', $old_data['alamat_wali'])),
             clean_input($get_val('kontak_wa', $old_data['kontak_wa'])),
             clean_input($get_val('nama_kontak_wa', $old_data['nama_kontak_wa'])),

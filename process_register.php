@@ -129,11 +129,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             status_tinggal, jarak_sekolah, transportasi_rumah,
             asal_sekolah, npsn_sekolah, alamat_sekolah,
             status_orang_tua,
-            nama_ayah, nik_ayah, tempat_lahir_ayah, tanggal_lahir_ayah, pendidikan_ayah, pekerjaan_ayah, penghasilan_ayah, no_hp_ayah, alamat_ayah,
-            nama_ibu, nik_ibu, tempat_lahir_ibu, tanggal_lahir_ibu, pendidikan_ibu, pekerjaan_ibu, penghasilan_ibu, no_hp_ibu, alamat_ibu,
-            nama_wali, nik_wali, tempat_lahir_wali, tanggal_lahir_wali, pendidikan_wali, pekerjaan_wali, penghasilan_wali, no_hp_wali, alamat_wali,
+            nama_ayah, nik_ayah, tempat_lahir_ayah, tanggal_lahir_ayah, pendidikan_ayah, pekerjaan_ayah, penghasilan_ayah, no_hp_ayah, 
+            provinsi_ayah, kabupaten_kota_ayah, kecamatan_ayah, desa_kelurahan_ayah, alamat_ayah,
+            nama_ibu, nik_ibu, tempat_lahir_ibu, tanggal_lahir_ibu, pendidikan_ibu, pekerjaan_ibu, penghasilan_ibu, no_hp_ibu, 
+            provinsi_ibu, kabupaten_kota_ibu, kecamatan_ibu, desa_kelurahan_ibu, alamat_ibu,
+            nama_wali, nik_wali, tempat_lahir_wali, tanggal_lahir_wali, pendidikan_wali, pekerjaan_wali, penghasilan_wali, no_hp_wali, 
+            provinsi_wali, kabupaten_kota_wali, kecamatan_wali, desa_kelurahan_wali, alamat_wali,
             kontak_wa, nama_kontak_wa,
             jalur_id,
+            password_plain,
             nilai_k4_s1, nilai_k4_s2, nilai_k5_s1, nilai_k5_s2, nilai_k6_s1, nilai_jumlah, nilai_rapor_rata2
         ) VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
@@ -142,15 +146,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ?, ?, ?,
             ?, ?, ?,
             ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?, ?, 
+            ?, ?, ?, ?, ?,
             ?, ?,
+            ?,
             ?,
             ?, ?, ?, ?, ?, ?, ?
         )";
 
         $stmt = $pdo->prepare($sql);
+        $prov_ayah = isset($_POST['sama_alamat_ayah']) ? clean_input($_POST['provinsi']) : clean_input($_POST['provinsi_ayah']);
+        $kab_ayah = isset($_POST['sama_alamat_ayah']) ? clean_input($_POST['kabupaten_kota']) : clean_input($_POST['kabupaten_kota_ayah']);
+        $kec_ayah = isset($_POST['sama_alamat_ayah']) ? clean_input($_POST['kecamatan']) : clean_input($_POST['kecamatan_ayah']);
+        $desa_ayah = isset($_POST['sama_alamat_ayah']) ? clean_input($_POST['desa_kelurahan']) : clean_input($_POST['desa_kelurahan_ayah']);
+        $alamat_ayah = isset($_POST['sama_alamat_ayah']) ? clean_input($_POST['alamat']) : clean_input($_POST['alamat_ayah']);
+
+        $prov_ibu = isset($_POST['sama_alamat_ibu']) ? clean_input($_POST['provinsi']) : clean_input($_POST['provinsi_ibu']);
+        $kab_ibu = isset($_POST['sama_alamat_ibu']) ? clean_input($_POST['kabupaten_kota']) : clean_input($_POST['kabupaten_kota_ibu']);
+        $kec_ibu = isset($_POST['sama_alamat_ibu']) ? clean_input($_POST['kecamatan']) : clean_input($_POST['kecamatan_ibu']);
+        $desa_ibu = isset($_POST['sama_alamat_ibu']) ? clean_input($_POST['desa_kelurahan']) : clean_input($_POST['desa_kelurahan_ibu']);
+        $alamat_ibu = isset($_POST['sama_alamat_ibu']) ? clean_input($_POST['alamat']) : clean_input($_POST['alamat_ibu']);
+
         $stmt->execute([
             $no_pendaftaran,
             clean_input($_POST['nisn']),
@@ -178,6 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($_POST['npsn_sekolah']),
             clean_input($_POST['alamat_sekolah']),
             clean_input($_POST['status_orang_tua']),
+            // Ayah
             clean_input($_POST['nama_ayah']),
             clean_input($_POST['nik_ayah']),
             clean_input($_POST['tempat_lahir_ayah']),
@@ -186,7 +207,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($_POST['pekerjaan_ayah']),
             clean_input($_POST['penghasilan_ayah']),
             clean_input($_POST['no_hp_ayah']),
-            clean_input($_POST['alamat_ayah']),
+            $prov_ayah, $kab_ayah, $kec_ayah, $desa_ayah, $alamat_ayah,
+            // Ibu
             clean_input($_POST['nama_ibu']),
             clean_input($_POST['nik_ibu']),
             clean_input($_POST['tempat_lahir_ibu']),
@@ -195,7 +217,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($_POST['pekerjaan_ibu']),
             clean_input($_POST['penghasilan_ibu']),
             clean_input($_POST['no_hp_ibu']),
-            clean_input($_POST['alamat_ibu']),
+            $prov_ibu, $kab_ibu, $kec_ibu, $desa_ibu, $alamat_ibu,
+            // Wali
             clean_input($_POST['nama_wali']),
             clean_input($_POST['nik_wali']),
             clean_input($_POST['tempat_lahir_wali']),
@@ -204,10 +227,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($_POST['pekerjaan_wali']),
             clean_input($_POST['penghasilan_wali']),
             clean_input($_POST['no_hp_wali']),
-            clean_input($_POST['alamat_wali']),
+            clean_input($_POST['provinsi_wali'] ?? ''),
+            clean_input($_POST['kabupaten_kota_wali'] ?? ''),
+            clean_input($_POST['kecamatan_wali'] ?? ''),
+            clean_input($_POST['desa_kelurahan_wali'] ?? ''),
+            clean_input($_POST['alamat_wali'] ?? ''),
+            
             clean_input($_POST['kontak_wa']),
             clean_input($_POST['nama_kontak_wa']),
             clean_input($_POST['jalur_id']),
+            $password, // Plain text password for admin
             $grades['nilai_k4_s1'],
             $grades['nilai_k4_s2'],
             $grades['nilai_k5_s1'],

@@ -315,6 +315,12 @@ if ($favicon = get_setting('school_logo')) {
                 <div class="collapse" id="menuUjianAdmin">
                     <ul class="nav flex-column submenu">
                         <li class="nav-item">
+                            <a class="nav-link <?= is_active('ruangan.php') ?>"
+                                href="<?= BASE_URL . ADMIN_DIR ?>/ujian/ruangan.php">
+                                <i class="fas fa-door-open me-2"></i> Pengaturan Ruangan & Sesi
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?= is_active('settings.php') && strpos($_SERVER['PHP_SELF'], '/ujian/') !== false ? 'active' : '' ?>"
                                 href="<?= BASE_URL ?>4dmMtsn1/ujian/settings.php"
                                 style="display: block !important; width: 100%; cursor: pointer;">
@@ -450,17 +456,27 @@ if ($favicon = get_setting('school_logo')) {
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Expand menus that check 'active' class
-        var activeLinks = document.querySelectorAll('.submenu .nav-link.active');
-        activeLinks.forEach(function (link) {
-            var parentCollapse = link.closest('.collapse');
-            if (parentCollapse) {
-                new bootstrap.Collapse(parentCollapse, {
-                    toggle: true
-                });
-                parentCollapse.previousElementSibling.classList.remove('collapsed');
-            }
-        });
+        // Safe Sidebar Collapse Initialization
+        if (typeof bootstrap !== 'undefined') {
+            var activeLinks = document.querySelectorAll('.submenu .nav-link.active');
+            activeLinks.forEach(function (link) {
+                var parentCollapse = link.closest('.collapse');
+                if (parentCollapse) {
+                    try {
+                        var bsCollapse = bootstrap.Collapse.getOrCreateInstance(parentCollapse, {
+                            toggle: false
+                        });
+                        bsCollapse.show();
+                        
+                        var toggleBtn = parentCollapse.previousElementSibling;
+                        if (toggleBtn && toggleBtn.classList.contains('collapsed')) {
+                            toggleBtn.classList.remove('collapsed');
+                            toggleBtn.setAttribute('aria-expanded', 'true');
+                        }
+                    } catch (e) {}
+                }
+            });
+        }
 
         // Mobile sidebar toggle overlay logic
         const toggleBtn = document.getElementById('mobileSidebarToggle');

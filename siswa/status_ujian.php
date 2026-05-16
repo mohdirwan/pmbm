@@ -2,35 +2,42 @@
 $page_title = "Informasi & Jadwal Ujian";
 require_once 'layout_top.php';
 
-$narasi_ujian = get_setting('narasi_info_test_akademik');
+// Proteksi: Hanya bisa diakses jika hasil administrasi sudah diumumkan, siswa lolos, dan butuh ujian
+if ($tahap_admin != 'pengumuman' || !$is_verified || !$needs_exam) {
+    echo "<script>window.location='status_administrasi.php';</script>";
+    exit();
+}
+
 $tata_tertib = get_setting('cbt_rules');
 $tutorial_pdf = get_setting('cbt_tutorial_pdf');
+
+function format_indo_date($date) {
+    if (!$date || $date == '-') return '-';
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) return $date;
+
+    $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    $months = [
+        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    
+    $time = strtotime($date);
+    $day_name = $days[date('w', $time)];
+    $day = date('j', $time);
+    $month_name = $months[(int)date('m', $time)];
+    $year = date('Y', $time);
+    
+    return "$day_name, $day $month_name $year";
+}
 ?>
 
 <style>
-    .rotate-15 {
-        transform: rotate(15deg);
-    }
-
-    .animate-pulse {
-        animation: pulse-animation 2s infinite;
-    }
-
+    .rotate-15 { transform: rotate(15deg); }
+    .animate-pulse { animation: pulse-animation 2s infinite; }
     @keyframes pulse-animation {
-        0% {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        50% {
-            transform: scale(1.1);
-            opacity: 0.7;
-        }
-
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.7; }
+        100% { transform: scale(1); opacity: 1; }
     }
 </style>
 
@@ -43,7 +50,6 @@ $tutorial_pdf = get_setting('cbt_tutorial_pdf');
         ?>
             <div class="card glass-card border-0 p-4 mb-4 overflow-hidden position-relative text-white"
                 style="background: linear-gradient(135deg, #0b2c24 0%, #1a4d40 100%);">
-                <!-- Decorative Icon Background -->
                 <div class="position-absolute top-0 end-0 opacity-10 mt-n4 me-n4">
                     <i class="fas fa-trophy fa-10x text-white rotate-15"></i>
                 </div>
@@ -100,42 +106,55 @@ $tutorial_pdf = get_setting('cbt_tutorial_pdf');
                 <div class="p-4 bg-primary bg-opacity-10 rounded-4 border border-primary border-opacity-25 mb-4 shadow-sm">
                     <h6 class="fw-bold text-primary mb-3"><i class="fas fa-clock me-2"></i> Jadwal Ujian Anda:</h6>
                     <div class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="p-3 bg-white rounded-4 text-center border">
                                 <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Hari/Tanggal</small>
-                                <span class="fw-bold text-dark"><?= $siswa['test_hari'] ?></span>
+                                <span class="fw-bold text-dark"><?= format_indo_date($siswa['test_hari']) ?></span>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="p-3 bg-white rounded-4 text-center border">
                                 <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Sesi</small>
                                 <span class="fw-bold text-dark"><?= $siswa['test_sesi'] ?></span>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="p-3 bg-white rounded-4 text-center border">
                                 <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Jam Pelaksanaan</small>
-                                <span class="fw-bold text-success"><?= $siswa['test_jam_mulai'] ?> - <?= $siswa['test_jam_selesai'] ?> WIB</span>
+                                <span class="fw-bold text-success"><?= date('H:i', strtotime($siswa['test_jam_mulai'])) ?> - <?= date('H:i', strtotime($siswa['test_jam_selesai'])) ?> WIB</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-white rounded-4 text-center border">
+                                <small class="text-muted d-block uppercase" style="font-size: 10px; letter-spacing: 1px;">Lokasi / Ruangan</small>
+                                <span class="fw-bold text-primary"><?= $siswa['test_ruangan'] ?: '-' ?></span>
                             </div>
                         </div>
                     </div>
                 </div>
             <?php else: ?>
-                <div class="p-4 bg-light rounded-4 border-start border-4 border-primary mb-4">
-                    <div class="fs-5 lh-base text-dark">
-                        <?= $narasi_ujian ? nl2br($narasi_ujian) : '<i class="text-muted">Informasi jadwal belum tersedia. Silakan hubungi panitia.</i>' ?>
+                <div class="p-4 bg-light rounded-4 border-start border-4 border-warning mb-4 shadow-sm">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fas fa-clock text-warning fa-2x"></i>
+                        <div class="fs-6 lh-base text-dark">
+                            <strong>Jadwal Sedang Diproses</strong><br>
+                            Jadwal pelaksanaan tes akademik Anda (Hari, Sesi, dan Ruangan) sedang dalam proses pembagian oleh panitia. Silakan cek kembali halaman ini secara berkala.
+                        </div>
                     </div>
                 </div>
             <?php endif; ?>
 
             <div class="rules-container p-3 rounded-4 bg-white border small text-muted overflow-auto mb-4"
                 style="max-height: 250px;">
+                <h6 class="fw-bold text-dark mb-2"><i class="fas fa-gavel me-2"></i>Tata Tertib Ujian:</h6>
                 <?= $tata_tertib ? nl2br($tata_tertib) : 'Belum ada tata tertib yang diunggah.' ?>
             </div>
 
-            <?php if ($tutorial_pdf): ?>
-                <div
-                    class="p-3 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-25 d-flex align-items-center justify-content-between">
+            <?php 
+            $tutorial_pdf = get_setting('cbt_tutorial_pdf');
+            if ($tutorial_pdf && get_setting('cbt_info_visibility', 'aktif') == 'aktif'): 
+            ?>
+                <div class="p-3 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-25 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="bg-white p-2 rounded-3 me-3 text-danger">
                             <i class="fas fa-file-pdf fs-4"></i>
@@ -178,11 +197,15 @@ $tutorial_pdf = get_setting('cbt_tutorial_pdf');
             </div>
 
             <div class="p-3 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-10 mb-4">
-                <small class="text-white-50 d-block mb-1">Password Ujian</small>
+                <small class="text-white-50 d-block mb-1">Password Ujian CBT</small>
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0 text-warning">26<?= htmlspecialchars($siswa['nisn']) ?></h5>
-                    <button class="btn btn-sm btn-link text-white-50 p-0"
-                        onclick="copyToClipboard('26<?= $siswa['nisn'] ?>')"><i class="far fa-copy"></i></button>
+                    <?php if(!empty($siswa['password_cbt'])): ?>
+                        <h5 class="fw-bold mb-0 text-warning"><?= htmlspecialchars($siswa['password_cbt']) ?></h5>
+                        <button class="btn btn-sm btn-link text-white-50 p-0"
+                            onclick="copyToClipboard('<?= $siswa['password_cbt'] ?>')"><i class="far fa-copy"></i></button>
+                    <?php else: ?>
+                        <span class="text-warning small italic">Belum Digenerate</span>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -198,13 +221,6 @@ $tutorial_pdf = get_setting('cbt_tutorial_pdf');
                 <i class="fas fa-print me-2"></i> Cetak Kartu Ujian
             </a>
         </div>
-
-        <!-- Help Card -->
-        <!-- <div class="card glass-card border-0 p-4 bg-info bg-opacity-10">
-            <h6 class="fw-bold mb-2">Kendala Login?</h6>
-            <p class="small text-muted mb-0">Jika anda tidak bisa login ke aplikasi CBT dengan akun di atas, silakan
-                hubungi pengawas di ruangan anda atau panitia IT.</p>
-        </div> -->
     </div>
 </div>
 

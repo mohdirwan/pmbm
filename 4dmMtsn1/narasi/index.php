@@ -44,7 +44,6 @@ $default_narasi = [
     'narasi_tahfizh_tidak_lolos' => 'Mohon Maaf, Ananda tidak lulus tes tahfizh. Selanjutnya Ananda dapat mengikuti tes akademik sesuai jadwal yang telah ditentukan.',
     'narasi_lulus_administrasi' => 'Selamat, Ananda dinyatakan lulus tahap administrasi pada proses Penerimaan Murid Baru di MTsN 1 Kota Pekanbaru. Silakan melanjutkan ke tahap berikutnya sesuai jadwal dan ketentuan yang telah ditetapkan.',
     'narasi_tidak_lulus_administrasi' => 'Mohon Maaf Ananda Tidak Lulus Seleksi Administrasi',
-    'narasi_info_test_akademik' => 'Bagi Ananda yang lulus administrasi, silakan mengikuti tes akademik yang akan dilaksanakan pada hari Sabtu, 14 Maret 2026 pukul 08.00 – 11.00 WIB di MTsN 1 Kota Pekanbaru. Silakan bawa handphone (HP) atau tablet yang terhubung dengan jaringan internet untuk dapat mengikuti tes akademik.',
     'narasi_lulus_test_akademik' => 'Selamat, Ananda lulus tes akademik di MTsN 1 Kota Pekanbaru. Silakan melakukan daftar ulang sesuai jadwal yang telah ditentukan.',
     'narasi_tidak_lulus_test_akademik' => 'Mohon maaf, Ananda tidak lulus tes akademik di MTsN 1 Kota Pekanbaru.',
     'narasi_finalisasi' => 'Ananda telah melaksanakan tes akademik. Mohon kesediaannya untuk secara berkala mengecek jadwal pengumuman kelulusan.',
@@ -227,17 +226,6 @@ $default_narasi = [
                                             rows="4"><?= get_setting('narasi_tahfizh_tidak_lolos', $default_narasi['narasi_tahfizh_tidak_lolos']) ?></textarea>
                                         <small class="text-muted mt-2 d-block">Muncul untuk jalur tahfizh yang tidak
                                             lulus tes tahfizh namun lanjut tes akademik.</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card narasi-card">
-                                    <div class="card-body">
-                                        <label class="narasi-label"><i>e</i> Info Tes Akademik</label>
-                                        <textarea name="narasi[narasi_info_test_akademik]" class="form-control"
-                                            rows="4"><?= get_setting('narasi_info_test_akademik', $default_narasi['narasi_info_test_akademik']) ?></textarea>
-                                        <small class="text-muted mt-2 d-block">Info jadwal dan persiapan tes
-                                            akademik.</small>
                                     </div>
                                 </div>
                             </div>

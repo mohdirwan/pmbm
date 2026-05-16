@@ -376,10 +376,30 @@ $list_jalur = $stmt_jalur->fetchAll();
                         <option value="Tidak Ada" <?= ($siswa['penghasilan_ayah'] ?? '') == 'Tidak Ada' ? 'selected' : '' ?>>Tidak Ada</option>
                     </select>
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Provinsi Ayah</label>
+                    <input type="text" class="form-control form-control-premium" name="provinsi_ayah"
+                        value="<?= htmlspecialchars($siswa['provinsi_ayah'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kab/Kota Ayah</label>
+                    <input type="text" class="form-control form-control-premium" name="kabupaten_kota_ayah"
+                        value="<?= htmlspecialchars($siswa['kabupaten_kota_ayah'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kecamatan Ayah</label>
+                    <input type="text" class="form-control form-control-premium" name="kecamatan_ayah"
+                        value="<?= htmlspecialchars($siswa['kecamatan_ayah'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kelurahan/Desa Ayah</label>
+                    <input type="text" class="form-control form-control-premium" name="desa_kelurahan_ayah"
+                        value="<?= htmlspecialchars($siswa['desa_kelurahan_ayah'] ?? '') ?>">
+                </div>
                 <div class="col-12">
-                    <label class="form-label-premium">Alamat Ayah</label>
+                    <label class="form-label-premium">Alamat Lengkap Ayah</label>
                     <textarea name="alamat_ayah" class="form-control form-control-premium" rows="2"
-                        placeholder="Biarkan kosong jika sama dengan murid"><?= htmlspecialchars($siswa['alamat_ayah'] ?? '') ?></textarea>
+                        placeholder="Nama jalan, nomor rumah, RT/RW"><?= htmlspecialchars($siswa['alamat_ayah'] ?? '') ?></textarea>
                 </div>
             </div>
 
@@ -444,10 +464,30 @@ $list_jalur = $stmt_jalur->fetchAll();
                         <option value="Tidak Ada" <?= ($siswa['penghasilan_ibu'] ?? '') == 'Tidak Ada' ? 'selected' : '' ?>>Tidak Ada</option>
                     </select>
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Provinsi Ibu</label>
+                    <input type="text" class="form-control form-control-premium" name="provinsi_ibu"
+                        value="<?= htmlspecialchars($siswa['provinsi_ibu'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kab/Kota Ibu</label>
+                    <input type="text" class="form-control form-control-premium" name="kabupaten_kota_ibu"
+                        value="<?= htmlspecialchars($siswa['kabupaten_kota_ibu'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kecamatan Ibu</label>
+                    <input type="text" class="form-control form-control-premium" name="kecamatan_ibu"
+                        value="<?= htmlspecialchars($siswa['kecamatan_ibu'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kelurahan/Desa Ibu</label>
+                    <input type="text" class="form-control form-control-premium" name="desa_kelurahan_ibu"
+                        value="<?= htmlspecialchars($siswa['desa_kelurahan_ibu'] ?? '') ?>">
+                </div>
                 <div class="col-12">
-                    <label class="form-label-premium">Alamat Ibu</label>
+                    <label class="form-label-premium">Alamat Lengkap Ibu</label>
                     <textarea name="alamat_ibu" class="form-control form-control-premium" rows="2"
-                        placeholder="Biarkan kosong jika sama dengan murid"><?= htmlspecialchars($siswa['alamat_ibu'] ?? '') ?></textarea>
+                        placeholder="Nama jalan, nomor rumah, RT/RW"><?= htmlspecialchars($siswa['alamat_ibu'] ?? '') ?></textarea>
                 </div>
             </div>
 
@@ -515,8 +555,28 @@ $list_jalur = $stmt_jalur->fetchAll();
                     <input type="text" class="form-control form-control-premium" name="no_hp_wali"
                         value="<?= htmlspecialchars($siswa['no_hp_wali'] ?? '') ?>">
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Provinsi Wali</label>
+                    <input type="text" class="form-control form-control-premium" name="provinsi_wali"
+                        value="<?= htmlspecialchars($siswa['provinsi_wali'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kab/Kota Wali</label>
+                    <input type="text" class="form-control form-control-premium" name="kabupaten_kota_wali"
+                        value="<?= htmlspecialchars($siswa['kabupaten_kota_wali'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kecamatan Wali</label>
+                    <input type="text" class="form-control form-control-premium" name="kecamatan_wali"
+                        value="<?= htmlspecialchars($siswa['kecamatan_wali'] ?? '') ?>">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-premium">Kelurahan/Desa Wali</label>
+                    <input type="text" class="form-control form-control-premium" name="desa_kelurahan_wali"
+                        value="<?= htmlspecialchars($siswa['desa_kelurahan_wali'] ?? '') ?>">
+                </div>
                 <div class="col-12">
-                    <label class="form-label-premium">Alamat Wali</label>
+                    <label class="form-label-premium">Alamat Lengkap Wali</label>
                     <textarea name="alamat_wali" class="form-control form-control-premium" rows="2"
                         placeholder="Abaikan jika tidak ada wali"><?= htmlspecialchars($siswa['alamat_wali'] ?? '') ?></textarea>
                 </div>
@@ -608,12 +668,46 @@ $list_jalur = $stmt_jalur->fetchAll();
             <div>
                 <a href="identitas.php" class="btn btn-outline-secondary rounded-pill px-4">Batal</a>
             </div>
-            <button type="submit" class="btn btn-premium-action px-5">
-                <i class="fas fa-save me-2"></i> Simpan Perubahan
+            <button type="button" class="btn btn-premium-action px-5" onclick="handleUpdateSubmit()">
+                <i class="fas fa-eye me-2"></i> Preview & Simpan
             </button>
         </div>
     </form>
 </div>
+
+    <!-- Modal Preview Data -->
+    <div class="modal fade" id="previewDataModal" tabindex="-1" aria-labelledby="previewDataModalLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 bg-success text-white rounded-top-4 p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white bg-opacity-25 p-3 rounded-3 me-3">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-1" id="previewDataModalLabel">Pratinjau Perubahan Data</h5>
+                            <small class="opacity-90">Pastikan data yang Anda perbaiki sudah benar sebelum disimpan</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body p-4" id="previewDataContent">
+                    <!-- Content will be filled by JavaScript -->
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-lg btn-secondary rounded-pill px-4" onclick="closePreview()">
+                        <i class="fas fa-edit me-2"></i>Kembali Edit
+                    </button>
+                    <button type="button" class="btn btn-lg btn-success rounded-pill px-5" onclick="submitUpdateForm()">
+                        <i class="fas fa-save me-2"></i>Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS if not already included in layout_bottom -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -640,6 +734,100 @@ $list_jalur = $stmt_jalur->fetchAll();
             });
         });
     });
+
+    function handleUpdateSubmit() {
+        const form = document.getElementById('updateForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        showPreviewData();
+    }
+
+    function showPreviewData() {
+        const form = document.getElementById('updateForm');
+        const formData = new FormData(form);
+        let html = '';
+
+        // Generate HTML for preview (Similar to register.php but adapted for this form)
+        html += `
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-primary text-white p-3">
+                    <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Data Murid</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover mb-0">
+                        <tbody>
+                            <tr><th width="35%" class="ps-4">Jalur Pendaftaran</th><td>${form.querySelector('select[name="jalur_id"] option:checked')?.text || '-'}</td></tr>
+                            <tr><th class="ps-4">NISN</th><td>${formData.get('nisn') || '-'}</td></tr>
+                            <tr><th class="ps-4">NIK</th><td>${formData.get('nik') || '-'}</td></tr>
+                            <tr><th class="ps-4">Nama Lengkap</th><td>${formData.get('nama_lengkap') || '-'}</td></tr>
+                            <tr><th class="ps-4">Tempat, Tanggal Lahir</th><td>${formData.get('tempat_lahir') || '-'}, ${formData.get('tanggal_lahir') || '-'}</td></tr>
+                            <tr><th class="ps-4">Jenis Kelamin</th><td>${formData.get('jenis_kelamin') === 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
+                            <tr><th class="ps-4">No. HP</th><td>${formData.get('no_hp') || '-'}</td></tr>
+                            <tr><th class="ps-4">Alamat</th><td>${formData.get('alamat') || '-'}</td></tr>
+                            <tr><th class="ps-4">Kecamatan</th><td>${formData.get('kecamatan') || '-'}</td></tr>
+                            <tr><th class="ps-4">WhatsApp Notifikasi</th><td>${formData.get('kontak_wa') || '-'} (a.n ${formData.get('nama_kontak_wa') || '-'})</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-success text-white p-3">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Data Orang Tua</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover mb-0">
+                        <tbody>
+                            <tr><th width="35%" class="ps-4">No. KK</th><td>${formData.get('no_kk') || '-'}</td></tr>
+                            <tr><th class="ps-4">Nama Ayah</th><td>${formData.get('nama_ayah') || '-'}</td></tr>
+                            <tr><th class="ps-4">Nama Ibu</th><td>${formData.get('nama_ibu') || '-'}</td></tr>
+                            <tr><th class="ps-4">Pekerjaan Ayah</th><td>${formData.get('pekerjaan_ayah') || '-'}</td></tr>
+                            <tr><th class="ps-4">Pekerjaan Ibu</th><td>${formData.get('pekerjaan_ibu') || '-'}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-warning text-dark p-3">
+                    <h5 class="mb-0"><i class="fas fa-list-ol me-2"></i>Rekap Nilai Rapor</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0">
+                        <thead class="table-light">
+                            <tr><th>Semester</th><th class="text-center">Nilai</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="ps-4">Kelas 4 Sem 1</td><td class="text-center">${formData.get('nilai_k4_s1') || '-'}</td></tr>
+                            <tr><td class="ps-4">Kelas 4 Sem 2</td><td class="text-center">${formData.get('nilai_k4_s2') || '-'}</td></tr>
+                            <tr><td class="ps-4">Kelas 5 Sem 1</td><td class="text-center">${formData.get('nilai_k5_s1') || '-'}</td></tr>
+                            <tr><td class="ps-4">Kelas 5 Sem 2</td><td class="text-center">${formData.get('nilai_k5_s2') || '-'}</td></tr>
+                            <tr><td class="ps-4">Kelas 6 Sem 1</td><td class="text-center">${formData.get('nilai_k6_s1') || '-'}</td></tr>
+                        </tbody>
+                        <tfoot class="table-dark">
+                            <tr><th class="ps-4">RATA-RATA</th><th class="text-center">${document.getElementById('avg-display').innerText}</th></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('previewDataContent').innerHTML = html;
+        const previewModal = new bootstrap.Modal(document.getElementById('previewDataModal'));
+        previewModal.show();
+    }
+
+    function closePreview() {
+        const modalEl = document.getElementById('previewDataModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+    }
+
+    function submitUpdateForm() {
+        document.getElementById('updateForm').submit();
+    }
 </script>
 
 <?php require_once 'layout_bottom.php'; ?>

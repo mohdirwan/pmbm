@@ -167,6 +167,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </span></p>
                 </div>
                 <div>
+                    <a href="<?= BASE_URL ?>cetak_formulir.php?reg=<?= $siswa['no_pendaftaran'] ?>" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 me-2">
+                        <i class="fas fa-print me-1"></i> Cetak Formulir Lengkap
+                    </a>
                     <?php
                     $statusColor = match ($siswa['status']) {
                         'Diterima' => 'success',
@@ -226,6 +229,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <div class="info-value">
                                         <?= $siswa['nisn'] ?> /
                                         <?= $siswa['nik'] ?>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="info-label">Password Login</div>
+                                    <div class="info-value text-primary">
+                                        <i class="fas fa-key me-1 small"></i>
+                                        <?= htmlspecialchars($siswa['password_plain'] ?? '********') ?>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -368,7 +378,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="mb-2">
                                     <div class="info-label">Alamat Ayah</div>
                                     <div class="info-value small text-muted">
-                                        <?= $siswa['alamat_ayah'] ?: '(Sama dengan murid)' ?>
+                                        <?php if (!empty($siswa['provinsi_ayah'])): ?>
+                                            <?= htmlspecialchars($siswa['alamat_ayah']) ?>, 
+                                            <?= htmlspecialchars($siswa['desa_kelurahan_ayah']) ?>, 
+                                            <?= htmlspecialchars($siswa['kecamatan_ayah']) ?>, 
+                                            <?= htmlspecialchars($siswa['kabupaten_kota_ayah']) ?>, 
+                                            <?= htmlspecialchars($siswa['provinsi_ayah']) ?>
+                                        <?php else: ?>
+                                            <?= $siswa['alamat_ayah'] ?: '(Sama dengan murid)' ?>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -402,7 +420,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="mb-2">
                                     <div class="info-label">Alamat Ibu</div>
                                     <div class="info-value small text-muted">
-                                        <?= $siswa['alamat_ibu'] ?: '(Sama dengan murid)' ?>
+                                        <?php if (!empty($siswa['provinsi_ibu'])): ?>
+                                            <?= htmlspecialchars($siswa['alamat_ibu']) ?>, 
+                                            <?= htmlspecialchars($siswa['desa_kelurahan_ibu']) ?>, 
+                                            <?= htmlspecialchars($siswa['kecamatan_ibu']) ?>, 
+                                            <?= htmlspecialchars($siswa['kabupaten_kota_ibu']) ?>, 
+                                            <?= htmlspecialchars($siswa['provinsi_ibu']) ?>
+                                        <?php else: ?>
+                                            <?= $siswa['alamat_ibu'] ?: '(Sama dengan murid)' ?>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -435,7 +461,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </div>
                                 <div class="mb-2">
                                     <div class="info-label">Alamat Wali</div>
-                                    <div class="info-value small text-muted"><?= $siswa['alamat_wali'] ?: '-' ?></div>
+                                    <div class="info-value small text-muted">
+                                        <?php if (!empty($siswa['provinsi_wali'])): ?>
+                                            <?= htmlspecialchars($siswa['alamat_wali']) ?>, 
+                                            <?= htmlspecialchars($siswa['desa_kelurahan_wali']) ?>, 
+                                            <?= htmlspecialchars($siswa['kecamatan_wali']) ?>, 
+                                            <?= htmlspecialchars($siswa['kabupaten_kota_wali']) ?>, 
+                                            <?= htmlspecialchars($siswa['provinsi_wali']) ?>
+                                        <?php else: ?>
+                                            <?= $siswa['alamat_wali'] ?: '-' ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>

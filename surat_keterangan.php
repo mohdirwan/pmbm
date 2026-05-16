@@ -151,12 +151,9 @@ $surat_list = $stmt->fetchAll();
                                         ? BASE_URL . 'uploads/suket_templates/' . $surat['file_preview_pdf']
                                         : 'preview_suket.php?id=' . $surat['id'];
 
-                                    // Determine download URL - use uploaded DOCX if exists
-                                    $download_url = !empty($surat['file_template_docx'])
-                                        ? BASE_URL . 'uploads/suket_templates/' . $surat['file_template_docx']
-                                        : 'preview_suket.php?id=' . $surat['id'];
-
-                                    $download_attr = !empty($surat['file_template_docx']) ? 'download' : 'target="_blank"';
+                                    // Use download_suket.php for reliable downloading
+                                    $download_url = 'download_suket.php?id=' . $surat['id'];
+                                    $download_attr = ''; // download attribute not needed when using a script that sends attachment headers
                                     ?>
 
                                     <a href="<?= $preview_url ?>" target="_blank" class="btn btn-preview btn-action flex-fill">

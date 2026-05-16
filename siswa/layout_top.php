@@ -375,14 +375,17 @@ if (in_array($current_page, $after_selection_pages)) {
                             <?php
                             $ppdb_status = get_setting('ppdb_status', 'tutup');
                             $status = $siswa['status'] ?? 'Pending';
-                            if ($status != 'Terverifikasi' && $status != 'Diterima' && $ppdb_status == 'buka'): ?>
+                            $allowed_edit_stages = ['buka', 'verifikasi', 'pengumuman_adm'];
+                            $can_edit = (!in_array($status, ['Terverifikasi', 'Diterima', 'Lulus']) && in_array($ppdb_status, $allowed_edit_stages));
+                            if ($status == 'Ditolak' && in_array($ppdb_status, $allowed_edit_stages)) $can_edit = true;
+
+                            if ($can_edit): ?>
                                 <li class="sub-item"><a
                                         class="nav-link <?= $current_page == 'upload_berkas.php' ? 'active' : '' ?>"
                                         href="upload_berkas.php">Upload Berkas Persyaratan</a></li>
                                 <li class="sub-item"><a
                                         class="nav-link <?= $current_page == 'edit_identitas.php' ? 'active' : '' ?>"
-                                        href="edit_identitas.php"><i class="fas fa-edit me-1 small opacity-75"></i> Ubah
-                                        Biodata</a></li>
+                                        href="edit_identitas.php"><i class="fas fa-check-double me-1 small opacity-75"></i> Finalisasi Pendaftaran & Cetak Formulir</a></li>
                             <?php endif; ?>
                         </ul>
                     </div>
@@ -443,9 +446,11 @@ if (in_array($current_page, $after_selection_pages)) {
                                     class="nav-link <?= $current_page == 'status_administrasi.php' ? 'active' : '' ?>"
                                     href="status_administrasi.php?title=Status Administrasi">Status Administrasi</a>
                             </li>
+                            <?php if ($tahap_admin == 'pengumuman' && $is_verified): ?>
                             <li class="sub-item"><a
                                     class="nav-link <?= $current_page == 'status_akhir.php' ? 'active' : '' ?>"
                                     href="status_akhir.php?title=Status Akhir PMBM">Status Akhir PMBM</a></li>
+                            <?php endif; ?>
                             <?php 
                             // Menu Pengumuman & Daftar Ulang dinonaktifkan sementara sesuai permintaan
                             if (false): 

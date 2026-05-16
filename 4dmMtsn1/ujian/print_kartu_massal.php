@@ -101,7 +101,7 @@ $school_logo = get_setting('school_logo');
                             </tr>
                             <tr>
                                 <td class="label">Password</td>
-                                <td>: <span style="font-family: monospace; color: #d32f2f;">[Password Rahasia Anda]</span></td>
+                                <td>: <strong style="font-family: monospace; color: #d32f2f;"><?= htmlspecialchars($s['password_plain'] ?? '********') ?></strong></td>
                             </tr>
                         </table>
 
@@ -110,6 +110,9 @@ $school_logo = get_setting('school_logo');
                             <strong><?= $s['test_hari'] ?> | <?= $s['test_sesi'] ?></strong>
                             <div style="font-size: 11px; margin-top: 3px; color: #2e7d32; font-weight: bold;">
                                 <i class="far fa-clock"></i> Pukul: <?= $s['test_jam_mulai'] ?> - <?= $s['test_jam_selesai'] ?> WIB
+                            </div>
+                            <div style="font-size: 11px; margin-top: 3px; color: #0d6efd; border-top: 1px solid #c8e6c9; padding-top: 3px;">
+                                <i class="fas fa-map-marker-alt"></i> Lokasi: <?= $s['test_ruangan'] ?: '-' ?>
                             </div>
                         </div>
                     </div>

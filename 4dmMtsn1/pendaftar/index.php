@@ -217,6 +217,9 @@ $students = $stmt->fetchAll();
                         <i class="fas fa-check-double me-2"></i>
                         Verifikasi Otomatis Semua Murid Pending
                     </button>
+                    <button type="button" class="btn btn-outline-primary ms-2" id="btnRevealAll">
+                        <i class="fas fa-eye me-2"></i> Tampilkan Semua Password
+                    </button>
                     <small class="text-muted ms-3">
                         <i class="fas fa-info-circle me-1"></i>
                         Tombol ini akan memverifikasi semua murid yang berstatus "Pending" (kecuali yang ditolak)
@@ -233,6 +236,7 @@ $students = $stmt->fetchAll();
                                 <tr>
                                     <th class="ps-4">No. Daftar</th>
                                     <th>Nama Murid & NISN</th>
+                                    <th>Password</th>
                                     <th>TTL & JK</th>
                                     <th>Asal Sekolah</th>
                                     <th>Waktu Daftar</th>
@@ -254,6 +258,17 @@ $students = $stmt->fetchAll();
                                                 </div>
                                                 <div class="small text-muted">
                                                     <?= $s['nisn'] ?>
+                                                </div>
+                                            </td>
+                                             <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <code class="small text-primary password-field" data-raw="<?= htmlspecialchars($s['password_plain'] ?? '') ?>">********</code>
+                                                    <button class="btn btn-sm btn-link p-0 text-muted toggle-password" type="button">
+                                                        <i class="far fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="small text-muted mt-1" style="font-size: 0.65rem;">
+                                                    <i class="fas fa-lock me-1"></i>Hashed in Database
                                                 </div>
                                             </td>
                                             <td>
@@ -498,6 +513,42 @@ $students = $stmt->fetchAll();
                         });
                     }
                 });
+            });
+
+            // Simple Toggle Password Reveal
+            $('.toggle-password').on('click', function() {
+                const $btn = $(this);
+                const $field = $btn.siblings('.password-field');
+                const raw = $field.data('raw');
+                const isHidden = $field.text() === '********';
+
+                if (isHidden) {
+                    $field.text(raw || '[Password Lama / Terenkripsi]');
+                    $btn.html('<i class="far fa-eye-slash"></i>');
+                } else {
+                    $field.text('********');
+                    $btn.html('<i class="far fa-eye"></i>');
+                }
+            });
+
+            // Reveal All Passwords
+            $('#btnRevealAll').on('click', function() {
+                const $btn = $(this);
+                const isRevealing = $btn.find('i').hasClass('fa-eye');
+
+                if (isRevealing) {
+                    $('.password-field').each(function() {
+                        const $field = $(this);
+                        const raw = $field.data('raw');
+                        $field.text(raw || '[Password Lama / Terenkripsi]');
+                    });
+                    $('.toggle-password').html('<i class="far fa-eye-slash"></i>');
+                    $btn.html('<i class="fas fa-eye-slash me-2"></i> Sembunyikan Semua Password');
+                } else {
+                    $('.password-field').text('********');
+                    $('.toggle-password').html('<i class="far fa-eye"></i>');
+                    $btn.html('<i class="fas fa-eye me-2"></i> Tampilkan Semua Password');
+                }
             });
         });
     </script>

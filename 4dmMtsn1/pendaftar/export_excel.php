@@ -52,6 +52,7 @@ header("Expires: 0");
             <th style="background-color: #0b2d24; color: white;">No</th>
             <th style="background-color: #0b2d24; color: white;">No Pendaftaran</th>
             <th style="background-color: #0b2d24; color: white;">NISN</th>
+            <th style="background-color: #0b2d24; color: white;">Password</th>
             <th style="background-color: #0b2d24; color: white;">NIK</th>
             <th style="background-color: #0b2d24; color: white;">No KK</th>
             <th style="background-color: #0b2d24; color: white;">Nama Lengkap</th>
@@ -91,6 +92,7 @@ header("Expires: 0");
                 <td><?= $index + 1 ?></td>
                 <td>'<?= $s['no_pendaftaran'] ?></td>
                 <td>'<?= $s['nisn'] ?></td>
+                <td><?= htmlspecialchars($s['password_plain'] ?? '********') ?></td>
                 <td>'<?= $s['nik'] ?></td>
                 <td>'<?= $s['no_kk'] ?></td>
                 <td><?= htmlspecialchars($s['nama_lengkap']) ?></td>

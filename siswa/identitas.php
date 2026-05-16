@@ -253,17 +253,26 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
             <div class="col-auto mt-3 mt-lg-0">
                 <?php
                 $ppdb_status = get_setting('ppdb_status', 'tutup');
-                $is_editable = ($status != 'Terverifikasi' && $status != 'Diterima' && $ppdb_status == 'buka');
+                $status = $siswa['status'] ?? 'Pending';
+                
+                // Allow editing if not verified/accepted and during registration or verification stages
+                $allowed_edit_stages = ['buka', 'verifikasi', 'pengumuman_adm'];
+                $is_editable = (!in_array($status, ['Terverifikasi', 'Diterima', 'Lulus']) && in_array($ppdb_status, $allowed_edit_stages));
+                
+                // If they are rejected, they should definitely be allowed to fix their data
+                if ($status == 'Ditolak' && in_array($ppdb_status, $allowed_edit_stages)) {
+                    $is_editable = true;
+                }
                 ?>
                 <div class="d-flex flex-column gap-2">
-                    <button onclick="window.print()"
-                        class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-lg btn-print-action">
-                        <i class="fas fa-print me-2 text-primary"></i> Cetak Biodata
+                    <button onclick="window.open('<?= BASE_URL ?>cetak_formulir.php?reg=<?= urlencode($siswa['no_pendaftaran']) ?>', '_blank')"
+                        class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
+                        <i class="fas fa-print me-2 text-primary"></i> Cetak Formulir
                     </button>
                     <?php if ($is_editable): ?>
                         <a href="edit_identitas.php"
                             class="btn btn-warning btn-lg rounded-pill px-4 fw-bold shadow-lg mt-2">
-                            <i class="fas fa-edit me-2"></i> Ubah Data Profil
+                            <i class="fas fa-check-double me-2"></i> Perbaiki / Lengkapi Data
                         </a>
                     <?php endif; ?>
                 </div>
@@ -465,7 +474,15 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                     <div class="data-value small text-primary"><?= htmlspecialchars($siswa['no_hp_ayah'] ?: '-') ?>
                     </div>
                     <div class="data-value small text-muted">
-                        <?= htmlspecialchars($siswa['alamat_ayah'] ?: '(Sama dengan murid)') ?>
+                        <?php if (!empty($siswa['provinsi_ayah'])): ?>
+                            <?= htmlspecialchars($siswa['alamat_ayah']) ?>, 
+                            <?= htmlspecialchars($siswa['desa_kelurahan_ayah']) ?>, 
+                            <?= htmlspecialchars($siswa['kecamatan_ayah']) ?>, 
+                            <?= htmlspecialchars($siswa['kabupaten_kota_ayah']) ?>, 
+                            <?= htmlspecialchars($siswa['provinsi_ayah']) ?>
+                        <?php else: ?>
+                            <?= htmlspecialchars($siswa['alamat_ayah'] ?: '(Sama dengan murid)') ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -508,7 +525,15 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                     <div class="data-label">No. HP & Alamat</div>
                     <div class="data-value small text-primary"><?= htmlspecialchars($siswa['no_hp_ibu'] ?: '-') ?></div>
                     <div class="data-value small text-muted">
-                        <?= htmlspecialchars($siswa['alamat_ibu'] ?: '(Sama dengan murid)') ?>
+                        <?php if (!empty($siswa['provinsi_ibu'])): ?>
+                            <?= htmlspecialchars($siswa['alamat_ibu']) ?>, 
+                            <?= htmlspecialchars($siswa['desa_kelurahan_ibu']) ?>, 
+                            <?= htmlspecialchars($siswa['kecamatan_ibu']) ?>, 
+                            <?= htmlspecialchars($siswa['kabupaten_kota_ibu']) ?>, 
+                            <?= htmlspecialchars($siswa['provinsi_ibu']) ?>
+                        <?php else: ?>
+                            <?= htmlspecialchars($siswa['alamat_ibu'] ?: '(Sama dengan murid)') ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -536,7 +561,17 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                     </div>
                     <div class="data-group">
                         <div class="data-label">Alamat Wali</div>
-                        <div class="data-value small text-muted"><?= htmlspecialchars($siswa['alamat_wali'] ?: '-') ?></div>
+                        <div class="data-value small text-muted">
+                            <?php if (!empty($siswa['provinsi_wali'])): ?>
+                                <?= htmlspecialchars($siswa['alamat_wali']) ?>, 
+                                <?= htmlspecialchars($siswa['desa_kelurahan_wali']) ?>, 
+                                <?= htmlspecialchars($siswa['kecamatan_wali']) ?>, 
+                                <?= htmlspecialchars($siswa['kabupaten_kota_wali']) ?>, 
+                                <?= htmlspecialchars($siswa['provinsi_wali']) ?>
+                            <?php else: ?>
+                                <?= htmlspecialchars($siswa['alamat_wali'] ?: '-') ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             <?php else: ?>
