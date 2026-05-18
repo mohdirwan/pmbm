@@ -28,6 +28,7 @@ $offset = ($page - 1) * $limit;
 $search = $_GET['search'] ?? '';
 $jalur = $_GET['jalur'] ?? '';
 $status = $_GET['status'] ?? '';
+$finalisasi = $_GET['finalisasi'] ?? '';
 
 $query = "SELECT p.*, j.nama_jalur 
           FROM pendaftar p 
@@ -50,6 +51,14 @@ if ($jalur) {
 if ($status) {
     $query .= " AND p.status = ?";
     $params[] = $status;
+}
+
+if ($finalisasi) {
+    if ($finalisasi == 'ya') {
+        $query .= " AND p.finalisasi = 'ya'";
+    } else {
+        $query .= " AND (p.finalisasi = 'belum' OR p.finalisasi IS NULL)";
+    }
 }
 
 // Get total count for pagination
@@ -130,9 +139,9 @@ $students = $stmt->fetchAll();
                     <p class="text-muted small">Kelola seluruh data calon peserta didik baru.</p>
                 </div>
                 <div>
-                    <a href="export_excel.php?search=<?= urlencode($search) ?>&jalur=<?= urlencode($jalur) ?>&status=<?= urlencode($status) ?>"
+                    <a href="export_excel.php?search=<?= urlencode($search) ?>&jalur=<?= urlencode($jalur) ?>&status=<?= urlencode($status) ?>&finalisasi=<?= urlencode($finalisasi) ?>"
                         class="btn btn-outline-success"><i class="fas fa-file-excel me-2"></i>Export Excel</a>
-                    <a href="print_list.php?search=<?= urlencode($search) ?>&jalur=<?= urlencode($jalur) ?>&status=<?= urlencode($status) ?>"
+                    <a href="print_list.php?search=<?= urlencode($search) ?>&jalur=<?= urlencode($jalur) ?>&status=<?= urlencode($status) ?>&finalisasi=<?= urlencode($finalisasi) ?>"
                         target="_blank" class="btn btn-outline-danger ms-2"><i class="fas fa-file-pdf me-2"></i>Print
                         PDF</a>
                 </div>
@@ -169,7 +178,7 @@ $students = $stmt->fetchAll();
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
                     <form method="GET" class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label fw-bold small">Cari Murid</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
@@ -190,7 +199,7 @@ $students = $stmt->fetchAll();
                                 ?>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label fw-bold small">Filter Status</label>
                             <select name="status" class="form-select">
                                 <option value="">Semua Status</option>
@@ -199,6 +208,14 @@ $students = $stmt->fetchAll();
                                     Terverifikasi</option>
                                 <option value="Diterima" <?= $status == 'Diterima' ? 'selected' : '' ?>>Diterima</option>
                                 <option value="Ditolak" <?= $status == 'Ditolak' ? 'selected' : '' ?>>Ditolak</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold small">Filter Finalisasi</label>
+                            <select name="finalisasi" class="form-select">
+                                <option value="">Semua</option>
+                                <option value="ya" <?= $finalisasi == 'ya' ? 'selected' : '' ?>>Sudah</option>
+                                <option value="belum" <?= $finalisasi == 'belum' ? 'selected' : '' ?>>Belum</option>
                             </select>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
@@ -241,6 +258,7 @@ $students = $stmt->fetchAll();
                                     <th>Asal Sekolah</th>
                                     <th>Waktu Daftar</th>
                                     <th>Jalur</th>
+                                    <th>Finalisasi</th>
                                     <th>Status</th>
                                     <th class="text-end pe-4">Aksi</th>
                                 </tr>
@@ -299,6 +317,17 @@ $students = $stmt->fetchAll();
                                                 </span>
                                             </td>
                                             <td>
+                                                <?php if (isset($s['finalisasi']) && $s['finalisasi'] == 'ya'): ?>
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
+                                                        <i class="fas fa-check-circle me-1"></i>Sudah
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3">
+                                                        <i class="fas fa-times-circle me-1"></i>Belum
+                                                    </span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
                                                 <?php
                                                 $badgeClass = match ($s['status']) {
                                                     'Diterima' => 'success',
@@ -333,7 +362,7 @@ $students = $stmt->fetchAll();
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="8" class="text-center py-5 text-muted">Belum ada data pendaftar yang
+                                        <td colspan="10" class="text-center py-5 text-muted">Belum ada data pendaftar yang
                                             sesuai filter.</td>
                                     </tr>
                                 <?php endif; ?>
@@ -355,7 +384,7 @@ $students = $stmt->fetchAll();
                                     <!-- Previous Button -->
                                     <?php if ($page > 1): ?>
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=<?= $page - 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $jalur ? '&jalur=' . urlencode($jalur) : '' ?><?= $status ? '&status=' . urlencode($status) : '' ?>">
+                                            <a class="page-link" href="?page=<?= $page - 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $jalur ? '&jalur=' . urlencode($jalur) : '' ?><?= $status ? '&status=' . urlencode($status) : '' ?><?= $finalisasi ? '&finalisasi=' . urlencode($finalisasi) : '' ?>">
                                                 <i class="fas fa-chevron-left"></i> Previous
                                             </a>
                                         </li>
@@ -373,7 +402,7 @@ $students = $stmt->fetchAll();
                                     for ($i = $startPage; $i <= $endPage; $i++):
                                     ?>
                                         <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                                            <a class="page-link" href="?page=<?= $i ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $jalur ? '&jalur=' . urlencode($jalur) : '' ?><?= $status ? '&status=' . urlencode($status) : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $jalur ? '&jalur=' . urlencode($jalur) : '' ?><?= $status ? '&status=' . urlencode($status) : '' ?><?= $finalisasi ? '&finalisasi=' . urlencode($finalisasi) : '' ?>">
                                                 <?= $i ?>
                                             </a>
                                         </li>
@@ -382,7 +411,7 @@ $students = $stmt->fetchAll();
                                     <!-- Next Button -->
                                     <?php if ($page < $totalPages): ?>
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=<?= $page + 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $jalur ? '&jalur=' . urlencode($jalur) : '' ?><?= $status ? '&status=' . urlencode($status) : '' ?>">
+                                            <a class="page-link" href="?page=<?= $page + 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $jalur ? '&jalur=' . urlencode($jalur) : '' ?><?= $status ? '&status=' . urlencode($status) : '' ?><?= $finalisasi ? '&finalisasi=' . urlencode($finalisasi) : '' ?>">
                                                 Next <i class="fas fa-chevron-right"></i>
                                             </a>
                                         </li>

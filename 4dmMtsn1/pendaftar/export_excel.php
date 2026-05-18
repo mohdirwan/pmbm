@@ -6,6 +6,7 @@ require_once '../../includes/auth_check.php';
 $search = $_GET['search'] ?? '';
 $jalur = $_GET['jalur'] ?? '';
 $status = $_GET['status'] ?? '';
+$finalisasi = $_GET['finalisasi'] ?? '';
 
 $query = "SELECT p.*, j.nama_jalur 
           FROM pendaftar p 
@@ -28,6 +29,14 @@ if ($jalur) {
 if ($status) {
     $query .= " AND p.status = ?";
     $params[] = $status;
+}
+
+if ($finalisasi) {
+    if ($finalisasi == 'ya') {
+        $query .= " AND p.finalisasi = 'ya'";
+    } else {
+        $query .= " AND (p.finalisasi = 'belum' OR p.finalisasi IS NULL)";
+    }
 }
 
 $query .= " ORDER BY p.id DESC";
@@ -80,6 +89,7 @@ header("Expires: 0");
             <th style="background-color: #0b2d24; color: white;">Total Nilai</th>
             <th style="background-color: #0b2d24; color: white;">Rata-rata</th>
             <th style="background-color: #0b2d24; color: white;">Jalur</th>
+            <th style="background-color: #0b2d24; color: white;">Finalisasi</th>
             <th style="background-color: #0b2d24; color: white;">Status</th>
             <th style="background-color: #0b2d24; color: white;">Tanggal Daftar</th>
         </tr>
@@ -120,6 +130,7 @@ header("Expires: 0");
                 <td><?= number_format($total_nilai, 2) ?></td>
                 <td><?= number_format($s['nilai_rapor_rata2'], 2) ?></td>
                 <td><?= htmlspecialchars($s['nama_jalur'] ?? 'N/A') ?></td>
+                <td><?= (isset($s['finalisasi']) && $s['finalisasi'] == 'ya') ? 'Sudah' : 'Belum' ?></td>
                 <td><?= $s['status'] ?></td>
                 <td><?= $s['tanggal_daftar'] ?></td>
             </tr>

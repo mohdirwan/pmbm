@@ -6,6 +6,7 @@ require_once '../../includes/auth_check.php';
 $search = $_GET['search'] ?? '';
 $jalur = $_GET['jalur'] ?? '';
 $status = $_GET['status'] ?? '';
+$finalisasi = $_GET['finalisasi'] ?? '';
 
 $query = "SELECT p.*, j.nama_jalur 
           FROM pendaftar p 
@@ -28,6 +29,14 @@ if ($jalur) {
 if ($status) {
     $query .= " AND p.status = ?";
     $params[] = $status;
+}
+
+if ($finalisasi) {
+    if ($finalisasi == 'ya') {
+        $query .= " AND p.finalisasi = 'ya'";
+    } else {
+        $query .= " AND (p.finalisasi = 'belum' OR p.finalisasi IS NULL)";
+    }
 }
 
 $query .= " ORDER BY p.id DESC";
@@ -109,6 +118,7 @@ $students = $stmt->fetchAll();
                 <th>JK</th>
                 <th>Asal Sekolah</th>
                 <th>Jalur</th>
+                <th>Finalisasi</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -141,6 +151,9 @@ $students = $stmt->fetchAll();
                     </td>
                     <td>
                         <?= htmlspecialchars($s['nama_jalur'] ?? 'N/A') ?>
+                    </td>
+                    <td>
+                        <?= (isset($s['finalisasi']) && $s['finalisasi'] == 'ya') ? 'Sudah' : 'Belum' ?>
                     </td>
                     <td>
                         <?= $s['status'] ?>
