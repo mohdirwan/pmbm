@@ -10,13 +10,15 @@ $allowed_stages = ['buka', 'verifikasi', 'pengumuman_adm'];
 if ($status == 'Terverifikasi' || $status == 'Diterima' || !in_array($ppdb_status, $allowed_stages)) {
     // If rejected, they should still be allowed to upload during verification/announcement stages
     if ($status != 'Ditolak' || !in_array($ppdb_status, ['verifikasi', 'pengumuman_adm'])) {
-        header("Location: dashboard.php");
+        echo "<script>window.location.href='dashboard.php';</script>";
         exit();
     }
 }
 
+$is_finalized = (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya');
+
 $message = "";
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file_upload'])) {
+if (!$is_finalized && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file_upload'])) {
     $uploadDir = '../uploads/';
     $field = $_POST['field_name'];
     $isPhoto = ($field === 'foto_siswa');
@@ -226,7 +228,9 @@ if (empty($docs)) {
                             <th class="py-3" style="width: 30%;">Deskripsi Berkas</th>
                             <th class="py-3" style="width: 30%;">Nama File</th>
                             <th class="py-3 text-center" style="width: 15%;">Status</th>
+                            <?php if (!$is_finalized): ?>
                             <th class="py-3 text-center" style="width: 20%;">Aksi</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -259,6 +263,7 @@ if (empty($docs)) {
                                         </span>
                                     <?php endif; ?>
                                 </td>
+                                <?php if (!$is_finalized): ?>
                                 <td class="text-center py-3">
                                     <div class="btn-group btn-group-sm">
                                         <?php if (isset($siswa[$doc['field']]) && $siswa[$doc['field']]): ?>
@@ -278,6 +283,7 @@ if (empty($docs)) {
                                         <?php endif; ?>
                                     </div>
                                 </td>
+                                <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -299,6 +305,7 @@ if (empty($docs)) {
     </div>
 </div>
 
+<?php if (!$is_finalized): ?>
 <?php foreach ($docs as $doc): ?>
     <!-- Modal Upload -->
     <div class="modal fade" id="modal_<?= $doc['field'] ?>" tabindex="-1" aria-hidden="true">
@@ -373,5 +380,6 @@ if (empty($docs)) {
         </div>
     </div>
 <?php endforeach; ?>
+<?php endif; ?>
 
 <?php require_once 'layout_bottom.php'; ?>

@@ -378,15 +378,14 @@ if (in_array($current_page, $after_selection_pages)) {
                             $allowed_edit_stages = ['buka', 'verifikasi', 'pengumuman_adm'];
                             $can_edit = (!in_array($status, ['Terverifikasi', 'Diterima', 'Lulus']) && in_array($ppdb_status, $allowed_edit_stages));
                             if ($status == 'Ditolak' && in_array($ppdb_status, $allowed_edit_stages)) $can_edit = true;
-
-                            if ($can_edit): ?>
-                                <li class="sub-item"><a
-                                        class="nav-link <?= $current_page == 'upload_berkas.php' ? 'active' : '' ?>"
-                                        href="upload_berkas.php">Upload Berkas Persyaratan</a></li>
-                                <li class="sub-item"><a
-                                        class="nav-link <?= $current_page == 'edit_identitas.php' ? 'active' : '' ?>"
-                                        href="edit_identitas.php"><i class="fas fa-check-double me-1 small opacity-75"></i> Finalisasi Pendaftaran & Cetak Formulir</a></li>
-                            <?php endif; ?>
+                            if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya') $can_edit = false;
+                            ?>
+                            <li class="sub-item"><a
+                                    class="nav-link <?= $current_page == 'upload_berkas.php' ? 'active' : '' ?>"
+                                    href="upload_berkas.php">Upload Berkas Persyaratan</a></li>
+                            <li class="sub-item"><a
+                                    class="nav-link <?= $current_page == 'preview_finalisasi.php' ? 'active' : '' ?>"
+                                    href="preview_finalisasi.php"><i class="fas fa-check-double me-1 small opacity-75"></i> Finalisasi Pendaftaran & Cetak Formulir</a></li>
                         </ul>
                     </div>
                 </div>

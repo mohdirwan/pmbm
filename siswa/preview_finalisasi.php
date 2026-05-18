@@ -1,5 +1,5 @@
 <?php
-$page_title = "Rangkuman Profil Calon Murid";
+$page_title = "Preview Data & Cetak Formulir";
 require_once 'layout_top.php';
 
 // Fetch Jalur Name and Syarat Khusus
@@ -8,6 +8,28 @@ $stmt_jalur->execute([$siswa['jalur_id']]);
 $jalur_data = $stmt_jalur->fetch();
 $nama_jalur = $jalur_data['nama_jalur'] ?? '';
 $syarat_text = $jalur_data['syarat'] ?? '';
+
+// Handle Finalisasi POST Request
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'finalisasi') {
+    try {
+        // Auto-add column to prevent errors on hosting servers that haven't run the SQL
+        try {
+            $pdo->exec("ALTER TABLE pendaftar ADD COLUMN finalisasi ENUM('belum', 'ya') DEFAULT 'belum'");
+        } catch (Exception $e) {
+            // Column already exists, ignore
+        }
+
+        // Update status
+        $stmt = $pdo->prepare("UPDATE pendaftar SET finalisasi = 'ya' WHERE id = ?");
+        $stmt->execute([$_SESSION['siswa_id']]);
+
+        // Redirect directly to print page using JS (to avoid header already sent error)
+        echo "<script>window.location.href = '../cetak_formulir.php?reg=" . urlencode($siswa['no_pendaftaran']) . "';</script>";
+        exit();
+    } catch (Exception $e) {
+        die("Error: " . $e->getMessage());
+    }
+}
 
 // Status Badge Logic
 $ppdb_status = get_setting('ppdb_status', 'belum');
@@ -263,18 +285,23 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                 if ($status == 'Ditolak' && in_array($ppdb_status, $allowed_edit_stages)) {
                     $is_editable = true;
                 }
-                
-                if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya') {
-                    $is_editable = false;
-                }
                 ?>
                 <div class="d-flex flex-column gap-2">
-
-                    <?php if ($is_editable): ?>
-                        <a href="edit_identitas.php"
-                            class="btn btn-warning btn-lg rounded-pill px-4 fw-bold shadow-lg mt-2">
-                            <i class="fas fa-check-double me-2"></i> Edit Data Calon Murid
-                        </a>
+                    <?php if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya'): ?>
+                        <button onclick="window.open('<?= BASE_URL ?>cetak_formulir.php?reg=<?= urlencode($siswa['no_pendaftaran']) ?>', '_blank')"
+                            class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
+                            <i class="fas fa-print me-2"></i> Cetak Formulir Pendaftaran
+                        </button>
+                        <div class="text-center mt-2">
+                            <span class="badge bg-success-subtle text-success border border-success border-opacity-25 py-2 px-3 rounded-pill">
+                                <i class="fas fa-lock me-1"></i> Data Telah Dikunci (Finalisasi)
+                            </span>
+                        </div>
+                    <?php else: ?>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#finalisasiModal"
+                            class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
+                            <i class="fas fa-print me-2 text-primary"></i> Finalisasi dan Cetak Formulir Pendaftaran
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -295,26 +322,14 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
         </div>
     <?php endif; ?>
 
-    <!-- ALERT INFO -->
-    <?php if ($is_editable): ?>
-        <div class="alert alert-success border-0 shadow-sm rounded-4 p-4 mb-5 d-flex align-items-center">
-            <i class="fas fa-edit fs-2 me-4 text-success"></i>
-            <div class="flex-grow-1">
-                <h6 class="fw-bold mb-1">Data Masih Dapat Diubah</h6>
-                <p class="mb-0 small opacity-75">Status pendaftaran Anda belum diverifikasi. Anda masih diizinkan untuk
-                    memperbaiki data jika terdapat kesalahan penulisan.</p>
-            </div>
+    <!-- INFO ALERT -->
+    <div class="alert alert-info border-0 shadow-sm rounded-4 p-4 mb-5 d-flex align-items-center">
+        <i class="fas fa-search fs-2 me-4 text-primary"></i>
+        <div>
+            <h6 class="fw-bold mb-1">Pratinjau Data Pendaftaran</h6>
+            <p class="mb-0 small opacity-75">Halaman ini digunakan untuk melihat rangkuman seluruh data pendaftaran Anda dan mencetak formulir. Pastikan seluruh data dan berkas sudah benar.</p>
         </div>
-    <?php else: ?>
-        <div class="alert alert-info border-0 shadow-sm rounded-4 p-4 mb-5 d-flex align-items-center">
-            <i class="fas fa-shield-alt fs-2 me-4 text-primary"></i>
-            <div>
-                <h6 class="fw-bold mb-1">Rangkuman Data Pendaftaran Telah Dikunci</h6>
-                <p class="mb-0 small opacity-75">Data Anda telah dalam tahap verifikasi atau sudah diterima. Perubahan data
-                    tidak lagi dimungkinkan melalui dashboard ini.</p>
-            </div>
-        </div>
-    <?php endif; ?>
+    </div>
 
     <!-- SECTION 1: DATA MURID (STEP 1 & 2 REGISTER) -->
     <h4 class="section-title"><i class="fas fa-user-graduate"></i> Identitas & Sekolah Asal</h4>
@@ -709,7 +724,12 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                             <?php endif; ?>
                         </div>
                         <?php if ($exists): ?>
-                            <span class="badge bg-success rounded-pill px-3"><i class="fas fa-check me-1"></i> Ada</span>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success rounded-pill px-3 me-2"><i class="fas fa-check me-1"></i> Ada</span>
+                                <a href="../uploads/<?= $siswa[$doc['field']] ?>" target="_blank" class="btn btn-sm btn-info text-white rounded-pill px-3 shadow-sm">
+                                    <i class="fas fa-eye me-1"></i> Lihat Berkas
+                                </a>
+                            </div>
                         <?php else: ?>
                             <?php if ($doc['optional']): ?>
                                 <span class="badge bg-secondary rounded-pill px-3"><i class="fas fa-minus me-1"></i> Kosong</span>
@@ -735,6 +755,32 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                 <br><br>
                 <div class="fw-bold">( <?= htmlspecialchars($siswa['nama_lengkap']) ?> )</div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Finalisasi -->
+<div class="modal fade" id="finalisasiModal" tabindex="-1" aria-labelledby="finalisasiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center d-block">
+                <div class="d-flex justify-content-center mb-3">
+                    <div class="bg-warning bg-opacity-25 text-warning p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="modal-title fw-bold" id="finalisasiModalLabel">Apakah Anda Yakin?</h5>
+            </div>
+            <div class="modal-body py-4 px-4 text-center">
+                <p class="mb-0 text-muted">Pastikan seluruh data diri dan berkas Anda sudah benar dan sesuai. Setelah dicetak, proses finalisasi dianggap selesai.</p>
+            </div>
+            <form method="POST" action="" target="_blank" onsubmit="setTimeout(() => { document.getElementById('btnSubmitFinal').innerHTML = '<i class=\'fas fa-spinner fa-spin me-2\'></i> Memproses...'; document.getElementById('btnSubmitFinal').disabled = true; setTimeout(() => window.location.reload(), 1000); }, 50);">
+                <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex justify-content-center gap-2">
+                    <input type="hidden" name="action" value="finalisasi">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" data-bs-dismiss="modal">Belum, Cek Ulang</button>
+                    <button type="submit" id="btnSubmitFinal" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Ya, Saya Yakin</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -6,7 +6,7 @@
 # Enable RewriteEngine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /pmbm/
+    RewriteBase /
     
     # Force HTTPS (uncomment when SSL is ready)
     # RewriteCond %{HTTPS} off
@@ -147,31 +147,31 @@ Options -Indexes
 # =====================================================
 # PHP Security Settings
 # =====================================================
-<IfModule mod_php7.c>
-    # Disable dangerous PHP functions
-    php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source"
-    
-    # Hide PHP version
-    php_flag expose_php off
-    
-    # Limit file upload size (30MB)
-    php_value upload_max_filesize 30M
-    php_value post_max_size 40M
-    
-    # Session security
-    php_value session.cookie_httponly 1
-    php_value session.cookie_secure 1
-    php_value session.use_only_cookies 1
-    php_value session.cookie_samesite Strict
-    
-    # Disable remote file inclusion
-    php_flag allow_url_fopen off
-    php_flag allow_url_include off
-    
-    # Error handling
-    # php_flag display_errors off
-    php_flag log_errors on
-</IfModule>
+# <IfModule mod_php7.c>
+#     # Disable dangerous PHP functions
+#     php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source"
+#     
+#     # Hide PHP version
+#     php_flag expose_php off
+#     
+#     # Limit file upload size (30MB)
+#     php_value upload_max_filesize 30M
+#     php_value post_max_size 40M
+#     
+#     # Session security
+#     php_value session.cookie_httponly 1
+#     php_value session.cookie_secure 1
+#     php_value session.use_only_cookies 1
+#     php_value session.cookie_samesite Strict
+#     
+#     # Disable remote file inclusion
+#     php_flag allow_url_fopen off
+#     php_flag allow_url_include off
+#     
+#     # Error handling
+#     # php_flag display_errors off
+#     php_flag log_errors on
+# </IfModule>
 
 # =====================================================
 # Custom Error Pages

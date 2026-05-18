@@ -15,6 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['siswa_id'] = $siswa['id'];
         $_SESSION['role'] = 'siswa';
         $_SESSION['nama_lengkap'] = $siswa['nama_lengkap'];
+        $_SESSION['login_alert_check'] = true;
         header("Location: siswa/dashboard.php");
         exit();
     } else {

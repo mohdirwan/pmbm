@@ -584,4 +584,63 @@ function get_stage_date_range($stage_key, $default_text)
     </div>
 </div>
 
+<?php 
+// --- FINALISASI ALERT FOR INCOMPLETE REGISTRATION ---
+if (isset($_SESSION['login_alert_check']) && ($siswa['finalisasi'] ?? 'belum') == 'belum') {
+    $active_scheme = get_setting('active_scheme', '1');
+    if ($active_scheme == '1') {
+        $end_raw = get_setting('scheme_1_end');
+    } elseif ($active_scheme == '2') {
+        $end_raw = get_setting('scheme_2_end');
+    } else {
+        $end_raw = get_setting('scheme_period_end');
+    }
+
+    if (!empty($end_raw)) {
+        $months = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+            '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+            '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+        $tgl = date('d', strtotime($end_raw));
+        $bln = $months[date('m', strtotime($end_raw))];
+        $thn = date('Y', strtotime($end_raw));
+        $tgl_akhir_formatted = "$tgl $bln $thn";
+    } else {
+        $tgl_akhir_formatted = "-";
+    }
+    ?>
+    <!-- SweetAlert2 CSS & JS CDN (Loaded dynamically to keep dashboard fast) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '⚠️ Pendaftar Belum Finalisasi!',
+                html: '<div style="text-align: left; font-size: 0.95rem; line-height: 1.6; color: #33475b;">' +
+                      'Halo <strong><?= htmlspecialchars($siswa['nama_lengkap']) ?></strong>,<br><br>' +
+                      'Silakan lengkapi data, Upload berkas dan lakukan finalisasi pendaftaran sebelum masa pendaftaran berakhir yaitu pada tanggal <strong><?= $tgl_akhir_formatted ?></strong>.<br><br>' +
+                      '<span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle me-1"></i>PENTING:</span> Jika Anda tidak melakukan finalisasi pendaftaran, data Anda tidak akan diverifikasi oleh panitia dan tidak dapat mengikuti seleksi selanjutnya.' +
+                      '</div>',
+                icon: 'warning',
+                confirmButtonText: '<i class="fas fa-edit me-2"></i>Lengkapi Sekarang',
+                confirmButtonColor: '#198754',
+                showCancelButton: true,
+                cancelButtonText: 'Nanti Saja',
+                cancelButtonColor: '#6c757d',
+                customClass: {
+                    popup: 'rounded-4'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'identitas.php';
+                }
+            });
+        });
+    </script>
+    <?php 
+    unset($_SESSION['login_alert_check']); 
+} 
+?>
+
 <?php require_once 'layout_bottom.php'; ?>

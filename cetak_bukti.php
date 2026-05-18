@@ -296,7 +296,7 @@ if (!$student) {
             <strong>INFORMASI LOGIN</strong>
             <div style="margin-top: 5px;">
                 Username : <?= htmlspecialchars($student['nisn']) ?><br>
-                Password : [Sesuai yang Anda buat]<br>
+                Password : <?= !empty($student['password_plain']) ? htmlspecialchars($student['password_plain']) : '[Sesuai yang Anda buat]' ?><br>
                 <div style="font-size: 11px; margin-top: 5px;">*Gunakan informasi ini untuk melengkapi berkas di
                     dashboard siswa.</div>
             </div>

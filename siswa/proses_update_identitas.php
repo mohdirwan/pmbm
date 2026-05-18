@@ -138,7 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             intval($get_val('jalur_id', $old_data['jalur_id'])),
-            clean_input($get_val('nisn', $old_data['nisn'])),
+            $old_data['nisn'],
             clean_input($get_val('nik', $old_data['nik'])),
             strtoupper(clean_input($get_val('nama_lengkap', $old_data['nama_lengkap']))),
             clean_input($get_val('tempat_lahir', $old_data['tempat_lahir'])),

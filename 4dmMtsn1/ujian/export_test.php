@@ -39,6 +39,7 @@ function format_indo_date($date) {
             <th>No</th>
             <th>No Pendaftaran</th>
             <th>Nama Lengkap</th>
+            <th>Jenis Kelamin</th>
             <th>NISN</th>
             <th>Hari Test</th>
             <th>Sesi Test</th>
@@ -56,6 +57,7 @@ function format_indo_date($date) {
             <td><?= $no++ ?></td>
             <td><?= $row['no_pendaftaran'] ?></td>
             <td><?= strtoupper($row['nama_lengkap']) ?></td>
+            <td><?= $row['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
             <td>'<?= $row['nisn'] ?></td> <!-- Tanda petik agar tidak jadi scientific format di excel -->
             <td><?= format_indo_date($row['test_hari']) ?></td>
             <td><?= $row['test_sesi'] ?? '-' ?></td>

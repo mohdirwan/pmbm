@@ -44,7 +44,7 @@ if (isset($_GET['export'])) {
         $sql = "SELECT p.no_pendaftaran, p.nama_lengkap, p.nisn, j.nama_jalur 
                 FROM pendaftar p 
                 LEFT JOIN jalur_pendaftaran j ON p.jalur_id = j.id 
-                WHERE p.status = 'Terverifikasi'";
+                WHERE p.status IN ('Pending', 'Terverifikasi')";
         
         $params = [];
         if (!empty($selected_jalurs)) {
@@ -112,8 +112,8 @@ if (isset($_GET['template'])) {
         // Header
         fputcsv($output, ['No Pendaftaran', 'Nama Murid', 'NISN', 'Username', 'Nilai']);
 
-        // Fetch Real Data (Only Verified)
-        $sql = "SELECT no_pendaftaran, nama_lengkap, nisn FROM pendaftar WHERE status = 'Terverifikasi'";
+        // Fetch Real Data (Pending & Verified)
+        $sql = "SELECT no_pendaftaran, nama_lengkap, nisn FROM pendaftar WHERE status IN ('Pending', 'Terverifikasi')";
         $params = [];
 
         // Filter by Jenis Kelamin
@@ -385,7 +385,7 @@ if (isset($_POST['import_nilai']) && isset($_FILES['file_nilai'])) {
                                     try {
                                         $prevQuery = "SELECT p.nama_lengkap, p.no_pendaftaran, p.nilai_ujian, p.nisn 
                                                       FROM pendaftar p 
-                                                      WHERE p.status = 'Terverifikasi' 
+                                                      WHERE p.status IN ('Pending', 'Terverifikasi') 
                                                       ORDER BY p.id DESC LIMIT 10";
                                         $prev = $pdo->query($prevQuery)->fetchAll();
                                         foreach ($prev as $p):

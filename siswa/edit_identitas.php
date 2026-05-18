@@ -10,9 +10,15 @@ $allowed_stages = ['buka', 'verifikasi', 'pengumuman_adm'];
 if ($status == 'Terverifikasi' || $status == 'Diterima' || !in_array($ppdb_status, $allowed_stages)) {
     // If rejected, they should still be allowed to correct data during verification/announcement stages
     if ($status != 'Ditolak' || !in_array($ppdb_status, ['verifikasi', 'pengumuman_adm'])) {
-        header("Location: identitas.php");
+        echo "<script>window.location.href='identitas.php';</script>";
         exit();
     }
+}
+
+// Finalisasi block: regardless of status, if finalized, block edit
+if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya') {
+    echo "<script>window.location.href='identitas.php';</script>";
+    exit();
 }
 
 // Fetch Jalur Pendaftaran
@@ -125,10 +131,9 @@ $list_jalur = $stmt_jalur->fetchAll();
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label-premium">NISN (10 Digit)</label>
-                    <input type="text" class="form-control form-control-premium" name="nisn"
-                        value="<?= htmlspecialchars($siswa['nisn']) ?>" required maxlength="10"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <label class="form-label-premium">NISN (10 Digit) <span class="text-danger small fw-normal ms-1">*Tidak dapat diubah</span></label>
+                    <input type="text" class="form-control form-control-premium bg-light text-muted" name="nisn"
+                        value="<?= htmlspecialchars($siswa['nisn']) ?>" required maxlength="10" readonly>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label-premium">NIK (16 Digit)</label>

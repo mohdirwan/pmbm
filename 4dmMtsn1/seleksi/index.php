@@ -22,6 +22,88 @@ if (isset($_POST['update_weights'])) {
 $w_rapor = (int) get_setting('weight_rapor', 50);
 $w_cbt = (int) get_setting('weight_cbt', 50);
 
+// Handle Quota Update
+if (isset($_POST['update_quotas'])) {
+    $quota_l = (int) $_POST['quota_male'];
+    $quota_p = (int) $_POST['quota_female'];
+
+    $stmt1 = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('quota_male', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+    $stmt1->execute([$quota_l, $quota_l]);
+
+    $stmt2 = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('quota_female', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+    $stmt2->execute([$quota_p, $quota_p]);
+
+    header("Location: index.php?msg=quotas_saved");
+    exit();
+}
+
+// Fetch Quotas
+$q_male = (int) get_setting('quota_male', 0);
+$q_female = (int) get_setting('quota_female', 0);
+
+// Handle Auto Graduation based on Quotas
+if (isset($_POST['auto_pass'])) {
+    $password = $_POST['admin_password'];
+    $user_id = $_SESSION['user_id'];
+
+    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $admin = $stmt->fetch();
+
+    if ($admin && password_verify($password, $admin['password'])) {
+        // Query to get ranked students
+        $query_ranked = "SELECT p.id, p.jenis_kelamin
+                         FROM pendaftar p
+                         WHERE p.status IN ('Pending', 'Terverifikasi', 'Diterima', 'Ditolak')
+                         AND (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus') OR p.nilai_ujian > 0)
+                         ORDER BY ((p.nilai_rapor_rata2 * $w_rapor / 100) + (p.nilai_ujian * $w_cbt / 100)) DESC, p.nilai_rapor_rata2 DESC";
+        
+        $stmt_ranked = $pdo->query($query_ranked);
+        $all_students = $stmt_ranked->fetchAll();
+
+        $count_l = 0;
+        $count_p = 0;
+        $lulus_ids = [];
+        $gagal_ids = [];
+
+        foreach ($all_students as $s) {
+            $jk = strtoupper($s['jenis_kelamin']);
+            if ($jk == 'L' || $jk == 'LAKI-LAKI') {
+                if ($count_l < $q_male) {
+                    $lulus_ids[] = $s['id'];
+                    $count_l++;
+                } else {
+                    $gagal_ids[] = $s['id'];
+                }
+            } else {
+                if ($count_p < $q_female) {
+                    $lulus_ids[] = $s['id'];
+                    $count_p++;
+                } else {
+                    $gagal_ids[] = $s['id'];
+                }
+            }
+        }
+
+        $pdo->beginTransaction();
+        if (!empty($lulus_ids)) {
+            $inLulus = implode(',', array_fill(0, count($lulus_ids), '?'));
+            $pdo->prepare("UPDATE pendaftar SET status = 'Diterima' WHERE id IN ($inLulus)")->execute($lulus_ids);
+        }
+        if (!empty($gagal_ids)) {
+            $inGagal = implode(',', array_fill(0, count($gagal_ids), '?'));
+            $pdo->prepare("UPDATE pendaftar SET status = 'Ditolak' WHERE id IN ($inGagal)")->execute($gagal_ids);
+        }
+        $pdo->commit();
+
+        header("Location: index.php?msg=auto_pass_success");
+        exit();
+    } else {
+        header("Location: index.php?msg=wrong_pass");
+        exit();
+    }
+}
+
 // Handle Penetapan Kelulusan
 if (isset($_POST['tetapkan_kelulusan'])) {
     $batas_ranking = (int)$_POST['batas_ranking'];
@@ -35,8 +117,8 @@ if (isset($_POST['tetapkan_kelulusan'])) {
     if ($admin && password_verify($password, $admin['password'])) {
         $query_all = "SELECT p.id
                       FROM pendaftar p
-                      WHERE p.status IN ('Terverifikasi', 'Diterima', 'Ditolak')
-                      AND (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus'))
+                      WHERE p.status IN ('Pending', 'Terverifikasi', 'Diterima', 'Ditolak')
+                      AND (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus') OR p.nilai_ujian > 0)
                       ORDER BY ((p.nilai_rapor_rata2 * $w_rapor / 100) + (p.nilai_ujian * $w_cbt / 100)) DESC, p.nilai_rapor_rata2 DESC";
         
         $stmt_all = $pdo->prepare($query_all);
@@ -68,14 +150,27 @@ if (isset($_POST['tetapkan_kelulusan'])) {
 
 // Ambil data pendaftar yang sudah diverifikasi (atau semua)
 // Hitung nilai akhir berdasarkan bobot persentase
-$query = "SELECT p.id, p.nama_lengkap, p.no_pendaftaran, p.jalur_id, p.nilai_rapor_rata2, p.nilai_ujian, p.status, j.nama_jalur,
+$query = "SELECT p.id, p.nama_lengkap, p.no_pendaftaran, p.jenis_kelamin, p.jalur_id, p.nilai_rapor_rata2, p.nilai_ujian, p.status, j.nama_jalur,
           ((p.nilai_rapor_rata2 * $w_rapor / 100) + (p.nilai_ujian * $w_cbt / 100)) as nilai_akhir
           FROM pendaftar p
           LEFT JOIN jalur_pendaftaran j ON p.jalur_id = j.id
-          WHERE p.status IN ('Terverifikasi', 'Diterima', 'Ditolak')
-          AND (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus'))
+          WHERE p.status IN ('Pending', 'Terverifikasi', 'Diterima', 'Ditolak')
+          AND (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus') OR p.nilai_ujian > 0)
           ORDER BY nilai_akhir DESC, p.nilai_rapor_rata2 DESC";
 $pendaftar = $pdo->query($query)->fetchAll();
+
+// Pisahkan Data Berdasarkan Jenis Kelamin
+$pendaftar_l = [];
+$pendaftar_p = [];
+foreach ($pendaftar as $p) {
+    // Handle both full string and short 'L'/'P' values from database
+    $jk = strtoupper($p['jenis_kelamin']);
+    if ($jk == 'L' || $jk == 'LAKI-LAKI') {
+        $pendaftar_l[] = $p;
+    } else {
+        $pendaftar_p[] = $p;
+    }
+}
 
 // Handle Status Update
 if (isset($_POST['update_status']) && isset($_POST['status'])) {
@@ -95,7 +190,7 @@ $stats_stmt = $pdo->query("SELECT
                             j.id as jalur_id,
                             j.nama_jalur,
                             COUNT(p.id) as total_pendaftar,
-                            SUM(CASE WHEN p.status = 'Terverifikasi' OR p.status = 'Diterima' THEN 1 ELSE 0 END) as total_verifikasi,
+                            SUM(CASE WHEN p.status IN ('Pending', 'Terverifikasi', 'Diterima') THEN 1 ELSE 0 END) as total_verifikasi,
                             SUM(CASE WHEN p.status = 'Ditolak' THEN 1 ELSE 0 END) as total_ditolak,
                             SUM(CASE WHEN p.status_tahfidz = 'Lulus' THEN 1 ELSE 0 END) as total_lulus_tahfidz,
                             SUM(CASE WHEN p.status_tahfidz = 'Tidak Lulus' THEN 1 ELSE 0 END) as total_tidak_lulus_tahfidz
@@ -117,7 +212,7 @@ foreach ($jalur_stats as $stat) {
 // 1. Rekap Tanpa Ujian (Jalur 8 & 10 + Tahfidz Lulus)
 $tanpa_ujian_stmt = $pdo->query("SELECT 
     COUNT(id) as total,
-    SUM(CASE WHEN status = 'Terverifikasi' OR status = 'Diterima' THEN 1 ELSE 0 END) as verif,
+    SUM(CASE WHEN status IN ('Pending', 'Terverifikasi', 'Diterima') THEN 1 ELSE 0 END) as verif,
     SUM(CASE WHEN status = 'Ditolak' THEN 1 ELSE 0 END) as tolak
 FROM pendaftar 
 WHERE jalur_id IN (8, 10) 
@@ -127,11 +222,12 @@ $rekap_tanpa_ujian = $tanpa_ujian_stmt->fetch();
 // 2. Rekap Dengan Ujian (Jalur 7 & 9 + Tahfidz Tidak Lulus)
 $dengan_ujian_stmt = $pdo->query("SELECT 
     COUNT(id) as total,
-    SUM(CASE WHEN status = 'Terverifikasi' OR status = 'Diterima' THEN 1 ELSE 0 END) as verif,
+    SUM(CASE WHEN status IN ('Pending', 'Terverifikasi', 'Diterima') THEN 1 ELSE 0 END) as verif,
     SUM(CASE WHEN status = 'Ditolak' THEN 1 ELSE 0 END) as tolak
 FROM pendaftar 
 WHERE jalur_id IN (7, 9) 
-   OR (jalur_id = 11 AND status_tahfidz = 'Tidak Lulus')");
+   OR (jalur_id = 11 AND status_tahfidz = 'Tidak Lulus')
+   OR nilai_ujian > 0");
 $rekap_dengan_ujian = $dengan_ujian_stmt->fetch();
 
 // Handle Clear All Scores
@@ -180,8 +276,8 @@ if (isset($_POST['update_individual_score'])) {
     }
 }
 
-// Cek apakah sudah ada nilai CBT yang masuk untuk kategori seleksi
-$check_cbt_stmt = $pdo->query("SELECT COUNT(*) FROM pendaftar WHERE (jalur_id IN (7, 9) OR (jalur_id = 11 AND status_tahfidz = 'Tidak Lulus')) AND nilai_ujian > 0 AND status IN ('Terverifikasi', 'Diterima', 'Ditolak')");
+// Cek apakah sudah ada nilai CBT yang masuk untuk kategori seleksi (Termasuk status Pending)
+$check_cbt_stmt = $pdo->query("SELECT COUNT(*) FROM pendaftar WHERE (jalur_id IN (7, 9) OR (jalur_id = 11 AND status_tahfidz = 'Tidak Lulus')) AND nilai_ujian > 0 AND status IN ('Pending', 'Terverifikasi', 'Diterima', 'Ditolak')");
 $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
 ?>
 <!DOCTYPE html>
@@ -213,6 +309,26 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             background: #fff;
         }
+        
+        .nilai-akhir-box { background: #f0f7ff; color: #0061f2; font-weight: 800; padding: 8px 15px; border-radius: 12px; display: inline-block; border: 1px solid #d0e3ff; }
+        
+        /* Premium Tabs Styling */
+        .nav-tabs-premium { background: #fff; border-radius: 20px 20px 0 0; padding: 10px 10px 0 10px; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
+        .nav-tabs-premium .nav-link { border: none; border-radius: 15px 15px 0 0; padding: 15px 25px; color: #475569 !important; font-weight: 700; transition: all 0.3s; margin-right: 5px; opacity: 0.7; }
+        .nav-tabs-premium .nav-link:hover { background: #f1f5f9; color: #1e293b !important; opacity: 1; }
+        .nav-tabs-premium .nav-link.active { background: #fff; position: relative; opacity: 1; }
+        
+        .tab-male.active { color: #0061f2 !important; border-top: 4px solid #0061f2 !important; box-shadow: 0 -5px 15px rgba(0,97,242,0.1); }
+        .tab-female.active { color: #e83e8c !important; border-top: 4px solid #e83e8c !important; box-shadow: 0 -5px 15px rgba(232,62,140,0.1); }
+        
+        .tab-male i { color: #0061f2; }
+        .tab-female i { color: #e83e8c; }
+        
+        .badge-count { font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+        .tab-male .badge-count { background: #e0e7ff; color: #4338ca; }
+        .tab-female .badge-count { background: #fce7f3; color: #be185d; }
+        .tab-male.active .badge-count { background: #0061f2; color: #fff; }
+        .tab-female.active .badge-count { background: #e83e8c; color: #fff; }
 
         .table thead th {
             background-color: #f1f4f9;
@@ -309,6 +425,16 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                 <?php elseif ($_GET['msg'] == 'kelulusan_ditetapkan'): ?>
                     <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
                         <i class="fas fa-check-circle me-2"></i> Kelulusan berhasil ditetapkan untuk ranking tersebut.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php elseif ($_GET['msg'] == 'quotas_saved'): ?>
+                    <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> Kuota pendaftaran berhasil disimpan.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php elseif ($_GET['msg'] == 'auto_pass_success'): ?>
+                    <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+                        <i class="fas fa-magic me-2"></i> Kelulusan otomatis berdasarkan kuota berhasil diproses!
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
@@ -457,10 +583,10 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                 </div>
             </div>
 
-            <!-- Skema Pembobotan & Weights -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card card-premium p-4 border-0 bg-white shadow-sm">
+            <!-- Skema Pembobotan & Quotas -->
+            <div class="row mb-4 g-4 no-print">
+                <div class="col-lg-7">
+                    <div class="card card-premium p-4 border-0 bg-white shadow-sm h-100">
                         <div class="d-flex align-items-start mb-3">
                             <div class="bg-warning bg-opacity-10 p-2 rounded-3 me-3">
                                 <i class="fas fa-calculator text-warning"></i>
@@ -472,7 +598,7 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                         </div>
                         <form method="POST" class="row g-3 align-items-end">
                             <input type="hidden" name="update_weights" value="1">
-                            <div class="col-6 col-md-3">
+                            <div class="col-6 col-md-4">
                                 <label class="small text-muted fw-bold mb-1">Bobot Rapor (%)</label>
                                 <div class="input-group">
                                     <input type="number" name="weight_rapor" id="weight_rapor"
@@ -481,7 +607,7 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                     <span class="input-group-text border-0 bg-light small text-muted">%</span>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-6 col-md-4">
                                 <label class="small text-muted fw-bold mb-1">Bobot CBT (%)</label>
                                 <div class="input-group">
                                     <input type="number" name="weight_cbt" id="weight_cbt"
@@ -490,12 +616,7 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                     <span class="input-group-text border-0 bg-light small text-muted">%</span>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="p-2 rounded-2 bg-light border border-dashed text-dark text-center h-100 d-flex align-items-center justify-content-center">
-                                    <span class="small fw-500">Hasil: (Rapor × <?= $w_rapor ?>%) + (CBT × <?= $w_cbt ?>%)</span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <button type="submit"
                                     class="btn btn-warning btn-sm w-100 rounded-pill fw-bold text-white shadow-sm py-2">
                                     <i class="fas fa-save me-1"></i> Update Bobot
@@ -504,109 +625,191 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                         </form>
                     </div>
                 </div>
+
+                <div class="col-lg-5">
+                    <div class="card card-premium p-4 border-0 bg-white shadow-sm h-100">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                                <i class="fas fa-users text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Set Kuota Penerimaan</h6>
+                                <p class="small text-muted mb-0">Atur jumlah siswa yang akan diterima per gender.</p>
+                            </div>
+                        </div>
+                        <form method="POST" class="row g-3 align-items-end">
+                            <input type="hidden" name="update_quotas" value="1">
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold mb-1"><i class="fas fa-mars me-1 text-primary"></i> Kuota L</label>
+                                <input type="number" name="quota_male" class="form-control form-control-sm border-0 bg-light" value="<?= $q_male ?>" min="0" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted fw-bold mb-1"><i class="fas fa-venus me-1 text-danger"></i> Kuota P</label>
+                                <input type="number" name="quota_female" class="form-control form-control-sm border-0 bg-light" value="<?= $q_female ?>" min="0" required>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill fw-bold shadow-sm py-2 px-4 flex-grow-1">
+                                        <i class="fas fa-save me-1"></i> Simpan Kuota
+                                    </button>
+                                    <?php if ($q_male > 0 || $q_female > 0): ?>
+                                        <button type="button" class="btn btn-success btn-sm rounded-pill fw-bold shadow-sm py-2 px-4 flex-grow-1" data-bs-toggle="modal" data-bs-target="#modalAutoPass">
+                                            <i class="fas fa-magic me-1"></i> Lulus Otomatis
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-            <!-- Ranking Table -->
-            <div class="card card-premium overflow-hidden border-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 80px;">Rank</th>
-                                <th>Murid</th>
-                                <th>Jalur Masuk</th>
-                                <th class="text-center">Rata-rata Rapor</th>
-                                <th class="text-center">Nilai Ujian CBT</th>
-                                <th class="text-center">Nilai Akhir</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($pendaftar)): ?>
-                                <tr>
-                                    <td colspan="7" class="text-center py-5 text-muted">Belum ada data pendaftar untuk
-                                        diranking.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($pendaftar as $index => $row):
-                                    $rank = $index + 1;
-                                    $rankClass = 'rank-other';
-                                    if ($rank == 1)
-                                        $rankClass = 'rank-1';
-                                    elseif ($rank == 2)
-                                        $rankClass = 'rank-2';
-                                    elseif ($rank == 3)
-                                        $rankClass = 'rank-3';
+            <!-- Tab Navigation -->
+            <?php 
+            $active_tab = (count($pendaftar_l) == 0 && count($pendaftar_p) > 0) ? 'female' : 'male';
+            ?>
+            <ul class="nav nav-tabs nav-tabs-premium mb-0 border-0" id="rankingTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link tab-male <?= $active_tab == 'male' ? 'active' : '' ?> text-uppercase border-0" id="male-tab" data-bs-toggle="tab" data-bs-target="#male" type="button" role="tab">
+                        <i class="fas fa-mars me-2"></i>Laki-laki <span class="badge-count"><?= count($pendaftar_l) ?></span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link tab-female <?= $active_tab == 'female' ? 'active' : '' ?> text-uppercase border-0" id="female-tab" data-bs-toggle="tab" data-bs-target="#female" type="button" role="tab">
+                        <i class="fas fa-venus me-2"></i>Perempuan <span class="badge-count"><?= count($pendaftar_p) ?></span>
+                    </button>
+                </li>
+            </ul>
 
-                                    // Determine status badge color
-                                    $statusColor = 'secondary-subtle text-secondary';
-                                    if ($row['status'] == 'Diterima')
-                                        $statusColor = 'success-subtle text-success';
-                                    elseif ($row['status'] == 'Ditolak')
-                                        $statusColor = 'danger-subtle text-danger';
-                                    ?>
+            <div class="tab-content" id="rankingTabsContent">
+                <!-- Tab Laki-laki -->
+                <div class="tab-pane fade <?= $active_tab == 'male' ? 'show active' : '' ?>" id="male" role="tabpanel">
+                    <div class="card card-premium overflow-hidden border-0 rounded-top-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
                                     <tr>
-                                        <td class="text-center">
-                                            <div class="badge-ranking mx-auto <?= $rankClass ?>">
-                                                <?= $rank ?>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="fw-bold text-dark"><?= htmlspecialchars($row['nama_lengkap']) ?></div>
-                                            <div class="small text-muted"><?= $row['no_pendaftaran'] ?></div>
-                                            <div class="mt-1">
-                                                <span class="badge rounded-pill <?= $statusColor ?> border"
-                                                    style="font-size: 0.65rem; font-weight: 600;">
-                                                    <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
-                                                    <?= strtoupper($row['status'] ?: 'Belum Ditentukan') ?>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-secondary border rounded-pill px-3">
-                                                <?= $row['nama_jalur'] ?: 'Umum' ?>
-                                            </span>
-                                        </td>
-                                        <td class="text-center fw-bold">
-                                            <?= number_format($row['nilai_rapor_rata2'], 2) ?>
-                                        </td>
-                                        <td class="text-center fw-bold">
-                                            <?= number_format($row['nilai_ujian'], 2) ?>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="nilai-akhir-box">
-                                                <?= number_format($row['nilai_akhir'], 2) ?>
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <form method="POST" class="d-flex gap-2 justify-content-center">
-                                                <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                                                <input type="hidden" name="update_status" value="1">
-                                                <?php if ($row['status'] != 'Diterima'): ?>
-                                                    <button type="submit" name="status" value="Diterima"
-                                                        class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0"
-                                                        onclick="return confirm('Apakah Anda yakin ingin MELULUSKAN siswa bernama <?= addslashes($row['nama_lengkap']) ?>?')">
-                                                        <i class="fas fa-check-circle me-1"></i> Lulus
-                                                    </button>
-                                                <?php endif; ?>
-                                                <?php if ($row['status'] != 'Ditolak'): ?>
-                                                    <button type="submit" name="status" value="Ditolak"
-                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print"
-                                                        onclick="return confirm('Apakah Anda yakin ingin MENGGAGALKAN siswa bernama <?= addslashes($row['nama_lengkap']) ?>?')">
-                                                        <i class="fas fa-times-circle me-1"></i> Gagal
-                                                    </button>
-                                                <?php endif; ?>
-                                                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print"
-                                                    onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)">
-                                                    <i class="fas fa-edit me-1"></i> Edit Nilai
-                                                </button>
-                                            </form>
-                                        </td>
+                                        <th class="text-center" style="width: 80px;">Rank</th>
+                                        <th>Murid</th>
+                                        <th>Jalur Masuk</th>
+                                        <th class="text-center">Rata-rata Rapor</th>
+                                        <th class="text-center">Nilai Ujian CBT</th>
+                                        <th class="text-center">Nilai Akhir</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($pendaftar_l)): ?>
+                                        <tr><td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="fas fa-user-slash d-block mb-2 fa-2x opacity-25"></i>
+                                            Belum ada data pendaftar Laki-laki.
+                                        </td></tr>
+                                    <?php else: ?>
+                                        <?php foreach ($pendaftar_l as $index => $row): 
+                                            $rank = $index + 1;
+                                            $rankClass = ($rank == 1) ? 'rank-1' : (($rank == 2) ? 'rank-2' : (($rank == 3) ? 'rank-3' : 'rank-other'));
+                                            $statusColor = ($row['status'] == 'Diterima') ? 'success-subtle text-success' : (($row['status'] == 'Ditolak') ? 'danger-subtle text-danger' : 'secondary-subtle text-secondary');
+                                        ?>
+                                            <tr>
+                                                <td class="text-center"><div class="badge-ranking mx-auto <?= $rankClass ?>"><?= $rank ?></div></td>
+                                                <td>
+                                                    <div class="fw-bold text-dark"><?= htmlspecialchars($row['nama_lengkap']) ?></div>
+                                                    <div class="small text-muted"><?= $row['no_pendaftaran'] ?></div>
+                                                    <div class="mt-1">
+                                                        <span class="badge rounded-pill <?= $statusColor ?> border" style="font-size: 0.65rem; font-weight: 600;">
+                                                            <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                                            <?= strtoupper($row['status'] ?: 'Belum Ditentukan') ?>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge bg-light text-secondary border rounded-pill px-3"><?= $row['nama_jalur'] ?: 'Umum' ?></span></td>
+                                                <td class="text-center fw-bold"><?= number_format($row['nilai_rapor_rata2'], 2) ?></td>
+                                                <td class="text-center fw-bold"><?= number_format($row['nilai_ujian'], 2) ?></td>
+                                                <td class="text-center"><span class="nilai-akhir-box"><?= number_format($row['nilai_akhir'], 2) ?></span></td>
+                                                <td class="text-center">
+                                                    <form method="POST" class="d-flex gap-2 justify-content-center">
+                                                        <input type="hidden" name="id" value="<?= $row['id'] ?>"><input type="hidden" name="update_status" value="1">
+                                                        <?php if ($row['status'] != 'Diterima'): ?>
+                                                            <button type="submit" name="status" value="Diterima" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0" onclick="return confirm('Luluskan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-check-circle me-1"></i> Lulus</button>
+                                                        <?php endif; ?>
+                                                        <?php if ($row['status'] != 'Ditolak'): ?>
+                                                            <button type="submit" name="status" value="Ditolak" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print" onclick="return confirm('Gagalkan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-times-circle me-1"></i> Gagal</button>
+                                                        <?php endif; ?>
+                                                        <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print" onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)"><i class="fas fa-edit me-1"></i> Edit</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Perempuan -->
+                <div class="tab-pane fade <?= $active_tab == 'female' ? 'show active' : '' ?>" id="female" role="tabpanel">
+                    <div class="card card-premium overflow-hidden border-0 rounded-top-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 80px;">Rank</th>
+                                        <th>Murid</th>
+                                        <th>Jalur Masuk</th>
+                                        <th class="text-center">Rata-rata Rapor</th>
+                                        <th class="text-center">Nilai Ujian CBT</th>
+                                        <th class="text-center">Nilai Akhir</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($pendaftar_p)): ?>
+                                        <tr><td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="fas fa-user-slash d-block mb-2 fa-2x opacity-25"></i>
+                                            Belum ada data pendaftar Perempuan.
+                                        </td></tr>
+                                    <?php else: ?>
+                                        <?php foreach ($pendaftar_p as $index => $row): 
+                                            $rank = $index + 1;
+                                            $rankClass = ($rank == 1) ? 'rank-1' : (($rank == 2) ? 'rank-2' : (($rank == 3) ? 'rank-3' : 'rank-other'));
+                                            $statusColor = ($row['status'] == 'Diterima') ? 'success-subtle text-success' : (($row['status'] == 'Ditolak') ? 'danger-subtle text-danger' : 'secondary-subtle text-secondary');
+                                        ?>
+                                            <tr>
+                                                <td class="text-center"><div class="badge-ranking mx-auto <?= $rankClass ?>"><?= $rank ?></div></td>
+                                                <td>
+                                                    <div class="fw-bold text-dark"><?= htmlspecialchars($row['nama_lengkap']) ?></div>
+                                                    <div class="small text-muted"><?= $row['no_pendaftaran'] ?></div>
+                                                    <div class="mt-1">
+                                                        <span class="badge rounded-pill <?= $statusColor ?> border" style="font-size: 0.65rem; font-weight: 600;">
+                                                            <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                                            <?= strtoupper($row['status'] ?: 'Belum Ditentukan') ?>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge bg-light text-secondary border rounded-pill px-3"><?= $row['nama_jalur'] ?: 'Umum' ?></span></td>
+                                                <td class="text-center fw-bold"><?= number_format($row['nilai_rapor_rata2'], 2) ?></td>
+                                                <td class="text-center fw-bold"><?= number_format($row['nilai_ujian'], 2) ?></td>
+                                                <td class="text-center"><span class="nilai-akhir-box"><?= number_format($row['nilai_akhir'], 2) ?></span></td>
+                                                <td class="text-center">
+                                                    <form method="POST" class="d-flex gap-2 justify-content-center">
+                                                        <input type="hidden" name="id" value="<?= $row['id'] ?>"><input type="hidden" name="update_status" value="1">
+                                                        <?php if ($row['status'] != 'Diterima'): ?>
+                                                            <button type="submit" name="status" value="Diterima" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0" onclick="return confirm('Luluskan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-check-circle me-1"></i> Lulus</button>
+                                                        <?php endif; ?>
+                                                        <?php if ($row['status'] != 'Ditolak'): ?>
+                                                            <button type="submit" name="status" value="Ditolak" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print" onclick="return confirm('Gagalkan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-times-circle me-1"></i> Gagal</button>
+                                                        <?php endif; ?>
+                                                        <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print" onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)"><i class="fas fa-edit me-1"></i> Edit</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -773,6 +976,43 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                         </button>
                         <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">
                             <i class="fas fa-check me-1"></i> Tetapkan Lulus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Auto Pass Confirmation -->
+    <div class="modal fade" id="modalAutoPass" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-success text-white border-0 py-3 rounded-top-4">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-magic me-2"></i>Konfirmasi Lulus Otomatis</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST">
+                    <div class="modal-body p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-user-check fa-3x text-success opacity-25"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Proses Kelulusan Otomatis?</h5>
+                        <p class="text-muted small">Sistem akan meluluskan <strong><?= $q_male ?> Laki-laki</strong> dan <strong><?= $q_female ?> Perempuan</strong> berdasarkan ranking nilai tertinggi saat ini. Siswa selebihnya akan otomatis berstatus Ditolak.</p>
+                        
+                        <div class="alert alert-warning small text-start border-0 mt-3">
+                            <i class="fas fa-info-circle me-1"></i> Pastikan pembobotan nilai sudah benar sebelum melanjutkan.
+                        </div>
+
+                        <div class="text-start mt-4">
+                            <label class="small fw-bold text-muted mb-1">Password Admin</label>
+                            <input type="password" name="admin_password" class="form-control rounded-3 py-2" required placeholder="Masukkan password untuk konfirmasi">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <input type="hidden" name="auto_pass" value="1">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">
+                            <i class="fas fa-check-circle me-1"></i> Proses Sekarang
                         </button>
                     </div>
                 </form>

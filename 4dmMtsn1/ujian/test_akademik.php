@@ -1,4 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
 require_once '../../includes/config.php';
 require_once '../../includes/auth_check.php';
 
@@ -236,6 +240,7 @@ function format_indo_date($date) {
                                 <thead class="table-light">
                                     <tr>
                                         <th>No. Reg / Nama</th>
+                                        <th>JK</th>
                                         <th>Hari / Lokasi</th>
                                         <th>Sesi & Pass CBT</th>
                                     </tr>
@@ -246,6 +251,11 @@ function format_indo_date($date) {
                                         <td>
                                             <div class="fw-bold small text-success"><?= $s['no_pendaftaran'] ?></div>
                                             <div class="small fw-semibold"><?= $s['nama_lengkap'] ?></div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border small">
+                                                <?= $s['jenis_kelamin'] ?>
+                                            </span>
                                         </td>
                                         <td>
                                             <?php if($s['test_hari']): ?>

@@ -91,20 +91,31 @@ function format_address($p, $prefix = '') {
     </div>
 
     <div class="section-title">A. DATA PENDAFTAR</div>
-    <table>
-        <tr><td class="label">No. Pendaftaran</td><td class="colon">:</td><td class="value"><strong><?= htmlspecialchars($student['no_pendaftaran']) ?></strong></td></tr>
-        <tr><td class="label">Jalur Pendaftaran</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nama_jalur']) ?></td></tr>
-        <tr><td class="label">Nama Lengkap</td><td class="colon">:</td><td class="value" style="text-transform: uppercase;"><?= htmlspecialchars($student['nama_lengkap']) ?></td></tr>
-        <tr><td class="label">NISN</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nisn']) ?></td></tr>
-        <tr><td class="label">NIK</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nik']) ?></td></tr>
-        <tr><td class="label">Jenis Kelamin</td><td class="colon">:</td><td class="value"><?= $student['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan' ?></td></tr>
-        <tr><td class="label">Tempat, Tgl Lahir</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['tempat_lahir']) ?>, <?= date('d F Y', strtotime($student['tanggal_lahir'])) ?></td></tr>
-        <tr><td class="label">Agama</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['agama']) ?></td></tr>
-        <tr><td class="label">Anak Ke</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['anak_ke']) ?></td></tr>
-        <tr><td class="label">Status dalam Keluarga</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['status_keluarga']) ?></td></tr>
-        <tr><td class="label">No. HP / WA</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['no_hp']) ?></td></tr>
-        <tr><td class="label">Alamat Lengkap</td><td class="colon">:</td><td class="value"><?= format_address($student) ?></td></tr>
-    </table>
+    <div style="display: flex; justify-content: space-between;">
+        <div style="flex: 1;">
+            <table>
+                <tr><td class="label">No. Pendaftaran</td><td class="colon">:</td><td class="value"><strong><?= htmlspecialchars($student['no_pendaftaran']) ?></strong></td></tr>
+                <tr><td class="label">Jalur Pendaftaran</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nama_jalur']) ?></td></tr>
+                <tr><td class="label">Nama Lengkap</td><td class="colon">:</td><td class="value" style="text-transform: uppercase;"><?= htmlspecialchars($student['nama_lengkap']) ?></td></tr>
+                <tr><td class="label">NISN</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nisn']) ?></td></tr>
+                <tr><td class="label">NIK</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nik']) ?></td></tr>
+                <tr><td class="label">Jenis Kelamin</td><td class="colon">:</td><td class="value"><?= $student['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan' ?></td></tr>
+                <tr><td class="label">Tempat, Tgl Lahir</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['tempat_lahir']) ?>, <?= date('d F Y', strtotime($student['tanggal_lahir'])) ?></td></tr>
+                <tr><td class="label">Agama</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['agama']) ?></td></tr>
+                <tr><td class="label">Anak Ke</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['anak_ke']) ?></td></tr>
+                <tr><td class="label">Status dalam Keluarga</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['status_keluarga']) ?></td></tr>
+                <tr><td class="label">No. HP / WA</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['no_hp']) ?></td></tr>
+                <tr><td class="label">Alamat Lengkap</td><td class="colon">:</td><td class="value"><?= format_address($student) ?></td></tr>
+            </table>
+        </div>
+        <div style="width: 120px; padding-left: 15px; padding-top: 10px;">
+            <?php if (!empty($student['foto_siswa'])): ?>
+                <img src="uploads/<?= htmlspecialchars($student['foto_siswa']) ?>" alt="Pas Foto" style="width: 3cm; height: 4cm; object-fit: cover; border: 1px solid #000; margin-left: auto; display: block;">
+            <?php else: ?>
+                <div style="width: 3cm; height: 4cm; border: 1px solid #000; text-align: center; line-height: 4cm; font-size: 10pt; color: #666; margin-left: auto;">3x4</div>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <div class="section-title">B. DATA ORANG TUA / WALI</div>
     <table>

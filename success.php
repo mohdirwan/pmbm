@@ -5,7 +5,7 @@ $no_pendaftaran = $_GET['reg'] ?? '';
 $student = null;
 
 if ($no_pendaftaran) {
-    $stmt = $pdo->prepare("SELECT p.nisn, p.nama_lengkap, p.kontak_wa, p.jalur_id, j.nama_jalur 
+    $stmt = $pdo->prepare("SELECT p.nisn, p.nama_lengkap, p.kontak_wa, p.jalur_id, j.nama_jalur, p.password_plain 
                            FROM pendaftar p 
                            JOIN jalur_pendaftaran j ON p.jalur_id = j.id 
                            WHERE p.no_pendaftaran = ?");
@@ -117,9 +117,9 @@ if ($is_special) {
                                     <div class="info-label">Username (Input)</div>
                                     <div class="info-value"><?= htmlspecialchars($student['nisn']) ?> (NISN)</div>
                                 </div>
-                                <div class=" col-md-6 text-center">
+                                <div class="col-md-6 text-center">
                                     <div class="info-label">Password</div>
-                                    <div class="info-value" style="font-size: 1.1rem;">Sesuai yang Anda buat</div>
+                                    <div class="info-value" style="font-size: 1.1rem;"><?= !empty($student['password_plain']) ? htmlspecialchars($student['password_plain']) : 'Sesuai yang Anda buat' ?></div>
                                 </div>
                             </div>
                         </div>
