@@ -375,6 +375,10 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                         <div class="data-label">Hobi</div>
                         <div class="data-value"><?= htmlspecialchars($siswa['hobi'] ?: '-') ?></div>
                     </div>
+                    <div class="col-md-3 data-group">
+                        <div class="data-label">Nomor HP Siswa</div>
+                        <div class="data-value text-primary fw-bold"><?= htmlspecialchars($siswa['no_hp'] ?: '-') ?></div>
+                    </div>
                     <div class="col-12 data-group">
                         <div class="data-label">Alamat Lengkap Berdasarkan KK</div>
                         <div class="data-value"><?= nl2br(htmlspecialchars($siswa['alamat'])) ?></div>
@@ -421,14 +425,6 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                 <div class="data-group">
                     <div class="data-label">Alamat Sekolah Asal</div>
                     <div class="data-value small"><?= htmlspecialchars($siswa['alamat_sekolah'] ?: '-') ?></div>
-                </div>
-                <div class="bg-light p-3 rounded-4 mt-4">
-                    <div class="data-label">Email Murid</div>
-                    <div class="data-value small"><?= htmlspecialchars($siswa['email'] ?: '-') ?></div>
-                </div>
-                <div class="bg-light p-3 rounded-4 mt-2">
-                    <div class="data-label">No. HP Murid</div>
-                    <div class="data-value small"><?= htmlspecialchars($siswa['no_hp_siswa'] ?: '-') ?></div>
                 </div>
             </div>
         </div>

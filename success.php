@@ -127,12 +127,12 @@ if ($is_special) {
 
                     <div class="d-grid gap-3">
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <!-- <div class="col-md-6">
                                 <a href="cetak_formulir.php?reg=<?= $no_pendaftaran ?>" target="_blank"
                                     class="btn btn-outline-primary btn-lg rounded-pill shadow w-100">
                                     <i class="fas fa-file-alt me-2"></i> Cetak Formulir
                                 </a>
-                            </div>
+                            </div> -->
                             <div class="col-md-6">
                                 <a href="cetak_bukti.php?reg=<?= $no_pendaftaran ?>" target="_blank"
                                     class="btn btn-primary btn-lg rounded-pill shadow w-100">

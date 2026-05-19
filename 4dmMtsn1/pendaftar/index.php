@@ -318,13 +318,33 @@ $students = $stmt->fetchAll();
                                             </td>
                                             <td>
                                                 <?php if (isset($s['finalisasi']) && $s['finalisasi'] == 'ya'): ?>
-                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
-                                                        <i class="fas fa-check-circle me-1"></i>Sudah
-                                                    </span>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
+                                                            <i class="fas fa-check-circle me-1"></i>Sudah
+                                                        </span>
+                                                        <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1 btn-change-finalisasi" 
+                                                            style="font-size: 0.75rem; border-radius: 4px;"
+                                                            data-id="<?= $s['id'] ?>" 
+                                                            data-nama="<?= htmlspecialchars($s['nama_lengkap']) ?>"
+                                                            data-target="belum"
+                                                            title="Batal Finalisasi">
+                                                            <i class="fas fa-undo"></i>
+                                                        </button>
+                                                    </div>
                                                 <?php else: ?>
-                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3">
-                                                        <i class="fas fa-times-circle me-1"></i>Belum
-                                                    </span>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3">
+                                                            <i class="fas fa-times-circle me-1"></i>Belum
+                                                        </span>
+                                                        <button type="button" class="btn btn-xs btn-outline-success py-0 px-1 btn-change-finalisasi" 
+                                                            style="font-size: 0.75rem; border-radius: 4px;"
+                                                            data-id="<?= $s['id'] ?>" 
+                                                            data-nama="<?= htmlspecialchars($s['nama_lengkap']) ?>"
+                                                            data-target="ya"
+                                                            title="Set Finalisasi">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </div>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
@@ -350,7 +370,8 @@ $students = $stmt->fetchAll();
                                                         data-nama="<?= htmlspecialchars($s['nama_lengkap']) ?>"
                                                         data-jalur="<?= $s['jalur_id'] ?>"
                                                         data-nisn="<?= htmlspecialchars($s['nisn']) ?>"
-                                                        data-nik="<?= htmlspecialchars($s['nik']) ?>">
+                                                        data-nik="<?= htmlspecialchars($s['nik']) ?>"
+                                                        data-finalisasi="<?= htmlspecialchars($s['finalisasi'] ?? 'belum') ?>">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                     <a href="../../cetak_bukti.php?reg=<?= $s['no_pendaftaran'] ?>"
@@ -467,6 +488,14 @@ $students = $stmt->fetchAll();
                             <label class="form-label fw-bold small">NIK</label>
                             <input type="text" name="nik" id="editNik" class="form-control" required>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Status Finalisasi</label>
+                            <select name="finalisasi" id="editFinalisasi" class="form-select" required>
+                                <option value="belum">Belum Finalisasi</option>
+                                <option value="ya">Sudah Finalisasi (Ya)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-light rounded-pill px-4"
@@ -492,12 +521,14 @@ $students = $stmt->fetchAll();
                 const jalur = button.data('jalur');
                 const nisn = button.data('nisn');
                 const nik = button.data('nik');
+                const finalisasi = button.data('finalisasi');
 
                 $('#editId').val(id);
                 $('#editNama').text(nama);
                 $('#editJalur').val(jalur || "");
                 $('#editNisn').val(nisn);
                 $('#editNik').val(nik);
+                $('#editFinalisasi').val(finalisasi || "belum");
 
                 const modalEl = document.getElementById('modalEdit');
                 const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -578,6 +609,62 @@ $students = $stmt->fetchAll();
                     $('.toggle-password').html('<i class="far fa-eye"></i>');
                     $btn.html('<i class="fas fa-eye me-2"></i> Tampilkan Semua Password');
                 }
+            });
+
+            // Handle quick toggle finalisasi
+            $(document).on('click', '.btn-change-finalisasi', function() {
+                const button = $(this);
+                const id = button.data('id');
+                const nama = button.data('nama');
+                const target = button.data('target');
+                const actionText = target === 'ya' ? 'memfinalisasi' : 'membatalkan finalisasi';
+                const statusText = target === 'ya' ? 'Sudah' : 'Belum';
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: `Anda akan mengubah status finalisasi untuk ${nama} menjadi "${statusText}".`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Ubah!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'api_toggle_finalisasi.php',
+                            type: 'POST',
+                            data: { id: id, finalisasi: target },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil!',
+                                        text: response.message,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal!',
+                                        text: response.message
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'Terjadi kesalahan sistem.'
+                                });
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

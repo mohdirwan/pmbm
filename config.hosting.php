@@ -88,7 +88,21 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function clean_input($data)
 {
-    return htmlspecialchars(stripslashes(trim($data)));
+    $decoded = decode_multiple_entities($data);
+    return htmlspecialchars(stripslashes(trim($decoded)));
+}
+
+// Helper to decode recursively double/triple encoded HTML entities
+if (!function_exists('decode_multiple_entities')) {
+    function decode_multiple_entities($str) {
+        if (!$str) return '';
+        $decoded = htmlspecialchars_decode($str, ENT_QUOTES);
+        while ($decoded !== $str) {
+            $str = $decoded;
+            $decoded = htmlspecialchars_decode($str, ENT_QUOTES);
+        }
+        return $decoded;
+    }
 }
 
 function generate_csrf_token()

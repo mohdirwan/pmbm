@@ -407,14 +407,6 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                     <div class="data-label">Alamat Sekolah Asal</div>
                     <div class="data-value small"><?= htmlspecialchars($siswa['alamat_sekolah'] ?: '-') ?></div>
                 </div>
-                <div class="bg-light p-3 rounded-4 mt-4">
-                    <div class="data-label">Email Murid</div>
-                    <div class="data-value small"><?= htmlspecialchars($siswa['email'] ?: '-') ?></div>
-                </div>
-                <div class="bg-light p-3 rounded-4 mt-2">
-                    <div class="data-label">No. HP Murid</div>
-                    <div class="data-value small"><?= htmlspecialchars($siswa['no_hp_siswa'] ?: '-') ?></div>
-                </div>
             </div>
         </div>
     </div>
@@ -436,167 +428,45 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
         </div>
     </div>
 
+    <?php if (!empty($siswa['nama_wali'])): ?>
     <div class="row g-4">
-        <!-- Ayah -->
-        <div class="col-lg-4">
-            <div class="info-card h-100">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3"><i
-                            class="fas fa-user-tie"></i></div>
-                    <h6 class="fw-bold mb-0">Ayah Kandung</h6>
-                </div>
-                <div class="data-group mb-3">
-                    <div class="data-label">Nama Lengkap</div>
-                    <div class="data-value"><?= htmlspecialchars($siswa['nama_ayah'] ?: '-') ?></div>
-                    <div class="small text-muted">NIK: <?= htmlspecialchars($siswa['nik_ayah'] ?: '-') ?></div>
-                </div>
-                <div class="data-group mb-3">
-                    <div class="data-label">TTL & Pendidikan</div>
-                    <div class="data-value small"><?= htmlspecialchars($siswa['tempat_lahir_ayah'] ?: '-') ?>,
-                        <?= htmlspecialchars($siswa['tanggal_lahir_ayah'] ?: '-') ?>
-                    </div>
-                    <div class="data-value small text-primary"><?= htmlspecialchars($siswa['pendidikan_ayah'] ?: '-') ?>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <div class="data-label">Pekerjaan</div>
-                        <div class="data-value small"><?= htmlspecialchars($siswa['pekerjaan_ayah'] ?: '-') ?></div>
-                    </div>
-                    <div class="col-6">
-                        <div class="data-label">Penghasilan</div>
-                        <div class="data-value small text-success">
-                            <?= htmlspecialchars($siswa['penghasilan_ayah'] ?: '-') ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-group">
-                    <div class="data-label">No. HP & Alamat</div>
-                    <div class="data-value small text-primary"><?= htmlspecialchars($siswa['no_hp_ayah'] ?: '-') ?>
-                    </div>
-                    <div class="data-value small text-muted">
-                        <?php if (!empty($siswa['provinsi_ayah'])): ?>
-                            <?= htmlspecialchars($siswa['alamat_ayah']) ?>, 
-                            <?= htmlspecialchars($siswa['desa_kelurahan_ayah']) ?>, 
-                            <?= htmlspecialchars($siswa['kecamatan_ayah']) ?>, 
-                            <?= htmlspecialchars($siswa['kabupaten_kota_ayah']) ?>, 
-                            <?= htmlspecialchars($siswa['provinsi_ayah']) ?>
-                        <?php else: ?>
-                            <?= htmlspecialchars($siswa['alamat_ayah'] ?: '(Sama dengan murid)') ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ibu -->
-        <div class="col-lg-4">
-            <div class="info-card h-100">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-danger bg-opacity-10 text-danger p-2 rounded-3 me-3"><i
-                            class="fas fa-user-nurse"></i></div>
-                    <h6 class="fw-bold mb-0">Ibu Kandung</h6>
-                </div>
-                <div class="data-group mb-3">
-                    <div class="data-label">Nama Lengkap</div>
-                    <div class="data-value"><?= htmlspecialchars($siswa['nama_ibu'] ?: '-') ?></div>
-                    <div class="small text-muted">NIK: <?= htmlspecialchars($siswa['nik_ibu'] ?: '-') ?></div>
-                </div>
-                <div class="data-group mb-3">
-                    <div class="data-label">TTL & Pendidikan</div>
-                    <div class="data-value small"><?= htmlspecialchars($siswa['tempat_lahir_ibu'] ?: '-') ?>,
-                        <?= htmlspecialchars($siswa['tanggal_lahir_ibu'] ?: '-') ?>
-                    </div>
-                    <div class="data-value small text-primary"><?= htmlspecialchars($siswa['pendidikan_ibu'] ?: '-') ?>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <div class="data-label">Pekerjaan</div>
-                        <div class="data-value small"><?= htmlspecialchars($siswa['pekerjaan_ibu'] ?: '-') ?></div>
-                    </div>
-                    <div class="col-6">
-                        <div class="data-label">Penghasilan</div>
-                        <div class="data-value small text-success">
-                            <?= htmlspecialchars($siswa['penghasilan_ibu'] ?: '-') ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-group">
-                    <div class="data-label">No. HP & Alamat</div>
-                    <div class="data-value small text-primary"><?= htmlspecialchars($siswa['no_hp_ibu'] ?: '-') ?></div>
-                    <div class="data-value small text-muted">
-                        <?php if (!empty($siswa['provinsi_ibu'])): ?>
-                            <?= htmlspecialchars($siswa['alamat_ibu']) ?>, 
-                            <?= htmlspecialchars($siswa['desa_kelurahan_ibu']) ?>, 
-                            <?= htmlspecialchars($siswa['kecamatan_ibu']) ?>, 
-                            <?= htmlspecialchars($siswa['kabupaten_kota_ibu']) ?>, 
-                            <?= htmlspecialchars($siswa['provinsi_ibu']) ?>
-                        <?php else: ?>
-                            <?= htmlspecialchars($siswa['alamat_ibu'] ?: '(Sama dengan murid)') ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Wali / Kontak -->
-        <div class="col-lg-4">
-            <?php if (!empty($siswa['nama_wali'])): ?>
-                <div class="info-card mb-3 h-100">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3 me-3"><i
-                                class="fas fa-user-friends"></i></div>
-                        <h6 class="fw-bold mb-0 text-warning-emphasis">Wali Murid</h6>
-                    </div>
-                    <div class="data-group mb-2">
-                        <div class="data-label">Nama Wali</div>
-                        <div class="data-value"><?= htmlspecialchars($siswa['nama_wali']) ?></div>
-                        <div class="small text-muted">NIK: <?= htmlspecialchars($siswa['nik_wali'] ?: '-') ?></div>
-                    </div>
-                    <div class="data-group mb-2">
-                        <div class="data-label">Pekerjaan & HP</div>
-                        <div class="data-value small"><?= htmlspecialchars($siswa['pekerjaan_wali'] ?: '-') ?></div>
-                        <div class="data-value small text-primary"><?= htmlspecialchars($siswa['no_hp_wali'] ?: '-') ?>
-                        </div>
-                    </div>
-                    <div class="data-group">
-                        <div class="data-label">Alamat Wali</div>
-                        <div class="data-value small text-muted">
-                            <?php if (!empty($siswa['provinsi_wali'])): ?>
-                                <?= htmlspecialchars($siswa['alamat_wali']) ?>, 
-                                <?= htmlspecialchars($siswa['desa_kelurahan_wali']) ?>, 
-                                <?= htmlspecialchars($siswa['kecamatan_wali']) ?>, 
-                                <?= htmlspecialchars($siswa['kabupaten_kota_wali']) ?>, 
-                                <?= htmlspecialchars($siswa['provinsi_wali']) ?>
-                            <?php else: ?>
-                                <?= htmlspecialchars($siswa['alamat_wali'] ?: '-') ?>
-                            <?php endif; ?>
-                        </div>
+        <div class="col-lg-12">
+            <div class="info-card mb-3 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-warning bg-opacity-10 text-warning p-2 rounded-3 me-3"><i
+                            class="fas fa-user-friends"></i></div>
+                    <h6 class="fw-bold mb-0 text-warning-emphasis">Wali Murid</h6>
+                </div>
+                <div class="data-group mb-2">
+                    <div class="data-label">Nama Wali</div>
+                    <div class="data-value"><?= htmlspecialchars($siswa['nama_wali']) ?></div>
+                    <div class="small text-muted">NIK: <?= htmlspecialchars($siswa['nik_wali'] ?: '-') ?></div>
+                </div>
+                <div class="data-group mb-2">
+                    <div class="data-label">Pekerjaan & HP</div>
+                    <div class="data-value small"><?= htmlspecialchars($siswa['pekerjaan_wali'] ?: '-') ?></div>
+                    <div class="data-value small text-primary"><?= htmlspecialchars($siswa['no_hp_wali'] ?: '-') ?>
                     </div>
                 </div>
-            <?php else: ?>
-                <div class="info-card style=" background: #eefdf7; border: 1px solid #c3e6cb;" h-100">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-success text-white p-2 rounded-3 me-3 shadow-sm"><i class="fab fa-whatsapp"></i>
-                        </div>
-                        <h6 class="fw-bold mb-0 text-success">Kontak WA Utama</h6>
-                    </div>
-                    <div class="data-group">
-                        <div class="data-label text-success">Nomor WhatsApp Notifikasi</div>
-                        <div class="data-value fs-4 fw-bold text-dark"><?= htmlspecialchars($siswa['kontak_wa'] ?: '-') ?>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 rounded-4 border mt-3">
-                        <div class="data-label text-muted small">Atas Nama (Pemilik Nomor)</div>
-                        <div class="data-value fw-bold text-success"><i
-                                class="fas fa-user-check me-2"></i><?= htmlspecialchars($siswa['nama_kontak_wa'] ?: '-') ?>
-                        </div>
+                <div class="data-group">
+                    <div class="data-label">Alamat Wali</div>
+                    <div class="data-value small text-muted">
+                        <?php if (!empty($siswa['provinsi_wali'])): ?>
+                            <?= htmlspecialchars($siswa['alamat_wali']) ?>, 
+                            <?= htmlspecialchars($siswa['desa_kelurahan_wali']) ?>, 
+                            <?= htmlspecialchars($siswa['kecamatan_wali']) ?>, 
+                            <?= htmlspecialchars($siswa['kabupaten_kota_wali']) ?>, 
+                            <?= htmlspecialchars($siswa['provinsi_wali']) ?>
+                        <?php else: ?>
+                            <?= htmlspecialchars($siswa['alamat_wali'] ?: '-') ?>
+                        <?php endif; ?>
                     </div>
                 </div>
-            <?php endif; ?>
+            </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- SECTION 3: REKAP NILAI & BERKAS (STEP 4 & 5 REGISTER) -->
     <div class="row g-4 mt-2">

@@ -18,20 +18,21 @@ if (!$student) {
     die("Data tidak ditemukan.");
 }
 
+
 // Helper function for address
 function format_address($p, $prefix = '') {
     if ($prefix && !empty($p[$prefix . 'provinsi'])) {
-        return htmlspecialchars($p[$prefix . 'alamat']) . ", " . 
-               htmlspecialchars($p[$prefix . 'desa_kelurahan']) . ", " . 
-               htmlspecialchars($p[$prefix . 'kecamatan']) . ", " . 
-               htmlspecialchars($p[$prefix . 'kabupaten_kota']) . ", " . 
-               htmlspecialchars($p[$prefix . 'provinsi']);
+        return htmlspecialchars(decode_multiple_entities($p[$prefix . 'alamat'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p[$prefix . 'desa_kelurahan'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p[$prefix . 'kecamatan'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p[$prefix . 'kabupaten_kota'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p[$prefix . 'provinsi']));
     } else {
-        return htmlspecialchars($p['alamat']) . ", " . 
-               htmlspecialchars($p['desa_kelurahan']) . ", " . 
-               htmlspecialchars($p['kecamatan']) . ", " . 
-               htmlspecialchars($p['kabupaten_kota']) . ", " . 
-               htmlspecialchars($p['provinsi']);
+        return htmlspecialchars(decode_multiple_entities($p['alamat'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p['desa_kelurahan'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p['kecamatan'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p['kabupaten_kota'])) . ", " . 
+               htmlspecialchars(decode_multiple_entities($p['provinsi']));
     }
 }
 ?>
@@ -82,7 +83,7 @@ function format_address($p, $prefix = '') {
         <?php endif; ?>
         <h2>KEMENTERIAN AGAMA REPUBLIK INDONESIA</h2>
         <h1>MTs NEGERI 1 KOTA PEKANBARU</h1>
-        <p>Jl. Teratai No.105, Pulau Karomah, Kec. Sukajadi, Kota Pekanbaru, Riau 28127</p>
+        <p>Jl. Amal Hamzah No.1, Cinta Raja, Kec. Sail, Kota Pekanbaru, Riau 28127</p>
     </div>
 
     <div class="title">
@@ -124,7 +125,7 @@ function format_address($p, $prefix = '') {
         <tr><td class="label">NIK Ayah</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nik_ayah']) ?: '-' ?></td></tr>
         <tr><td class="label">Pendidikan Terakhir</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['pendidikan_ayah']) ?: '-' ?></td></tr>
         <tr><td class="label">Pekerjaan</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['pekerjaan_ayah']) ?: '-' ?></td></tr>
-        <tr><td class="label">Penghasilan / Bulan</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['penghasilan_ayah']) ?: '-' ?></td></tr>
+        <tr><td class="label">Penghasilan / Bulan</td><td class="colon">:</td><td class="value"><?= htmlspecialchars(decode_multiple_entities($student['penghasilan_ayah'])) ?: '-' ?></td></tr>
         <tr><td class="label">No. HP / WA Ayah</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['no_hp_ayah']) ?: '-' ?></td></tr>
         <tr><td class="label">Alamat Ayah</td><td class="colon">:</td><td class="value"><?= format_address($student, 'ayah_') ?></td></tr>
 
@@ -133,7 +134,7 @@ function format_address($p, $prefix = '') {
         <tr><td class="label">NIK Ibu</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['nik_ibu']) ?: '-' ?></td></tr>
         <tr><td class="label">Pendidikan Terakhir</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['pendidikan_ibu']) ?: '-' ?></td></tr>
         <tr><td class="label">Pekerjaan</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['pekerjaan_ibu']) ?: '-' ?></td></tr>
-        <tr><td class="label">Penghasilan / Bulan</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['penghasilan_ibu']) ?: '-' ?></td></tr>
+        <tr><td class="label">Penghasilan / Bulan</td><td class="colon">:</td><td class="value"><?= htmlspecialchars(decode_multiple_entities($student['penghasilan_ibu'])) ?: '-' ?></td></tr>
         <tr><td class="label">No. HP / WA Ibu</td><td class="colon">:</td><td class="value"><?= htmlspecialchars($student['no_hp_ibu']) ?: '-' ?></td></tr>
         <tr><td class="label">Alamat Ibu</td><td class="colon">:</td><td class="value"><?= format_address($student, 'ibu_') ?></td></tr>
 

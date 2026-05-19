@@ -372,7 +372,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </div>
                                 <div class="mb-2">
                                     <div class="info-label">Penghasilan / HP</div>
-                                    <div class="info-value"><?= $siswa['penghasilan_ayah'] ?: '-' ?> / <span
+                                    <div class="info-value"><?= htmlspecialchars(decode_multiple_entities($siswa['penghasilan_ayah'])) ?: '-' ?> / <span
                                             class="text-primary"><?= $siswa['no_hp_ayah'] ?: '-' ?></span></div>
                                 </div>
                                 <div class="mb-2">
@@ -414,7 +414,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </div>
                                 <div class="mb-2">
                                     <div class="info-label">Penghasilan / HP</div>
-                                    <div class="info-value"><?= $siswa['penghasilan_ibu'] ?: '-' ?> / <span
+                                    <div class="info-value"><?= htmlspecialchars(decode_multiple_entities($siswa['penghasilan_ibu'])) ?: '-' ?> / <span
                                             class="text-primary"><?= $siswa['no_hp_ibu'] ?: '-' ?></span></div>
                                 </div>
                                 <div class="mb-2">
