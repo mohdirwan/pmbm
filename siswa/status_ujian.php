@@ -4,7 +4,7 @@ require_once 'layout_top.php';
 
 // Proteksi: Hanya bisa diakses jika hasil administrasi sudah diumumkan, siswa lolos, dan butuh ujian
 if ($tahap_admin != 'pengumuman' || !$is_verified || !$needs_exam) {
-    echo "<script>window.location='status_administrasi.php';</script>";
+    echo "<script>window.location='dashboard.php';</script>";
     exit();
 }
 

@@ -331,6 +331,27 @@ $students = $stmt->fetchAll();
                                                             <i class="fas fa-undo"></i>
                                                         </button>
                                                     </div>
+                                                    <?php
+                                                    $oleh = $s['finalisasi_oleh'] ?? null;
+                                                    if ($oleh === 'manual'): ?>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size: 0.6rem;">
+                                                                <i class="fas fa-user me-1"></i>Mandiri
+                                                            </span>
+                                                        </div>
+                                                    <?php elseif ($oleh === 'sistem'): ?>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-danger text-white" style="font-size: 0.6rem;">
+                                                                <i class="fas fa-robot me-1"></i>Otomatis Sistem
+                                                            </span>
+                                                        </div>
+                                                    <?php elseif ($oleh === 'admin'): ?>
+                                                        <div class="mt-1">
+                                                            <span class="badge bg-secondary bg-opacity-15 text-secondary" style="font-size: 0.6rem;">
+                                                                <i class="fas fa-user-shield me-1"></i>Oleh Admin
+                                                            </span>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 <?php else: ?>
                                                     <div class="d-flex align-items-center gap-2">
                                                         <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3">

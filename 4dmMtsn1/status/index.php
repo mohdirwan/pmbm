@@ -27,6 +27,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmt_sync = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('tahap_administrasi', 'pengumuman') ON DUPLICATE KEY UPDATE setting_value = 'pengumuman'");
                     $stmt_sync->execute();
                 }
+
+                // === AUTO-FINALISASI OLEH SISTEM ===
+                // Jika status berpindah dari 'buka' ke tahap lain, finalisasi otomatis semua yang belum
+                $prev_status = get_setting('ppdb_status', 'belum');
+                if ($prev_status === 'buka' && $status !== 'buka') {
+                    // Pastikan kolom finalisasi_oleh sudah ada
+                    try {
+                        $pdo->exec("ALTER TABLE pendaftar ADD COLUMN finalisasi_oleh ENUM('manual','sistem','admin') NULL DEFAULT NULL");
+                    } catch (Exception $eAlter) { /* kolom sudah ada, abaikan */ }
+
+                    // Finalisasi otomatis untuk semua yang belum finalisasi
+                    $stmt_auto = $pdo->prepare(
+                        "UPDATE pendaftar SET finalisasi = 'ya', finalisasi_oleh = 'sistem' 
+                         WHERE (finalisasi = 'belum' OR finalisasi IS NULL)"
+                    );
+                    $stmt_auto->execute();
+                    $auto_count = $stmt_auto->rowCount();
+
+                    if ($auto_count > 0 && function_exists('log_activity')) {
+                        log_activity("Finalisasi Otomatis", "Sistem memfinalisasi $auto_count pendaftar secara otomatis karena pendaftaran ditutup (status berubah ke '$status')");
+                    }
+                }
             }
         }
 

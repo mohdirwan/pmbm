@@ -42,9 +42,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Data pendaftar tidak ditemukan.");
         }
 
-        // Helper function for fallback
+        // Helper: field WAJIB — fallback ke data lama jika kosong (tidak boleh kosong)
         $get_val = function ($key, $default) {
-            return (isset($_POST[$key]) && trim($_POST[$key]) !== '') ? $_POST[$key] : $default;
+            return (isset($_POST[$key]) && trim($_POST[$key]) !== '') ? trim($_POST[$key]) : $default;
+        };
+
+        // Helper: field OPSIONAL — simpan kosong jika memang dikosongkan oleh user
+        $get_val_opt = function ($key) {
+            return isset($_POST[$key]) ? trim($_POST[$key]) : '';
         };
 
         // 1. Recalculate Grades (with fallback to old data)
@@ -152,54 +157,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             clean_input($get_val('provinsi', $old_data['provinsi'])),
             intval($get_val('anak_ke', $old_data['anak_ke'])),
             clean_input($get_val('status_keluarga', $old_data['status_keluarga'])),
-            clean_input($get_val('hobi', $old_data['hobi'])),
+            clean_input($get_val_opt('hobi')),              // opsional, boleh kosong
             clean_input($get_val('status_tinggal', $old_data['status_tinggal'])),
-            clean_input($get_val('jarak_sekolah', $old_data['jarak_sekolah'])),
+            clean_input($get_val_opt('jarak_sekolah')),     // opsional, boleh kosong
             clean_input($get_val('transportasi_rumah', $old_data['transportasi_rumah'])),
             clean_input($get_val('asal_sekolah', $old_data['asal_sekolah'])),
-            clean_input($get_val('npsn_sekolah', $old_data['npsn_sekolah'])),
-            clean_input($get_val('alamat_sekolah', $old_data['alamat_sekolah'])),
+            clean_input($get_val_opt('npsn_sekolah')),      // opsional, boleh kosong
+            clean_input($get_val_opt('alamat_sekolah')),    // opsional, boleh kosong
             clean_input($get_val('no_kk', $old_data['no_kk'])),
             clean_input($get_val('status_orang_tua', $old_data['status_orang_tua'])),
-            clean_input($get_val('nama_ayah', $old_data['nama_ayah'])),
-            clean_input($get_val('nik_ayah', $old_data['nik_ayah'])),
-            clean_input($get_val('tempat_lahir_ayah', $old_data['tempat_lahir_ayah'])),
-            clean_input($get_val('tanggal_lahir_ayah', $old_data['tanggal_lahir_ayah'])),
-            clean_input($get_val('pendidikan_ayah', $old_data['pendidikan_ayah'])),
-            clean_input($get_val('pekerjaan_ayah', $old_data['pekerjaan_ayah'])),
-            clean_input($get_val('penghasilan_ayah', $old_data['penghasilan_ayah'])),
-            clean_input($get_val('no_hp_ayah', $old_data['no_hp_ayah'])),
-            clean_input($get_val('provinsi_ayah', $old_data['provinsi_ayah'])),
-            clean_input($get_val('kabupaten_kota_ayah', $old_data['kabupaten_kota_ayah'])),
-            clean_input($get_val('kecamatan_ayah', $old_data['kecamatan_ayah'])),
-            clean_input($get_val('desa_kelurahan_ayah', $old_data['desa_kelurahan_ayah'])),
-            clean_input($get_val('alamat_ayah', $old_data['alamat_ayah'])),
-            clean_input($get_val('nama_ibu', $old_data['nama_ibu'])),
-            clean_input($get_val('nik_ibu', $old_data['nik_ibu'])),
-            clean_input($get_val('tempat_lahir_ibu', $old_data['tempat_lahir_ibu'])),
-            clean_input($get_val('tanggal_lahir_ibu', $old_data['tanggal_lahir_ibu'])),
-            clean_input($get_val('pendidikan_ibu', $old_data['pendidikan_ibu'])),
-            clean_input($get_val('pekerjaan_ibu', $old_data['pekerjaan_ibu'])),
-            clean_input($get_val('penghasilan_ibu', $old_data['penghasilan_ibu'])),
-            clean_input($get_val('no_hp_ibu', $old_data['no_hp_ibu'])),
-            clean_input($get_val('provinsi_ibu', $old_data['provinsi_ibu'])),
-            clean_input($get_val('kabupaten_kota_ibu', $old_data['kabupaten_kota_ibu'])),
-            clean_input($get_val('kecamatan_ibu', $old_data['kecamatan_ibu'])),
-            clean_input($get_val('desa_kelurahan_ibu', $old_data['desa_kelurahan_ibu'])),
-            clean_input($get_val('alamat_ibu', $old_data['alamat_ibu'])),
-            clean_input($get_val('nama_wali', $old_data['nama_wali'])),
-            clean_input($get_val('nik_wali', $old_data['nik_wali'])),
-            clean_input($get_val('tempat_lahir_wali', $old_data['tempat_lahir_wali'])),
-            clean_input($get_val('tanggal_lahir_wali', $old_data['tanggal_lahir_wali'])),
-            clean_input($get_val('pendidikan_wali', $old_data['pendidikan_wali'])),
-            clean_input($get_val('pekerjaan_wali', $old_data['pekerjaan_wali'])),
-            clean_input($get_val('penghasilan_wali', $old_data['penghasilan_wali'])),
-            clean_input($get_val('no_hp_wali', $old_data['no_hp_wali'])),
-            clean_input($get_val('provinsi_wali', $old_data['provinsi_wali'])),
-            clean_input($get_val('kabupaten_kota_wali', $old_data['kabupaten_kota_wali'])),
-            clean_input($get_val('kecamatan_wali', $old_data['kecamatan_wali'])),
-            clean_input($get_val('desa_kelurahan_wali', $old_data['desa_kelurahan_wali'])),
-            clean_input($get_val('alamat_wali', $old_data['alamat_wali'])),
+            // Data Ayah — semua opsional, bisa dikosongkan
+            clean_input($get_val_opt('nama_ayah')),
+            clean_input($get_val_opt('nik_ayah')),
+            clean_input($get_val_opt('tempat_lahir_ayah')),
+            clean_input($get_val_opt('tanggal_lahir_ayah')),
+            clean_input($get_val_opt('pendidikan_ayah')),
+            clean_input($get_val_opt('pekerjaan_ayah')),
+            clean_input($get_val_opt('penghasilan_ayah')),
+            clean_input($get_val_opt('no_hp_ayah')),
+            clean_input($get_val_opt('provinsi_ayah')),
+            clean_input($get_val_opt('kabupaten_kota_ayah')),
+            clean_input($get_val_opt('kecamatan_ayah')),
+            clean_input($get_val_opt('desa_kelurahan_ayah')),
+            clean_input($get_val_opt('alamat_ayah')),
+            // Data Ibu — semua opsional, bisa dikosongkan
+            clean_input($get_val_opt('nama_ibu')),
+            clean_input($get_val_opt('nik_ibu')),
+            clean_input($get_val_opt('tempat_lahir_ibu')),
+            clean_input($get_val_opt('tanggal_lahir_ibu')),
+            clean_input($get_val_opt('pendidikan_ibu')),
+            clean_input($get_val_opt('pekerjaan_ibu')),
+            clean_input($get_val_opt('penghasilan_ibu')),
+            clean_input($get_val_opt('no_hp_ibu')),
+            clean_input($get_val_opt('provinsi_ibu')),
+            clean_input($get_val_opt('kabupaten_kota_ibu')),
+            clean_input($get_val_opt('kecamatan_ibu')),
+            clean_input($get_val_opt('desa_kelurahan_ibu')),
+            clean_input($get_val_opt('alamat_ibu')),
+            // Data Wali — semua opsional, bisa dikosongkan
+            clean_input($get_val_opt('nama_wali')),
+            clean_input($get_val_opt('nik_wali')),
+            clean_input($get_val_opt('tempat_lahir_wali')),
+            clean_input($get_val_opt('tanggal_lahir_wali')),
+            clean_input($get_val_opt('pendidikan_wali')),
+            clean_input($get_val_opt('pekerjaan_wali')),
+            clean_input($get_val_opt('penghasilan_wali')),
+            clean_input($get_val_opt('no_hp_wali')),
+            clean_input($get_val_opt('provinsi_wali')),
+            clean_input($get_val_opt('kabupaten_kota_wali')),
+            clean_input($get_val_opt('kecamatan_wali')),
+            clean_input($get_val_opt('desa_kelurahan_wali')),
+            clean_input($get_val_opt('alamat_wali')),
+            // Kontak WA — wajib
             clean_input($get_val('kontak_wa', $old_data['kontak_wa'])),
             clean_input($get_val('nama_kontak_wa', $old_data['nama_kontak_wa'])),
             $grades['nilai_k4_s1'],

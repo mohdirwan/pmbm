@@ -23,6 +23,12 @@ if (!$siswa) {
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
+// Guard Status Administrasi Page (Closed/Disabled for now)
+if ($current_page == 'status_administrasi.php') {
+    header("Location: dashboard.php");
+    exit();
+}
+
 // --- CENTRALIZED ACCESS GUARD ---
 $ppdb_status = get_setting('ppdb_status', 'belum');
 $tahap_admin = get_setting('tahap_administrasi', 'verifikasi');
@@ -441,10 +447,12 @@ if (in_array($current_page, $after_selection_pages)) {
                     <div class="collapse <?= in_array($current_page, ['status_administrasi.php', 'status_ujian.php', 'status_akhir.php', 'pengumuman.php']) ? 'show' : '' ?>"
                         id="menuLulus">
                         <ul class="sub-menu">
+                            <?php if (false): ?>
                             <li class="sub-item"><a
                                     class="nav-link <?= $current_page == 'status_administrasi.php' ? 'active' : '' ?>"
                                     href="status_administrasi.php?title=Status Administrasi">Status Administrasi</a>
                             </li>
+                            <?php endif; ?>
                             <?php if ($tahap_admin == 'pengumuman' && $is_verified): ?>
                             <li class="sub-item"><a
                                     class="nav-link <?= $current_page == 'status_akhir.php' ? 'active' : '' ?>"

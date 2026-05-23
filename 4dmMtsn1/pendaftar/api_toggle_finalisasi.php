@@ -28,8 +28,9 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare("UPDATE pendaftar SET finalisasi = ? WHERE id = ?");
-    $result = $stmt->execute([$finalisasi, $id]);
+    $stmt = $pdo->prepare("UPDATE pendaftar SET finalisasi = ?, finalisasi_oleh = ? WHERE id = ?");
+    $finalisasi_oleh = ($finalisasi === 'ya') ? 'admin' : null;
+    $result = $stmt->execute([$finalisasi, $finalisasi_oleh, $id]);
 
     if ($result) {
         $status_label = ($finalisasi == 'ya') ? 'Sudah Finalisasi' : 'Belum Finalisasi';

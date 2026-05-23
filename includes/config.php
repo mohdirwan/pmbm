@@ -6,7 +6,7 @@ date_default_timezone_set('Asia/Jakarta');
 // 1. DATABASE CONFIGURATION (AUTO-DETECT)
 // ============================================
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
-    // Pengaturan Lokal (XAMPP)
+    // Pengaturan Lokal (XAMPP) 
     define('DB_HOST', 'localhost');
     define('DB_USER', 'root');
     define('DB_PASS', '');
@@ -222,6 +222,29 @@ function sync_ppdb_status()
             $stmt_sync = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('tahap_administrasi', 'verifikasi') ON DUPLICATE KEY UPDATE setting_value = 'verifikasi'");
             $stmt_sync->execute();
 
+            // === AUTO-FINALISASI OLEH SISTEM ===
+            // Finalisasi otomatis semua pendaftar yang belum finalisasi saat pendaftaran ditutup
+            try {
+                // Tambah kolom finalisasi_oleh jika belum ada
+                try {
+                    $pdo->exec("ALTER TABLE pendaftar ADD COLUMN finalisasi_oleh ENUM('manual','sistem','admin') NULL DEFAULT NULL");
+                } catch (Exception $eAlter) { /* kolom sudah ada, abaikan */ }
+
+                $stmt_auto = $pdo->prepare(
+                    "UPDATE pendaftar 
+                     SET finalisasi = 'ya', finalisasi_oleh = 'sistem' 
+                     WHERE (finalisasi = 'belum' OR finalisasi IS NULL)"
+                );
+                $stmt_auto->execute();
+                $auto_count = $stmt_auto->rowCount();
+
+                if ($auto_count > 0) {
+                    log_activity("Finalisasi Otomatis", "Sistem memfinalisasi $auto_count pendaftar secara otomatis karena masa pendaftaran berakhir");
+                }
+            } catch (Exception $eFinalisasi) {
+                log_activity("Error Finalisasi Otomatis", "Gagal auto-finalisasi: " . $eFinalisasi->getMessage());
+            }
+
             $current_status = 'verifikasi'; // Move to next check
         }
     }
@@ -326,4 +349,4 @@ if (get_setting('maintenance_mode', 'off') === 'on') {
         }
     }
 }
-?>
+?>

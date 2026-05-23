@@ -12,15 +12,20 @@ $syarat_text = $jalur_data['syarat'] ?? '';
 // Handle Finalisasi POST Request
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'finalisasi') {
     try {
-        // Auto-add column to prevent errors on hosting servers that haven't run the SQL
+        // Auto-add columns to prevent errors on hosting servers that haven't run the SQL
         try {
             $pdo->exec("ALTER TABLE pendaftar ADD COLUMN finalisasi ENUM('belum', 'ya') DEFAULT 'belum'");
         } catch (Exception $e) {
             // Column already exists, ignore
         }
+        try {
+            $pdo->exec("ALTER TABLE pendaftar ADD COLUMN finalisasi_oleh ENUM('manual','sistem','admin') NULL DEFAULT NULL");
+        } catch (Exception $e) {
+            // Column already exists, ignore
+        }
 
-        // Update status
-        $stmt = $pdo->prepare("UPDATE pendaftar SET finalisasi = 'ya' WHERE id = ?");
+        // Update status — tandai sebagai finalisasi MANUAL oleh siswa
+        $stmt = $pdo->prepare("UPDATE pendaftar SET finalisasi = 'ya', finalisasi_oleh = 'manual' WHERE id = ?");
         $stmt->execute([$_SESSION['siswa_id']]);
 
         // Redirect directly to print page using JS (to avoid header already sent error)
@@ -287,21 +292,46 @@ if ($ppdb_status == 'pengumuman_adm' || $ppdb_status == 'cbt' || $ppdb_status ==
                 }
                 ?>
                 <div class="d-flex flex-column gap-2">
-                    <?php if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya'): ?>
-                        <button onclick="window.open('<?= BASE_URL ?>cetak_formulir.php?reg=<?= urlencode($siswa['no_pendaftaran']) ?>', '_blank')"
-                            class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
-                            <i class="fas fa-print me-2"></i> Cetak Formulir Pendaftaran
-                        </button>
-                        <div class="text-center mt-2">
-                            <span class="badge bg-success-subtle text-success border border-success border-opacity-25 py-2 px-3 rounded-pill">
-                                <i class="fas fa-lock me-1"></i> Data Telah Dikunci (Finalisasi)
-                            </span>
-                        </div>
+                    <?php if ($ppdb_status == 'buka'): ?>
+                        <?php if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya'): ?>
+                            <button onclick="window.open('<?= BASE_URL ?>cetak_formulir.php?reg=<?= urlencode($siswa['no_pendaftaran']) ?>', '_blank')"
+                                class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
+                                <i class="fas fa-print me-2"></i> Cetak Formulir Pendaftaran
+                            </button>
+                            <div class="text-center mt-2">
+                                <span class="badge bg-success-subtle text-success border border-success border-opacity-25 py-2 px-3 rounded-pill">
+                                    <i class="fas fa-lock me-1"></i> Data Telah Dikunci (Finalisasi)<?= (isset($siswa['finalisasi_oleh']) && $siswa['finalisasi_oleh'] == 'sistem') ? ' yaitu Finalisasi oleh sistem karena jam pendaftaran berakhir' : '' ?>
+                                </span>
+                            </div>
+                        <?php else: ?>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#finalisasiModal"
+                                class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
+                                <i class="fas fa-print me-2 text-primary"></i> Finalisasi dan Cetak Formulir Pendaftaran
+                            </button>
+                        <?php endif; ?>
                     <?php else: ?>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#finalisasiModal"
-                            class="btn btn-light btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
-                            <i class="fas fa-print me-2 text-primary"></i> Finalisasi dan Cetak Formulir Pendaftaran
-                        </button>
+                        <?php if (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya'): ?>
+                            <!-- Pendaftaran tutup tapi sudah finalisasi: tetap tampilkan tombol cetak -->
+                            <button onclick="window.open('<?= BASE_URL ?>cetak_formulir.php?reg=<?= urlencode($siswa['no_pendaftaran']) ?>', '_blank')"
+                                class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-lg" style="position: relative; z-index: 100;">
+                                <i class="fas fa-print me-2"></i> Cetak Formulir Pendaftaran
+                            </button>
+                            <div class="text-center mt-2">
+                                <span class="badge bg-success-subtle text-success border border-success border-opacity-25 py-2 px-3 rounded-pill">
+                                    <i class="fas fa-lock me-1"></i> Data Telah Dikunci (Finalisasi)<?= (isset($siswa['finalisasi_oleh']) && $siswa['finalisasi_oleh'] == 'sistem') ? ' yaitu Finalisasi oleh sistem karena jam pendaftaran berakhir' : '' ?>
+                                </span>
+                            </div>
+                        <?php else: ?>
+                            <!-- Pendaftaran tutup dan belum finalisasi: tampilkan peringatan -->
+                            <div class="text-center">
+                                <span class="badge bg-danger py-2 px-3 rounded-pill fs-6 fw-bold shadow-sm">
+                                    <i class="fas fa-exclamation-circle me-1"></i> Pendaftaran Telah Ditutup
+                                </span>
+                                <div class="mt-2 text-white-50 small">
+                                    <i class="fas fa-info-circle me-1"></i> Anda tidak melakukan finalisasi pendaftaran
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>

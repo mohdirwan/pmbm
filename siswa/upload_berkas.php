@@ -17,8 +17,11 @@ if ($status == 'Terverifikasi' || $status == 'Diterima' || !in_array($ppdb_statu
 
 $is_finalized = (isset($siswa['finalisasi']) && $siswa['finalisasi'] == 'ya');
 
+// Kunci upload jika: sudah finalisasi ATAU pendaftaran sudah ditutup
+$upload_locked = $is_finalized || ($ppdb_status !== 'buka');
+
 $message = "";
-if (!$is_finalized && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file_upload'])) {
+if (!$upload_locked && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file_upload'])) {
     $uploadDir = '../uploads/';
     $field = $_POST['field_name'];
     $isPhoto = ($field === 'foto_siswa');
@@ -228,8 +231,10 @@ if (empty($docs)) {
                             <th class="py-3" style="width: 30%;">Deskripsi Berkas</th>
                             <th class="py-3" style="width: 30%;">Nama File</th>
                             <th class="py-3 text-center" style="width: 15%;">Status</th>
-                            <?php if (!$is_finalized): ?>
+                            <?php if (!$upload_locked): ?>
                             <th class="py-3 text-center" style="width: 20%;">Aksi</th>
+                            <?php elseif ($ppdb_status !== 'buka'): ?>
+                            <th class="py-3 text-center" style="width: 20%;">Lihat</th>
                             <?php endif; ?>
                         </tr>
                     </thead>
@@ -263,7 +268,7 @@ if (empty($docs)) {
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <?php if (!$is_finalized): ?>
+                                <?php if (!$upload_locked): ?>
                                 <td class="text-center py-3">
                                     <div class="btn-group btn-group-sm">
                                         <?php if (isset($siswa[$doc['field']]) && $siswa[$doc['field']]): ?>
@@ -283,6 +288,18 @@ if (empty($docs)) {
                                         <?php endif; ?>
                                     </div>
                                 </td>
+                                <?php elseif ($ppdb_status !== 'buka' && isset($siswa[$doc['field']]) && $siswa[$doc['field']]): ?>
+                                <!-- Pendaftaran tutup: hanya tampilkan tombol lihat, tanpa upload -->
+                                <td class="text-center py-3">
+                                    <a href="../uploads/<?= $siswa[$doc['field']] ?>" target="_blank"
+                                        class="btn btn-sm btn-info text-white" title="Preview">
+                                        <i class="fas fa-eye me-1"></i> Lihat
+                                    </a>
+                                </td>
+                                <?php elseif ($ppdb_status !== 'buka'): ?>
+                                <td class="text-center py-3">
+                                    <span class="text-muted small">-</span>
+                                </td>
                                 <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
@@ -301,11 +318,22 @@ if (empty($docs)) {
                     </div>
                 </div>
             </div>
+            <?php if ($ppdb_status !== 'buka'): ?>
+                <div class="alert alert-warning border-0 rounded-4 mt-3 mb-0 shadow-sm">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-lock fa-lg me-3 text-warning"></i>
+                        <div>
+                            <div class="fw-bold">Upload Berkas Tidak Tersedia</div>
+                            <div class="small text-muted">Masa pendaftaran sudah ditutup. Berkas tidak dapat diunggah atau diubah.</div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-<?php if (!$is_finalized): ?>
+<?php if (!$upload_locked): ?>
 <?php foreach ($docs as $doc): ?>
     <!-- Modal Upload -->
     <div class="modal fade" id="modal_<?= $doc['field'] ?>" tabindex="-1" aria-hidden="true">
@@ -381,5 +409,6 @@ if (empty($docs)) {
     </div>
 <?php endforeach; ?>
 <?php endif; ?>
+
 
 <?php require_once 'layout_bottom.php'; ?>
