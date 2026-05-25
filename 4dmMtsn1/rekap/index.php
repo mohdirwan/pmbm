@@ -147,7 +147,7 @@ $jalurs = $stmt->fetchAll();
                                         </td>
                                         <td class="text-end pe-4">
                                             <?php if ($j['total_pendaftar'] > 0): ?>
-                                                <button onclick="startRekap(<?= $j['id'] ?>, '<?= addslashes($j['nama_jalur']) ?>')"
+                                                <button onclick="startRekap(<?= $j['id'] ?>, '<?= addslashes($j['nama_jalur']) ?>', <?= $j['total_pendaftar'] ?>)"
                                                     class="btn btn-primary rounded-pill px-4 shadow-sm">
                                                     <i class="fas fa-download me-2"></i> Rekap ZIP
                                                 </button>
@@ -188,31 +188,126 @@ $jalurs = $stmt->fetchAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function startRekap(jalurId, namaJalur) {
+        function startRekap(jalurId, namaJalur, totalPendaftar) {
+            let html = '<div class="d-grid gap-2 mt-3">';
+            let maxPerPart = 250;
+            let parts = Math.ceil(totalPendaftar / maxPerPart);
+            
+            if (parts > 1) {
+                html += '<p class="text-muted small mb-3">Data terlalu besar ('+totalPendaftar+' pendaftar). Silakan unduh per bagian agar proses server tidak berat:</p>';
+                for(let i=0; i<parts; i++) {
+                    let start = i * maxPerPart + 1;
+                    let end = Math.min((i+1) * maxPerPart, totalPendaftar);
+                    let targetCount = end - start + 1;
+                    html += `<button onclick="Swal.close(); processRekapBatch(${jalurId}, ${start-1}, ${targetCount}, 'Part_${i+1}')" class="btn btn-primary shadow-sm"><i class="fas fa-download me-2"></i> Unduh Part ${i+1} (${start} - ${end})</button>`;
+                }
+            } else {
+                html += `<p class="text-muted small mb-3">Total ${totalPendaftar} pendaftar akan direkap menjadi satu file ZIP.</p>`;
+                html += `<button onclick="Swal.close(); processRekapBatch(${jalurId}, 0, ${totalPendaftar}, 'Full')" class="btn btn-primary shadow-sm"><i class="fas fa-download me-2"></i> Mulai Rekap Semua</button>`;
+            }
+            html += '</div>';
+
             Swal.fire({
                 title: 'Konfirmasi Rekap',
-                text: "Anda akan mengunduh seluruh berkas untuk jalur '" + namaJalur + "'. Proses ini mungkin memakan waktu.",
-                icon: 'question',
+                html: html,
+                icon: 'info',
+                showConfirmButton: false,
                 showCancelButton: true,
-                confirmButtonColor: '#0f5132',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Mulai Rekap!',
                 cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('loadingOverlay').style.display = 'flex';
-
-                    // Redirect to process script
-                    window.location.href = 'proses_rekap.php?jalur_id=' + jalurId;
-
-                    // Note: Since this will be a download, the page won't technically refresh/redirect 
-                    // until the ZIP is ready. We can hide the overlay after some time or use AJAX 
-                    // if we want a better progress bar, but for simplicity, we'll hide it after 5 sec if still showing.
-                    setTimeout(() => {
-                        document.getElementById('loadingOverlay').style.display = 'none';
-                    }, 10000);
-                }
             });
+        }
+
+        async function processRekapBatch(jalurId, globalOffset, totalToProcess, partName) {
+            const overlay = document.getElementById('loadingOverlay');
+            const overlayText = overlay.querySelector('h5');
+            const overlayDesc = overlay.querySelector('p');
+            
+            overlay.style.display = 'flex';
+            overlayText.innerText = "Memulai inisialisasi ZIP...";
+            overlayDesc.innerText = "Mempersiapkan sistem...";
+
+            try {
+                // 1. Inisialisasi proses
+                const initRes = await fetch(`proses_rekap.php?action=init&jalur_id=${jalurId}`);
+                const initData = await initRes.json();
+
+                if (!initData.success) {
+                    throw new Error(initData.error || "Gagal inisialisasi");
+                }
+
+                const sessionId = initData.session_id;
+                // Append partName to zip filename if not full
+                let zipFilename = initData.zip_filename;
+                if(partName !== 'Full') {
+                    zipFilename = zipFilename.replace('.zip', `_${partName}.zip`);
+                }
+
+                const limit = 50; // Proses 50 siswa per request batching copy file
+                let localOffset = 0;
+
+                // 2. Looping Batching
+                while (localOffset < totalToProcess) {
+                    let fetchOffset = globalOffset + localOffset;
+                    let fetchLimit = Math.min(limit, totalToProcess - localOffset);
+                    let endDisp = localOffset + fetchLimit;
+                    
+                    overlayText.innerText = `Memproses: ${localOffset + 1} s.d ${endDisp} dari ${totalToProcess} Siswa (${partName})`;
+                    overlayDesc.innerText = `Mohon jangan tutup halaman ini. Sedang menyalin file ke folder sementara...`;
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'process_batch');
+                    formData.append('jalur_id', jalurId);
+                    formData.append('session_id', sessionId);
+                    formData.append('offset', fetchOffset);
+                    formData.append('limit', fetchLimit);
+
+                    const batchRes = await fetch('proses_rekap.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const batchData = await batchRes.json();
+                    
+                    if (!batchData.success) {
+                        throw new Error(batchData.error || "Gagal memproses batch");
+                    }
+
+                    localOffset += fetchLimit;
+                }
+
+                // 3. Compress Folder menjadi ZIP
+                overlayText.innerText = "Mengompresi Berkas...";
+                overlayDesc.innerText = "Mohon tunggu, sedang membuat file ZIP (proses ini bisa memakan waktu beberapa menit untuk file besar)...";
+                
+                const compressData = new FormData();
+                compressData.append('action', 'compress');
+                compressData.append('jalur_id', jalurId);
+                compressData.append('session_id', sessionId);
+
+                const compRes = await fetch('proses_rekap.php', {
+                    method: 'POST',
+                    body: compressData
+                });
+                
+                const compData = await compRes.json();
+                if (!compData.success) {
+                    throw new Error(compData.error || "Gagal mengompresi ZIP");
+                }
+
+                // 4. Download hasil akhir
+                overlayText.innerText = "Proses Selesai!";
+                overlayDesc.innerText = "Mengunduh file ZIP...";
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    window.location.href = `proses_rekap.php?action=download_file&session_id=${sessionId}&filename=${encodeURIComponent(zipFilename)}`;
+                }, 1500);
+
+            } catch (error) {
+                console.error(error);
+                overlay.style.display = 'none';
+                Swal.fire('Error', 'Terjadi kesalahan saat rekap: ' + error.message, 'error');
+            }
         }
     </script>
 </body>
