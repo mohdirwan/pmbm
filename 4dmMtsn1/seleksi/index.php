@@ -18,9 +18,21 @@ if (isset($_POST['update_weights'])) {
     exit();
 }
 
-// Fetch Weights
+// Handle wa group link Update
+if (isset($_POST['update_wa_link'])) {
+    $wa_group_link = $_POST['wa_group_link'];
+    $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('wa_group_link', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+    $stmt->execute([$wa_group_link, $wa_group_link]);
+
+    header("Location: index.php?msg=wa_link_saved");
+    exit();
+}
+
+
+// Fetch Settings
 $w_rapor = (int) get_setting('weight_rapor', 50);
 $w_cbt = (int) get_setting('weight_cbt', 50);
+$wa_group_link = get_setting('wa_group_link', '');
 
 // Handle Quota Update
 if (isset($_POST['update_quotas'])) {
@@ -88,7 +100,7 @@ if (isset($_POST['auto_pass'])) {
         $pdo->beginTransaction();
         if (!empty($lulus_ids)) {
             $inLulus = implode(',', array_fill(0, count($lulus_ids), '?'));
-            $pdo->prepare("UPDATE pendaftar SET status = 'Diterima' WHERE id IN ($inLulus)")->execute($lulus_ids);
+            $pdo->prepare("UPDATE pendaftar SET status = 'Diterima', gedung = 'Gedung Utama' WHERE id IN ($inLulus)")->execute($lulus_ids);
         }
         if (!empty($gagal_ids)) {
             $inGagal = implode(',', array_fill(0, count($gagal_ids), '?'));
@@ -130,7 +142,7 @@ if (isset($_POST['tetapkan_kelulusan'])) {
 
         if (!empty($top_ids)) {
             $inQueryTop = implode(',', array_fill(0, count($top_ids), '?'));
-            $update_lulus = $pdo->prepare("UPDATE pendaftar SET status = 'Diterima' WHERE id IN ($inQueryTop)");
+            $update_lulus = $pdo->prepare("UPDATE pendaftar SET status = 'Diterima', gedung = 'Gedung Utama' WHERE id IN ($inQueryTop)");
             $update_lulus->execute($top_ids);
         }
 
@@ -150,7 +162,7 @@ if (isset($_POST['tetapkan_kelulusan'])) {
 
 // Ambil data pendaftar yang sudah diverifikasi (atau semua)
 // Hitung nilai akhir berdasarkan bobot persentase
-$query = "SELECT p.id, p.nama_lengkap, p.no_pendaftaran, p.jenis_kelamin, p.jalur_id, p.nilai_rapor_rata2, p.nilai_ujian, p.status, j.nama_jalur,
+$query = "SELECT p.id, p.nama_lengkap, p.no_pendaftaran, p.jenis_kelamin, p.jalur_id, p.nilai_rapor_rata2, p.nilai_ujian, p.status, p.gedung, j.nama_jalur,
           ((p.nilai_rapor_rata2 * $w_rapor / 100) + (p.nilai_ujian * $w_cbt / 100)) as nilai_akhir
           FROM pendaftar p
           LEFT JOIN jalur_pendaftaran j ON p.jalur_id = j.id
@@ -176,9 +188,29 @@ foreach ($pendaftar as $p) {
 if (isset($_POST['update_status']) && isset($_POST['status'])) {
     $id = $_POST['id'];
     $status = $_POST['status'];
-    $stmt = $pdo->prepare("UPDATE pendaftar SET status = ? WHERE id = ?");
-    if ($stmt->execute([$status, $id])) {
+    
+    if ($status === 'Diterima') {
+        $gedung = isset($_POST['gedung']) ? $_POST['gedung'] : 'Gedung Utama';
+        $stmt = $pdo->prepare("UPDATE pendaftar SET status = ?, gedung = ? WHERE id = ?");
+        $success = $stmt->execute([$status, $gedung, $id]);
+    } else {
+        $stmt = $pdo->prepare("UPDATE pendaftar SET status = ? WHERE id = ?");
+        $success = $stmt->execute([$status, $id]);
+    }
+
+    if ($success) {
         // Redirect with success message to refresh list
+        header("Location: index.php?msg=success");
+        exit();
+    }
+}
+
+// Handle Gedung Update Independent
+if (isset($_POST['update_gedung']) && isset($_POST['gedung'])) {
+    $id = $_POST['id'];
+    $gedung = $_POST['gedung'];
+    $stmt = $pdo->prepare("UPDATE pendaftar SET gedung = ? WHERE id = ?");
+    if ($stmt->execute([$gedung, $id])) {
         header("Location: index.php?msg=success");
         exit();
     }
@@ -437,6 +469,11 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                         <i class="fas fa-magic me-2"></i> Kelulusan otomatis berdasarkan kuota berhasil diproses!
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                <?php elseif ($_GET['msg'] == 'wa_link_saved'): ?>
+                    <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> Link Grup WhatsApp berhasil disimpan!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -664,6 +701,35 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                 </div>
             </div>
 
+            <!-- WA Group Link Setting -->
+            <div class="row mb-4 g-4 no-print">
+                <div class="col-lg-12">
+                    <div class="card card-premium p-4 border-0 bg-white shadow-sm">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="bg-success bg-opacity-10 p-2 rounded-3 me-3">
+                                <i class="fab fa-whatsapp text-success"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Pengaturan Grup WhatsApp</h6>
+                                <p class="small text-muted mb-0">Tentukan link tautan grup WhatsApp untuk calon murid yang diterima.</p>
+                            </div>
+                        </div>
+                        <form method="POST" class="row g-3 align-items-end">
+                            <input type="hidden" name="update_wa_link" value="1">
+                            <div class="col-md-9">
+                                <label class="small text-muted fw-bold mb-1">Link Tautan Grup WA</label>
+                                <input type="url" name="wa_group_link" class="form-control form-control-sm border-0 bg-light py-2" value="<?= htmlspecialchars($wa_group_link) ?>" placeholder="Contoh: https://chat.whatsapp.com/...">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-success btn-sm w-100 rounded-pill fw-bold text-white shadow-sm py-2">
+                                    <i class="fas fa-save me-1"></i> Simpan Link WA
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Tab Navigation -->
             <?php 
             $active_tab = (count($pendaftar_l) == 0 && count($pendaftar_p) > 0) ? 'female' : 'male';
@@ -720,6 +786,12 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                                             <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
                                                             <?= strtoupper($row['status'] ?: 'Belum Ditentukan') ?>
                                                         </span>
+                                                        <?php if ($row['status'] == 'Diterima'): ?>
+                                                            <span class="badge rounded-pill bg-info text-white border ms-1" style="font-size: 0.65rem; font-weight: 600;">
+                                                                <i class="fas fa-building me-1" style="font-size: 0.5rem;"></i>
+                                                                <?= htmlspecialchars($row['gedung'] ?: 'Gedung Utama') ?>
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                                 <td><span class="badge bg-light text-secondary border rounded-pill px-3"><?= $row['nama_jalur'] ?: 'Umum' ?></span></td>
@@ -727,16 +799,32 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                                 <td class="text-center fw-bold"><?= number_format($row['nilai_ujian'], 2) ?></td>
                                                 <td class="text-center"><span class="nilai-akhir-box"><?= number_format($row['nilai_akhir'], 2) ?></span></td>
                                                 <td class="text-center">
-                                                    <form method="POST" class="d-flex gap-2 justify-content-center">
-                                                        <input type="hidden" name="id" value="<?= $row['id'] ?>"><input type="hidden" name="update_status" value="1">
-                                                        <?php if ($row['status'] != 'Diterima'): ?>
-                                                            <button type="submit" name="status" value="Diterima" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0" onclick="return confirm('Luluskan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-check-circle me-1"></i> Lulus</button>
+                                                    <div class="d-flex gap-2 justify-content-center">
+                                                        <?php if ($row['status'] == 'Diterima'): ?>
+                                                            <form method="POST" class="d-flex gap-1 m-0">
+                                                                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                                                <input type="hidden" name="update_gedung" value="1">
+                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                                                                    <option value="Gedung Utama" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Utama') ? 'selected' : '' ?>>Gedung Utama</option>
+                                                                    <option value="Gedung Filial" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Filial') ? 'selected' : '' ?>>Gedung Filial</option>
+                                                                </select>
+                                                            </form>
                                                         <?php endif; ?>
-                                                        <?php if ($row['status'] != 'Ditolak'): ?>
-                                                            <button type="submit" name="status" value="Ditolak" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print" onclick="return confirm('Gagalkan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-times-circle me-1"></i> Gagal</button>
-                                                        <?php endif; ?>
-                                                        <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print" onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)"><i class="fas fa-edit me-1"></i> Edit</button>
-                                                    </form>
+                                                        <form method="POST" class="d-flex gap-2 m-0">
+                                                            <input type="hidden" name="id" value="<?= $row['id'] ?>"><input type="hidden" name="update_status" value="1">
+                                                            <?php if ($row['status'] != 'Diterima'): ?>
+                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                                                    <option value="Gedung Utama" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Utama') ? 'selected' : '' ?>>Gedung Utama</option>
+                                                                    <option value="Gedung Filial" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Filial') ? 'selected' : '' ?>>Gedung Filial</option>
+                                                                </select>
+                                                                <button type="submit" name="status" value="Diterima" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0" onclick="return confirm('Luluskan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-check-circle me-1"></i> Lulus</button>
+                                                            <?php endif; ?>
+                                                            <?php if ($row['status'] != 'Ditolak'): ?>
+                                                                <button type="submit" name="status" value="Ditolak" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print" onclick="return confirm('Gagalkan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-times-circle me-1"></i> Gagal</button>
+                                                            <?php endif; ?>
+                                                            <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print" onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)"><i class="fas fa-edit me-1"></i> Edit</button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -785,6 +873,12 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                                             <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
                                                             <?= strtoupper($row['status'] ?: 'Belum Ditentukan') ?>
                                                         </span>
+                                                        <?php if ($row['status'] == 'Diterima'): ?>
+                                                            <span class="badge rounded-pill bg-info text-white border ms-1" style="font-size: 0.65rem; font-weight: 600;">
+                                                                <i class="fas fa-building me-1" style="font-size: 0.5rem;"></i>
+                                                                <?= htmlspecialchars($row['gedung'] ?: 'Gedung Utama') ?>
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                                 <td><span class="badge bg-light text-secondary border rounded-pill px-3"><?= $row['nama_jalur'] ?: 'Umum' ?></span></td>
@@ -792,16 +886,32 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                                 <td class="text-center fw-bold"><?= number_format($row['nilai_ujian'], 2) ?></td>
                                                 <td class="text-center"><span class="nilai-akhir-box"><?= number_format($row['nilai_akhir'], 2) ?></span></td>
                                                 <td class="text-center">
-                                                    <form method="POST" class="d-flex gap-2 justify-content-center">
-                                                        <input type="hidden" name="id" value="<?= $row['id'] ?>"><input type="hidden" name="update_status" value="1">
-                                                        <?php if ($row['status'] != 'Diterima'): ?>
-                                                            <button type="submit" name="status" value="Diterima" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0" onclick="return confirm('Luluskan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-check-circle me-1"></i> Lulus</button>
+                                                    <div class="d-flex gap-2 justify-content-center">
+                                                        <?php if ($row['status'] == 'Diterima'): ?>
+                                                            <form method="POST" class="d-flex gap-1 m-0">
+                                                                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                                                <input type="hidden" name="update_gedung" value="1">
+                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                                                                    <option value="Gedung Utama" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Utama') ? 'selected' : '' ?>>Gedung Utama</option>
+                                                                    <option value="Gedung Filial" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Filial') ? 'selected' : '' ?>>Gedung Filial</option>
+                                                                </select>
+                                                            </form>
                                                         <?php endif; ?>
-                                                        <?php if ($row['status'] != 'Ditolak'): ?>
-                                                            <button type="submit" name="status" value="Ditolak" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print" onclick="return confirm('Gagalkan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-times-circle me-1"></i> Gagal</button>
-                                                        <?php endif; ?>
-                                                        <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print" onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)"><i class="fas fa-edit me-1"></i> Edit</button>
-                                                    </form>
+                                                        <form method="POST" class="d-flex gap-2 m-0">
+                                                            <input type="hidden" name="id" value="<?= $row['id'] ?>"><input type="hidden" name="update_status" value="1">
+                                                            <?php if ($row['status'] != 'Diterima'): ?>
+                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                                                    <option value="Gedung Utama" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Utama') ? 'selected' : '' ?>>Gedung Utama</option>
+                                                                    <option value="Gedung Filial" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Filial') ? 'selected' : '' ?>>Gedung Filial</option>
+                                                                </select>
+                                                                <button type="submit" name="status" value="Diterima" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm border-0" onclick="return confirm('Luluskan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-check-circle me-1"></i> Lulus</button>
+                                                            <?php endif; ?>
+                                                            <?php if ($row['status'] != 'Ditolak'): ?>
+                                                                <button type="submit" name="status" value="Ditolak" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm no-print" onclick="return confirm('Gagalkan <?= addslashes($row['nama_lengkap']) ?>?')"><i class="fas fa-times-circle me-1"></i> Gagal</button>
+                                                            <?php endif; ?>
+                                                            <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 shadow-sm no-print" onclick="editIndividualScore(<?= $row['id'] ?>, '<?= htmlspecialchars($row['nama_lengkap'], ENT_QUOTES) ?>', <?= $row['nilai_rapor_rata2'] ?>, <?= $row['nilai_ujian'] ?>)"><i class="fas fa-edit me-1"></i> Edit</button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

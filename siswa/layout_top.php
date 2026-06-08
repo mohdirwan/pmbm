@@ -44,8 +44,8 @@ if (in_array($current_page, $exam_pages)) {
     
     $rejected_at_admin = ($siswa['status'] == 'Ditolak' && $tahap_admin == 'pengumuman' && !$failed_tahfidz);
     
-    // Forbidden if rejected at admin, or if admin results not yet published, or if still pending
-    if ($rejected_at_admin || $tahap_admin !== 'pengumuman' || $siswa['status'] == 'Pending') {
+    // Forbidden if rejected at admin (and has no exam score), or if admin results not yet published, or if still pending
+    if (($rejected_at_admin && $siswa['nilai_ujian'] <= 0) || $tahap_admin !== 'pengumuman' || $siswa['status'] == 'Pending') {
         header("Location: dashboard.php?msg=access_denied");
         exit();
     }
@@ -423,7 +423,7 @@ if (in_array($current_page, $after_selection_pages)) {
 
                 // Reveal Exam Info ONLY after admin results are out, and only for those who passed admin (Verified/Diterima/Lulus)
                 // AND ensure it doesn't disappear if they are final-rejected until the big day.
-                if ($tahap_admin == 'pengumuman' && $is_verified && $needs_exam):
+                if ($tahap_admin == 'pengumuman' && ($is_verified || $siswa['nilai_ujian'] > 0) && $needs_exam):
                     ?>
                     <div class="nav-item">
                         <a class="menu-header text-decoration-none <?= $current_page != 'status_ujian.php' ? 'collapsed' : '' ?>"

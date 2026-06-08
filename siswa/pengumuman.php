@@ -19,10 +19,26 @@ if ($ann_status == 'closed' || $ppdb_status !== 'pengumuman') {
                         class="fas fa-bullhorn me-3 text-warning"></i><?= get_setting('announcement_title', 'Pengumuman Kelulusan') ?>
                 </h5>
 
-                <?php if ($siswa['status'] == 'Diterima'): ?>
-                    <div class="alert alert-success border-0 rounded-4 p-4 mb-5">
+                <?php if ($siswa['status'] == 'Diterima' || $siswa['status'] == 'Lulus'): ?>
+                    <div class="alert alert-success border-0 rounded-4 p-4 mb-3">
                         <?= get_setting('announcement_body', 'Selamat, Anda dinyatakan lulus seleksi.') ?>
                     </div>
+                    <?php 
+                    $gedung_info = "";
+                    if (isset($siswa['gedung'])) {
+                        if ($siswa['gedung'] == 'Gedung Utama') {
+                            $gedung_info = "sekolah di gedung utama jalan amal Hamzah";
+                        } elseif ($siswa['gedung'] == 'Gedung Filial') {
+                            $gedung_info = "sekolah di gedung filial jalan Wates tenayan Raya";
+                        }
+                    }
+                    if (!empty($gedung_info)): 
+                    ?>
+                    <div class="alert alert-info border-0 rounded-4 p-4 mb-5">
+                        <i class="fas fa-map-marker-alt me-2 text-info fs-5 align-middle"></i>
+                        <span class="align-middle"><strong>Informasi Penempatan:</strong> Ananda akan <?= $gedung_info ?>.</span>
+                    </div>
+                    <?php endif; ?>
 
                     <h6 class="fw-bold mb-3">Tata Cara Daftar Ulang:</h6>
                     <div class="row g-4 mb-5">
@@ -53,10 +69,18 @@ if ($ann_status == 'closed' || $ppdb_status !== 'pengumuman') {
                         </div>
                     </div>
 
-                    <div class="text-center">
+                    <div class="text-center d-flex justify-content-center gap-3 flex-wrap">
                         <a href="cetak_bukti_lulus.php" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
                             <i class="fas fa-print me-2"></i> Cetak Bukti Kelulusan (SKL)
                         </a>
+                        <?php 
+                        $wa_group_link = get_setting('wa_group_link', '');
+                        if (!empty($wa_group_link)): 
+                        ?>
+                        <a href="<?= htmlspecialchars($wa_group_link) ?>" target="_blank" class="btn btn-success btn-lg rounded-pill px-5 shadow">
+                            <i class="fab fa-whatsapp me-2"></i> Bergabung ke Grup WA
+                        </a>
+                        <?php endif; ?>
                     </div>
 
                 <?php elseif ($siswa['status'] == 'Pending'): ?>

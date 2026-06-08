@@ -488,6 +488,8 @@ function get_stage_date_range($stage_key, $default_text)
         $is_lulus_langsung = (in_array($siswa['jalur_id'], [8, 10]) || (($siswa['jalur_id'] == 11) && ($siswa['status_tahfidz'] ?? '') == 'Lulus'));
         $status_is_ok = in_array($siswa['status'], ['Terverifikasi', 'Diterima', 'Lulus']);
 
+        $wa_link_extracted = '';
+
         if ($status_is_ok && $is_lulus_langsung || ($siswa['status'] == 'Diterima' || $siswa['status'] == 'Lulus')) {
             $ann_color = "success";
             $ann_icon = "fa-award";
@@ -497,6 +499,27 @@ function get_stage_date_range($stage_key, $default_text)
             } else {
                 $ann_message = get_setting('narasi_lulus_test_akademik', "Selamat, Ananda lulus tes akademik di MTsN 1 Kota Pekanbaru. Silakan melakukan daftar ulang sesuai jadwal yang telah ditentukan.");
             }
+
+            // Extract WhatsApp link if embedded in narration
+            if (preg_match('/(https?:\/\/chat\.whatsapp\.com\/[^\s<]+)/i', $ann_message, $matches)) {
+                $wa_link_extracted = $matches[1];
+                $ann_message = str_replace($wa_link_extracted, '', $ann_message);
+                // Clean up trailing words like ", melalui link berikut ini"
+                $ann_message = preg_replace('/(,\s*)?(melalui|silakan klik)?\s*link\s*(berikut|dibawah)?\s*(ini)?\s*:?\s*$/i', '', trim($ann_message));
+            }
+            
+            $gedung_info = "";
+            if (isset($siswa['gedung'])) {
+                if ($siswa['gedung'] == 'Gedung Utama') {
+                    $gedung_info = "sekolah di gedung utama jalan amal Hamzah";
+                } elseif ($siswa['gedung'] == 'Gedung Filial') {
+                    $gedung_info = "sekolah di gedung filial jalan Wates tenayan Raya";
+                }
+            }
+            if (!empty($gedung_info)) {
+                $ann_message .= "<br><br><div class='alert alert-info border-0 p-3 mt-3 mb-0'><i class='fas fa-map-marker-alt me-2 text-info'></i><strong>Informasi Penempatan:</strong> Ananda akan " . $gedung_info . ".</div>";
+            }
+            
             $ann_detail = "<div class='mt-3 p-3 bg-success bg-opacity-10 rounded-4 border border-success border-opacity-25'>" .
                 "<h6 class='fw-bold mb-2 text-success'><i class='fas fa-info-circle me-2'></i>Informasi Daftar Ulang:</h6>" .
                 get_setting('narasi_info_daftar_ulang', "Bagi Ananda yang lulus tes akademik, silakan melakukan daftar ulang pada hari Rabu – Jumat, 01 – 03 April 2026 pukul 08.00 – 15.00 WIB di MTsN 1 Kota Pekanbaru.") .
@@ -550,9 +573,21 @@ function get_stage_date_range($stage_key, $default_text)
 
                             <?php 
                             // 2. Button during/after Final Phase (Nilai)
-                            if (in_array($ppdb_status, ['pengumuman', 'finalisasi']) && isset($siswa['nilai_ujian']) && $needs_exam): ?>
-                                <a href="status_ujian.php" class="btn btn-outline-primary rounded-pill px-4 me-2">
+                            if (in_array($ppdb_status, ['pengumuman', 'finalisasi']) && isset($siswa['nilai_ujian']) && $needs_exam && ($siswa['status'] != 'Ditolak' || $siswa['nilai_ujian'] > 0)): ?>
+                                <a href="status_ujian.php" class="btn btn-outline-primary rounded-pill px-4 me-2 mt-2">
                                     <i class="fas fa-poll me-2"></i> Lihat Hasil & Nilai Ujian
+                                </a>
+                            <?php endif; ?>
+
+                            <?php 
+                            // 3. WhatsApp Group Button for Passed Students
+                            $wa_group_link = get_setting('wa_group_link', '');
+                            if (empty($wa_group_link) && !empty($wa_link_extracted)) {
+                                $wa_group_link = $wa_link_extracted;
+                            }
+                            if ($ppdb_status == 'pengumuman' && ($siswa['status'] == 'Diterima' || $siswa['status'] == 'Lulus') && !empty($wa_group_link)): ?>
+                                <a href="<?= htmlspecialchars($wa_group_link) ?>" target="_blank" class="btn btn-success rounded-pill px-4 me-2 mt-2">
+                                    <i class="fab fa-whatsapp me-2"></i> Bergabung ke Grup WA
                                 </a>
                             <?php endif; ?>
                         </div>
