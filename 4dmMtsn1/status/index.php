@@ -68,6 +68,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
+        // Handle show_countdown_pengumuman
+        if (isset($_POST['show_countdown_pengumuman'])) {
+            $stmt_date->execute(['show_countdown_pengumuman', 'aktif', 'aktif']);
+        } else {
+            $stmt_date->execute(['show_countdown_pengumuman', 'tidak', 'tidak']);
+        }
+
         $pdo->commit();
         $success_msg = "Pengaturan tahapan dan jadwal berhasil diperbarui!";
     } catch (Exception $e) {
@@ -400,6 +407,17 @@ function format_indo_date($date_string)
                                                         class="form-control form-control-sm datetimepicker"
                                                         value="<?= $val_end ?>" placeholder="Pilih Jadwal">
                                                 </div>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($key == 'finalisasi'): ?>
+                                            <?php $show_cd = get_setting('show_countdown_pengumuman', 'tidak'); ?>
+                                            <div class="mt-3 pt-3 border-top">
+                                                <div class="form-check form-switch d-flex justify-content-between align-items-center px-0">
+                                                    <label class="form-check-label small fw-bold text-muted mb-0" for="cdSwitch">Tampilkan Hitung Mundur</label>
+                                                    <input class="form-check-input ms-0 mt-0" type="checkbox" id="cdSwitch" name="show_countdown_pengumuman" value="aktif" <?= $show_cd == 'aktif' ? 'checked' : '' ?> style="transform: scale(1.2);">
+                                                </div>
+                                                <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Aktifkan untuk menampilkan countdown di login siswa.</small>
                                             </div>
                                         <?php endif; ?>
                                     </div>

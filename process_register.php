@@ -253,53 +253,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $pdo->commit();
         error_log("PROCESS: Database Transaction committed successfully (Initial Registration).");
 
-        // === Send WhatsApp Notification ===
-        try {
-            require_once 'includes/wa_helper.php';
-            $nama_lengkap = strtoupper(clean_input($_POST['nama_lengkap']));
-            $nisn = clean_input($_POST['nisn']);
-            $no_hp = clean_input($_POST['kontak_wa']);
-            $nama_kontak = clean_input($_POST['nama_kontak_wa']);
-            $jalur_id = intval($_POST['jalur_id']);
-
-            // Get Jalur Name
-            $stmt_j = $pdo->prepare("SELECT nama_jalur FROM jalur_pendaftaran WHERE id = ?");
-            $stmt_j->execute([$jalur_id]);
-            $nama_jalur = $stmt_j->fetchColumn();
-
-            if (!empty($no_hp)) {
-                $login_url = BASE_URL . 'login_siswa.php';
-
-                // Determine which message to send
-                $is_tahfidz = stripos($nama_jalur, 'tahfi') !== false;
-
-                if ($is_tahfidz) {
-                    $custom_msg = "Selamat, pendaftaran Ananda di MTsN 1 Kota Pekanbaru melalui jalur tahfizh telah berhasil dan tercatat dalam sistem. Silakan mengikuti tes tahfizh pada hari Senin – Selasa, 09 – 10 Maret 2026 pukul 08.00 – 12.00 WIB di MTsN 1 Kota Pekanbaru.";
-                } else {
-                    $custom_msg = "Selamat, pendaftaran Ananda di MTsN 1 Kota Pekanbaru melalui  " . $nama_jalur . " telah berhasil dan tercatat dalam sistem. Silakan menunggu informasi selanjutnya sesuai jadwal yang ditentukan.";
-                }
-
-                $message = "Assalamu'alaikum warahmatullahi wabarakatuh.
-
-Halo {$nama_kontak},
-
-{$custom_msg}
-
-Berikut adalah rincian akun login untuk melengkapi berkas di Dashboard Murid:
-Link Login: {$login_url}
-Username: {$nisn} (NISN Ananda)
-Password: [Password yang dibuat saat mendaftar]
-
-Mohon simpan informasi akun ini dengan baik.
-
-Wassalamu'alaikum warahmatullahi wabarakatuh.";
-
-                send_wa_message($no_hp, $message);
-            }
-        } catch (Throwable $wa_err) {
-            error_log("PROCESS: WhatsApp Error: " . $wa_err->getMessage());
-            // Silently fail WA to not break registration
-        }
 
         error_log("PROCESS: Redirecting to success.php with NO Registration: " . $no_pendaftaran);
         // Redirect to success page

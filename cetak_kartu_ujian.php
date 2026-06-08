@@ -20,7 +20,9 @@ if (!$student) {
 
 // Generate Password for Exam
 $exam_username = $student['no_pendaftaran'];
-$exam_password = "26" . $student['nisn'];
+$birth_year = preg_match('/^\d{4}/', $student['tanggal_lahir'] ?? '', $matches) ? $matches[0] : '';
+$exam_password = $birth_year . $student['nisn'];
+$tata_tertib = get_setting('cbt_rules');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -337,13 +339,13 @@ $exam_password = "26" . $student['nisn'];
                                 <?= htmlspecialchars($student['nisn']) ?>
                             </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td class="label">Password</td>
                             <td class="colon">:</td>
                             <td class="value">
                                 <strong style="color: #d32f2f; font-family: monospace;"><?= htmlspecialchars($student['password_plain'] ?? '********') ?></strong>
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <td class="label">Jalur Pendaftaran</td>
                             <td class="colon">:</td>
@@ -406,18 +408,14 @@ $exam_password = "26" . $student['nisn'];
             </div>
 
             <div class="instructions">
-                <strong><i class="fas fa-info-circle"></i> PENTING:</strong>
-                <ul style="margin: 5px 0 0; padding-left: 20px;">
-                    <li>Kartu ini wajib dibawa/disiapkan pada saat pelaksanaan ujian online.</li>
-                    <li>Siswa diharapkan login 15 menit sebelum waktu ujian dimulai.</li>
-                    <li>Gunakan perangkat (HP/Laptop) dengan koneksi internet yang stabil.</li>
-                    <li>Jika ada kendala login, segera lapor kepada pengawas/proktor ujian.</li>
-                </ul>
+                <strong><i class="fas fa-info-circle"></i> INFO TATA TERTIB UJIAN:</strong>
+                <div style="margin-top: 5px;">
+                    <?= $tata_tertib ? nl2br($tata_tertib) : 'Belum ada tata tertib yang diunggah.' ?>
+                </div>
             </div>
 
             <!--<div class="footer">-->
             <!--    <div class="signature">-->
-            <!--        <?php-->
             <!--        $months = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April', '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus', '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'];-->
             <!--        $date = date('d') . ' ' . $months[date('m')] . ' ' . date('Y');-->
             <!--        ?>-->

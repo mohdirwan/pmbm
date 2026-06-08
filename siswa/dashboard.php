@@ -408,10 +408,10 @@ function get_stage_date_range($stage_key, $default_text)
     $ann_message = "";
     $ann_detail = ""; // For admin notes or additional info
     
+    $is_post_admin = in_array($ppdb_status, ['pengumuman_adm', 'cbt', 'finalisasi', 'pengumuman']);
+    
     // 1. Stage: Announcement of Administrative Results
-    // Fix: Only show this box IF we are exactly in 'pengumuman_adm' stage. 
-    // If we are in 'cbt' or 'finalisasi', this old announcement should be hidden for rejected students.
-    if ($ppdb_status == 'pengumuman_adm') {
+    if ($ppdb_status == 'pengumuman_adm' || ($siswa['status'] == 'Ditolak' && $is_post_admin)) {
         $show_announcement = true;
         $ann_title = "Hasil Seleksi Administrasi";
 
@@ -450,8 +450,8 @@ function get_stage_date_range($stage_key, $default_text)
     if ($ppdb_status == 'cbt') {
         $no_exam_needed = ($is_tanpa_tes || ($is_tahfidz && ($siswa['status_tahfidz'] ?? '') == 'Lulus'));
         
-        // Check if student passed admin (either status is verified or they have an exam number)
-        $has_passed_admin = ($siswa['status'] != 'Ditolak' || !empty($siswa['no_pendaftaran']));
+        // Check if student passed admin
+        $has_passed_admin = ($siswa['status'] != 'Ditolak');
         
         if ($has_passed_admin && !$no_exam_needed) {
             $show_announcement = true;
@@ -469,7 +469,7 @@ function get_stage_date_range($stage_key, $default_text)
 
     // 2.5 Stage: Finalisasi
     if ($ppdb_status == 'finalisasi') {
-        $has_passed_admin = ($siswa['status'] != 'Ditolak' || !empty($siswa['no_pendaftaran']));
+        $has_passed_admin = ($siswa['status'] != 'Ditolak');
         
         if ($has_passed_admin) {
             $show_announcement = true;
@@ -501,7 +501,11 @@ function get_stage_date_range($stage_key, $default_text)
                 "<h6 class='fw-bold mb-2 text-success'><i class='fas fa-info-circle me-2'></i>Informasi Daftar Ulang:</h6>" .
                 get_setting('narasi_info_daftar_ulang', "Bagi Ananda yang lulus tes akademik, silakan melakukan daftar ulang pada hari Rabu – Jumat, 01 – 03 April 2026 pukul 08.00 – 15.00 WIB di MTsN 1 Kota Pekanbaru.") .
                 "</div>";
-        } else if ($siswa['status'] == 'Ditolak' || $siswa['status'] == 'Tidak Lulus') {
+        } else if ($siswa['status'] == 'Ditolak') {
+            $ann_color = "danger";
+            $ann_icon = "fa-times-circle";
+            $ann_message = get_setting('narasi_tidak_lulus_administrasi', "Mohon Maaf Ananda Tidak Lulus Seleksi Administrasi");
+        } else if ($siswa['status'] == 'Tidak Lulus') {
             $ann_color = "danger";
             $ann_icon = "fa-times-circle";
             $ann_message = get_setting('narasi_tidak_lulus_test_akademik', "Mohon maaf, Ananda tidak lulus tes akademik di MTsN 1 Kota Pekanbaru.");

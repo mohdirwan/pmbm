@@ -42,10 +42,7 @@ if (in_array($current_page, $exam_pages)) {
     $is_tahfidz = stripos(($siswa['nama_jalur'] ?? ''), 'tahfi') !== false;
     $failed_tahfidz = ($is_tahfidz && ($siswa['status_tahfidz'] ?? '') == 'Tidak Lulus');
     
-    // Check if they were rejected specifically during Administrative stage
-    // They are rejected at admin IF (Status is Ditolak AND we haven't reached CBT stage yet)
-    $is_final_stage = ($ppdb_status == 'pengumuman' || $ppdb_status == 'finalisasi' || $ppdb_status == 'cbt');
-    $rejected_at_admin = ($siswa['status'] == 'Ditolak' && $tahap_admin == 'pengumuman' && !$failed_tahfidz && !$is_final_stage);
+    $rejected_at_admin = ($siswa['status'] == 'Ditolak' && $tahap_admin == 'pengumuman' && !$failed_tahfidz);
     
     // Forbidden if rejected at admin, or if admin results not yet published, or if still pending
     if ($rejected_at_admin || $tahap_admin !== 'pengumuman' || $siswa['status'] == 'Pending') {
@@ -413,9 +410,8 @@ if (in_array($current_page, $after_selection_pages)) {
                     // Final announcement is out: Access to all menus for everyone (rejection handled inside pages)
                     $is_verified = ($siswa['status'] != 'Pending');
                 } elseif ($ppdb_status == 'cbt' || $ppdb_status == 'finalisasi') {
-                    // During CBT/Finalization: If they reached here, they MUST see the menus.
-                    // Even if DB says 'Ditolak' (final result), we treat them as verified for UI consistency.
-                    $is_verified = true; 
+                    // During CBT/Finalization: They should only see menus if they are not rejected.
+                    $is_verified = ($siswa['status'] != 'Ditolak' && $siswa['status'] != 'Pending');
                 } else {
                     // Before CBT/Finalization: Standard administrative rejection check.
                     $rejected_at_admin = ($siswa['status'] == 'Ditolak' && $tahap_admin == 'pengumuman' && !$failed_tahfidz);

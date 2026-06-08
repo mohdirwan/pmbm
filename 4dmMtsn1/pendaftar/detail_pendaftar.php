@@ -1,7 +1,6 @@
 <?php
 require_once '../../includes/config.php';
 require_once '../../includes/auth_check.php';
-require_once '../../includes/wa_helper.php';
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
@@ -31,17 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare("UPDATE pendaftar SET status_tahfidz = ? WHERE id = ?");
             $stmt->execute([$status_tahfidz, $id]);
 
-            // Send WhatsApp notification if status is "Tidak Lulus"
-            if ($status_tahfidz == 'Tidak Lulus') {
-                $pesan_wa = "Kepada Yth. Orang tua/Wali dari:\n\n";
-                $pesan_wa .= "Nama: " . $siswa['nama_lengkap'] . "\n";
-                $pesan_wa .= "NISN: " . $siswa['nisn'] . "\n\n";
-                $pesan_wa .= "Mohon Maaf, Ananda tidak lulus tes tahfizh. Selanjutnya Ananda dapat mengikuti tes akademik sesuai jadwal yang telah ditentukan.\n\n";
-                $pesan_wa .= "Terima kasih atas perhatiannya.\n";
-                $pesan_wa .= "Panitia PMBM MTsN 1 Kota Pekanbaru";
 
-                send_wa_message($siswa['no_hp_ayah'], $pesan_wa);
-            }
 
             // Record Log
             log_activity("Update Status Tahfidz", "Murid: {$siswa['no_pendaftaran']}, Status: $status_tahfidz");
@@ -70,13 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Record Log
             log_activity("Verifikasi Pendaftar", "Murid: {$siswa['no_pendaftaran']}, Action: $action ($status)");
 
-            // Send WhatsApp Notification (DISABLED AS REQUESTED)
-            // if ($status == 'Terverifikasi') {
-            //     $pesan = "Halo " . $siswa['nama_lengkap'] . ",\n\nSelamat! Berkas pendaftaran Anda telah *DIVERIFIKASI*. Silakan cetak bukti verifikasi dan pantau terus dashboard Anda.\n\nReg: " . $siswa['no_pendaftaran'];
-            // } else {
-            //     $pesan = "Halo " . $siswa['nama_lengkap'] . ",\n\nMohon maaf, berkas pendaftaran Anda *DITOLAK*.\nAlasan: " . $catatan . "\n\nSilakan perbaiki data Anda di dashboard siswa.";
-            // }
-            // send_wa_message($siswa['no_hp_ayah'], $pesan);
+
 
             // Redirect back to list with success message
             header("Location: index.php?msg=" . urlencode("Status pendaftaran berhasil diubah menjadi $status"));

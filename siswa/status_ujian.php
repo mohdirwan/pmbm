@@ -29,6 +29,9 @@ function format_indo_date($date) {
     
     return "$day_name, $day $month_name $year";
 }
+
+$birth_year = preg_match('/^\d{4}/', $siswa['tanggal_lahir'] ?? '', $matches) ? $matches[0] : '';
+$exam_password = $birth_year . $siswa['nisn'];
 ?>
 
 <style>
@@ -199,10 +202,10 @@ function format_indo_date($date) {
             <div class="p-3 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-10 mb-4">
                 <small class="text-white-50 d-block mb-1">Password Ujian CBT</small>
                 <div class="d-flex justify-content-between align-items-center">
-                    <?php if(!empty($siswa['password_cbt'])): ?>
-                        <h5 class="fw-bold mb-0 text-warning"><?= htmlspecialchars($siswa['password_cbt']) ?></h5>
+                    <?php if(!empty($exam_password)): ?>
+                        <h5 class="fw-bold mb-0 text-warning"><?= htmlspecialchars($exam_password) ?></h5>
                         <button class="btn btn-sm btn-link text-white-50 p-0"
-                            onclick="copyToClipboard('<?= $siswa['password_cbt'] ?>')"><i class="far fa-copy"></i></button>
+                            onclick="copyToClipboard(<?= json_encode($exam_password) ?>)"><i class="far fa-copy"></i></button>
                     <?php else: ?>
                         <span class="text-warning small italic">Belum Digenerate</span>
                     <?php endif; ?>
