@@ -511,27 +511,31 @@ function get_stage_date_range($stage_key, $default_text)
             $gedung_info = "";
             if (isset($siswa['gedung'])) {
                 if ($siswa['gedung'] == 'Gedung Utama') {
-                    $gedung_info = "sekolah di gedung utama jalan amal Hamzah";
+                    $gedung_info = " di gedung utama jalan amal Hamzah";
                 } elseif ($siswa['gedung'] == 'Gedung Filial') {
-                    $gedung_info = "sekolah di gedung filial jalan Wates tenayan Raya";
+                    $gedung_info = " di gedung filial jalan Wates tenayan Raya";
                 }
             }
             if (!empty($gedung_info)) {
-                $ann_message .= "<br><br><div class='alert alert-info border-0 p-3 mt-3 mb-0'><i class='fas fa-map-marker-alt me-2 text-info'></i><strong>Informasi Penempatan:</strong> Ananda akan " . $gedung_info . ".</div>";
+                $ann_message .= "<br><br><div class='alert alert-info border-0 p-3 mt-3 mb-0'><i class='fas fa-map-marker-alt me-2 text-info'></i><strong>Informasi Penempatan:</strong> Ananda " . $gedung_info . ".</div>";
             }
             
             $ann_detail = "<div class='mt-3 p-3 bg-success bg-opacity-10 rounded-4 border border-success border-opacity-25'>" .
                 "<h6 class='fw-bold mb-2 text-success'><i class='fas fa-info-circle me-2'></i>Informasi Daftar Ulang:</h6>" .
-                get_setting('narasi_info_daftar_ulang', "Bagi Ananda yang lulus tes akademik, silakan melakukan daftar ulang pada hari Rabu – Jumat, 01 – 03 April 2026 pukul 08.00 – 15.00 WIB di MTsN 1 Kota Pekanbaru.") .
+                nl2br(get_setting('narasi_info_daftar_ulang', "Bagi Ananda yang lulus tes akademik, silakan melakukan daftar ulang pada hari Rabu – Jumat, 01 – 03 April 2026 pukul 08.00 – 15.00 WIB di MTsN 1 Kota Pekanbaru.")) .
                 "</div>";
-        } else if ($siswa['status'] == 'Ditolak') {
+        } else if ($siswa['status'] == 'Ditolak' || $siswa['status'] == 'Tidak Lulus') {
             $ann_color = "danger";
             $ann_icon = "fa-times-circle";
-            $ann_message = get_setting('narasi_tidak_lulus_administrasi', "Mohon Maaf Ananda Tidak Lulus Seleksi Administrasi");
-        } else if ($siswa['status'] == 'Tidak Lulus') {
-            $ann_color = "danger";
-            $ann_icon = "fa-times-circle";
-            $ann_message = get_setting('narasi_tidak_lulus_test_akademik', "Mohon maaf, Ananda tidak lulus tes akademik di MTsN 1 Kota Pekanbaru.");
+            
+            // Cek apakah siswa pernah dijadwalkan ujian. Jika iya, berarti gagalnya di tes. Jika tidak, gagal di administrasi.
+            $took_exam = (!empty($siswa['test_hari']) || !empty($siswa['test_ruangan']));
+            
+            if ($took_exam || $siswa['status'] == 'Tidak Lulus') {
+                $ann_message = get_setting('narasi_tidak_lulus_test_akademik', "Mohon maaf, Ananda tidak lulus tes akademik di MTsN 1 Kota Pekanbaru.");
+            } else {
+                $ann_message = get_setting('narasi_tidak_lulus_administrasi', "Mohon Maaf Ananda Tidak Lulus Seleksi Administrasi");
+            }
         }
     }
 

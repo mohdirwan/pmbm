@@ -102,14 +102,11 @@ if (!empty($jalur_stats)) {
                                     // Sinkronkan dengan logika finalisasi/index.php
                                     $query_lulus = "SELECT COUNT(*) FROM pendaftar p 
                                                     WHERE 
-                                                    (
-                                                        (p.jalur_id IN (8, 10) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Lulus'))
-                                                        AND p.status IN ('Terverifikasi', 'Diterima')
-                                                    )
+                                                    p.status = 'Diterima'
                                                     OR 
                                                     (
-                                                        (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus'))
-                                                        AND p.status = 'Diterima'
+                                                        p.status = 'Terverifikasi' AND 
+                                                        (p.jalur_id IN (8, 10) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Lulus'))
                                                     )";
                                     echo $pdo->query($query_lulus)->fetchColumn() ?: 0;
                                 } catch (Exception $e) {

@@ -20,9 +20,9 @@ require_once 'layout_top.php';
         if ($tahap_admin == 'pengumuman') {
             $failed_tahfidz = ($is_tahfidz && ($siswa['status_tahfidz'] ?? '') == 'Tidak Lulus');
             
-            // NEW LOGIC: If student has a participant number, they DEFINITELY passed administration
-            // even if their current status is 'Ditolak' (which means they failed at the final exam stage)
-            $has_exam_number = !empty($siswa['no_pendaftaran']);
+            // NEW LOGIC: Jika siswa sudah punya jadwal ujian (test_hari / test_ruangan), berarti dia pasti lolos administrasi
+            // meskipun statusnya saat ini 'Ditolak' (karena Ditolak-nya di tahap akhir/CBT).
+            $has_exam_number = (!empty($siswa['test_hari']) || !empty($siswa['test_ruangan']));
             $passed_admin_stage = ($is_verified || $failed_tahfidz || $has_exam_number);
 
             if ($passed_admin_stage) {

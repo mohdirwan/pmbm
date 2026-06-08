@@ -211,6 +211,10 @@ if (isset($_POST['update_gedung']) && isset($_POST['gedung'])) {
     $gedung = $_POST['gedung'];
     $stmt = $pdo->prepare("UPDATE pendaftar SET gedung = ? WHERE id = ?");
     if ($stmt->execute([$gedung, $id])) {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode(['success' => true]);
+            exit;
+        }
         header("Location: index.php?msg=success");
         exit();
     }
@@ -490,6 +494,9 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                         data-bs-target="#modalClear">
                         <i class="fas fa-trash-alt me-2"></i> Clear CBT List
                     </button>
+                    <button class="btn btn-success rounded-pill px-4 no-print" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel me-2"></i> Export Excel
+                    </button>
                     <button class="btn btn-primary rounded-pill px-4 no-print" onclick="window.print()">
                         <i class="fas fa-print me-2"></i> Cetak Laporan
                     </button>
@@ -734,25 +741,33 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
             <?php 
             $active_tab = (count($pendaftar_l) == 0 && count($pendaftar_p) > 0) ? 'female' : 'male';
             ?>
-            <ul class="nav nav-tabs nav-tabs-premium mb-0 border-0" id="rankingTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link tab-male <?= $active_tab == 'male' ? 'active' : '' ?> text-uppercase border-0" id="male-tab" data-bs-toggle="tab" data-bs-target="#male" type="button" role="tab">
-                        <i class="fas fa-mars me-2"></i>Laki-laki <span class="badge-count"><?= count($pendaftar_l) ?></span>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link tab-female <?= $active_tab == 'female' ? 'active' : '' ?> text-uppercase border-0" id="female-tab" data-bs-toggle="tab" data-bs-target="#female" type="button" role="tab">
-                        <i class="fas fa-venus me-2"></i>Perempuan <span class="badge-count"><?= count($pendaftar_p) ?></span>
-                    </button>
-                </li>
-            </ul>
+            <div class="nav-tabs-premium d-flex justify-content-between align-items-end mb-0 border-0" style="padding-bottom: 0;">
+                <ul class="nav nav-tabs border-0 w-100" id="rankingTabs" role="tablist" style="flex-wrap: nowrap;">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link tab-male <?= $active_tab == 'male' ? 'active' : '' ?> text-uppercase border-0" id="male-tab" data-bs-toggle="tab" data-bs-target="#male" type="button" role="tab">
+                            <i class="fas fa-mars me-2"></i>Laki-laki <span class="badge-count"><?= count($pendaftar_l) ?></span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link tab-female <?= $active_tab == 'female' ? 'active' : '' ?> text-uppercase border-0" id="female-tab" data-bs-toggle="tab" data-bs-target="#female" type="button" role="tab">
+                            <i class="fas fa-venus me-2"></i>Perempuan <span class="badge-count"><?= count($pendaftar_p) ?></span>
+                        </button>
+                    </li>
+                    <li class="nav-item ms-auto pb-2 pe-2 align-self-center no-print">
+                        <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                            <span class="input-group-text bg-light border-0 ps-3"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="searchInput" class="form-control border-0 bg-light" placeholder="Cari nama murid..." style="width: 250px; outline: none; box-shadow: none;">
+                        </div>
+                    </li>
+                </ul>
+            </div>
 
             <div class="tab-content" id="rankingTabsContent">
                 <!-- Tab Laki-laki -->
                 <div class="tab-pane fade <?= $active_tab == 'male' ? 'show active' : '' ?>" id="male" role="tabpanel">
                     <div class="card card-premium overflow-hidden border-0 rounded-top-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0" id="tableLaki">
                                 <thead class="bg-light">
                                     <tr>
                                         <th class="text-center" style="width: 80px;">Rank</th>
@@ -804,7 +819,7 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                                             <form method="POST" class="d-flex gap-1 m-0">
                                                                 <input type="hidden" name="id" value="<?= $row['id'] ?>">
                                                                 <input type="hidden" name="update_gedung" value="1">
-                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="updateGedung(this, <?= $row['id'] ?>)">
                                                                     <option value="Gedung Utama" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Utama') ? 'selected' : '' ?>>Gedung Utama</option>
                                                                     <option value="Gedung Filial" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Filial') ? 'selected' : '' ?>>Gedung Filial</option>
                                                                 </select>
@@ -839,7 +854,7 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                 <div class="tab-pane fade <?= $active_tab == 'female' ? 'show active' : '' ?>" id="female" role="tabpanel">
                     <div class="card card-premium overflow-hidden border-0 rounded-top-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0" id="tablePerempuan">
                                 <thead class="bg-light">
                                     <tr>
                                         <th class="text-center" style="width: 80px;">Rank</th>
@@ -891,7 +906,7 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
                                                             <form method="POST" class="d-flex gap-1 m-0">
                                                                 <input type="hidden" name="id" value="<?= $row['id'] ?>">
                                                                 <input type="hidden" name="update_gedung" value="1">
-                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                                                                <select name="gedung" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="updateGedung(this, <?= $row['id'] ?>)">
                                                                     <option value="Gedung Utama" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Utama') ? 'selected' : '' ?>>Gedung Utama</option>
                                                                     <option value="Gedung Filial" <?= (isset($row['gedung']) && $row['gedung'] == 'Gedung Filial') ? 'selected' : '' ?>>Gedung Filial</option>
                                                                 </select>
@@ -926,7 +941,84 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
+        // Export to Excel using SheetJS
+        function exportToExcel() {
+            var wb = XLSX.utils.book_new();
+
+            // Helper function to clean table for export (remove Aksi column & complex HTML)
+            function prepareTableForExport(tableId) {
+                var table = document.getElementById(tableId);
+                if (!table) return null;
+                
+                var clone = table.cloneNode(true);
+                // Remove the last column ("Aksi")
+                var ths = clone.querySelectorAll('thead th');
+                if(ths.length > 0) {
+                    ths[ths.length - 1].remove();
+                    
+                    // Insert new headers Status and Gedung after Murid (index 1)
+                    var thStatus = document.createElement('th');
+                    thStatus.innerText = 'Status';
+                    var thGedung = document.createElement('th');
+                    thGedung.innerText = 'Gedung';
+                    
+                    if(ths[1]) {
+                        ths[1].after(thStatus);
+                        thStatus.after(thGedung);
+                    }
+                }
+                
+                var rows = clone.querySelectorAll('tbody tr');
+                rows.forEach(function(row) {
+                    var tds = row.querySelectorAll('td');
+                    if (tds.length > 0) {
+                        tds[tds.length - 1].remove(); // Remove Aksi
+                        
+                        // Clean up "Murid" column (tds[1]) to only text and extract Status & Gedung
+                        if(tds[1]) {
+                            var textName = tds[1].querySelector('.fw-bold') ? tds[1].querySelector('.fw-bold').innerText.trim() : '';
+                            var textNo = tds[1].querySelector('.text-muted') ? tds[1].querySelector('.text-muted').innerText.trim() : '';
+                            
+                            var statusBadge = tds[1].querySelector('.badge:not(.bg-info)');
+                            var textStatus = statusBadge ? statusBadge.innerText.trim() : 'BELUM DITENTUKAN';
+                            
+                            var gedungBadge = tds[1].querySelector('.fa-building');
+                            var textGedung = gedungBadge ? gedungBadge.parentNode.innerText.trim() : '-';
+
+                            // Update Murid column
+                            tds[1].innerText = textName + ' (' + textNo + ')';
+                            
+                            // Insert Status and Gedung cells
+                            var tdStatus = document.createElement('td');
+                            tdStatus.innerText = textStatus;
+                            var tdGedung = document.createElement('td');
+                            tdGedung.innerText = textGedung;
+                            
+                            tds[1].after(tdStatus);
+                            tdStatus.after(tdGedung);
+                        }
+                    }
+                });
+                return clone;
+            }
+
+            var cleanLaki = prepareTableForExport('tableLaki');
+            if (cleanLaki) {
+                var wsLaki = XLSX.utils.table_to_sheet(cleanLaki);
+                XLSX.utils.book_append_sheet(wb, wsLaki, "Laki-laki");
+            }
+
+            var cleanPerempuan = prepareTableForExport('tablePerempuan');
+            if (cleanPerempuan) {
+                var wsPerempuan = XLSX.utils.table_to_sheet(cleanPerempuan);
+                XLSX.utils.book_append_sheet(wb, wsPerempuan, "Perempuan");
+            }
+
+            XLSX.writeFile(wb, "Hasil_Seleksi.xlsx");
+        }
+
         const raporInput = document.getElementById('weight_rapor');
         const cbtInput = document.getElementById('weight_cbt');
 
@@ -1193,6 +1285,72 @@ $has_cbt_scores = $check_cbt_stmt->fetchColumn() > 0;
             var modal = new bootstrap.Modal(document.getElementById('modalEditScore'));
             modal.show();
         }
+
+        // Update Gedung via AJAX
+        function updateGedung(selectObj, id) {
+            let gedung = selectObj.value;
+            let originalColor = selectObj.style.backgroundColor;
+            selectObj.style.backgroundColor = '#e2e8f0'; // Loading gray
+            selectObj.disabled = true;
+
+            let formData = new FormData();
+            formData.append('update_gedung', '1');
+            formData.append('id', id);
+            formData.append('gedung', gedung);
+
+            fetch('', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    selectObj.style.backgroundColor = '#d1fae5'; // Success green
+                    let tr = selectObj.closest('tr');
+                    if (tr) {
+                        let badgeContainer = tr.querySelector('.bg-info.text-white');
+                        if (badgeContainer) {
+                            badgeContainer.innerHTML = '<i class="fas fa-building me-1" style="font-size: 0.5rem;"></i> ' + gedung;
+                        }
+                    }
+                } else {
+                    selectObj.style.backgroundColor = '#fee2e2'; // Error red
+                    alert('Gagal update gedung.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                selectObj.style.backgroundColor = '#fee2e2'; // Error red
+                alert('Terjadi kesalahan koneksi.');
+            })
+            .finally(() => {
+                selectObj.disabled = false;
+                setTimeout(() => {
+                    selectObj.style.backgroundColor = originalColor;
+                }, 2000);
+            });
+        }
+
+        // Search Filter Logic
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('.tab-pane table tbody tr');
+            
+            rows.forEach(row => {
+                let nameCell = row.querySelector('td:nth-child(2) .fw-bold.text-dark');
+                if (nameCell) {
+                    let nameText = nameCell.textContent || nameCell.innerText;
+                    if (nameText.toLowerCase().indexOf(filter) > -1) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
+        });
     </script>
 </body>
 

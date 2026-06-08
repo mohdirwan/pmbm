@@ -10,16 +10,11 @@ $query = "SELECT p.*, j.nama_jalur
           FROM pendaftar p 
           LEFT JOIN jalur_pendaftaran j ON p.jalur_id = j.id 
           WHERE 
-          (
-            -- Kategori 1: Langsung masuk jika sudah diverifikasi berkasnya (dan status bukan pending)
-            (p.jalur_id IN (8, 10) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Lulus'))
-            AND p.status IN ('Terverifikasi', 'Diterima')
-          )
+          p.status = 'Diterima'
           OR 
           (
-            -- Kategori 2: Masuk jika sudah dinyatakan Lulus (Diterima)
-            (p.jalur_id IN (7, 9) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Tidak Lulus'))
-            AND p.status = 'Diterima'
+             p.status = 'Terverifikasi' AND 
+             (p.jalur_id IN (8, 10) OR (p.jalur_id = 11 AND p.status_tahfidz = 'Lulus'))
           )
           ORDER BY p.no_pendaftaran ASC";
 

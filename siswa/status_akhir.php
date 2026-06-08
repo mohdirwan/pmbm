@@ -37,16 +37,38 @@ if ($tahap_admin != 'pengumuman' || !$is_verified) {
                         $nama_jalur = htmlspecialchars($siswa['nama_jalur'] ?? 'Jalur Prestasi');
                         $status_desc = "Alhamdulillah! Ananda dinyatakan <strong>LULUS SELEKSI ".strtoupper($nama_jalur)."</strong>. Selamat bergabung di keluarga besar MTsN 1 Kota Pekanbaru.";
                     } else {
-                        $status_desc = get_setting('narasi_lulus_test_akademik', "Selamat, Ananda lulus tes akademik di MTsN 1 Kota Pekanbaru. Silakan melakukan daftar ulang sesuai jadwal yang telah ditentukan.");
+                        $status_desc = nl2br(get_setting('narasi_lulus_test_akademik', "Selamat, Ananda lulus tes akademik di MTsN 1 Kota Pekanbaru. Silakan melakukan daftar ulang sesuai jadwal yang telah ditentukan."));
                     }
                     
-                    $status_desc .= "<br><br>" . get_setting('narasi_info_daftar_ulang', "Bagi Ananda yang lulus tes akademik, silakan melakukan daftar ulang pada hari Rabu – Jumat, 01 – 03 April 2026 pukul 08.00 – 15.00 WIB di MTsN 1 Kota Pekanbaru.");
+                    $status_desc .= "<br><br>" . nl2br(get_setting('narasi_info_daftar_ulang', "Bagi Ananda yang lulus tes akademik, silakan melakukan daftar ulang pada hari Rabu – Jumat, 01 – 03 April 2026 pukul 08.00 – 15.00 WIB di MTsN 1 Kota Pekanbaru."));
+                    
+                    if (!empty($siswa['gedung'])) {
+                        $gedung_name = strtoupper(htmlspecialchars($siswa['gedung']));
+                        $gedung_address = "";
+                        
+                        // Menentukan alamat berdasarkan nama gedung
+                        if (stripos($siswa['gedung'], 'utama') !== false) {
+                            $gedung_address = " (Jalan Amal Hamzah)";
+                        } elseif (stripos($siswa['gedung'], 'filial') !== false) {
+                            $gedung_address = " (Jalan Wates Tenayan Raya)";
+                        }
+                        
+                        $status_desc .= "<br><br>Penempatan Ananda: <strong>" . $gedung_name . $gedung_address . "</strong>";
+                    }
                 } elseif ($status == 'Ditolak' || $status == 'Tidak Lulus') {
                     $status_class = "text-danger";
                     $status_bg = "bg-danger bg-opacity-10";
                     $status_icon = "fa-times-circle";
                     $status_text = "MAAF, ANANDA TIDAK LULUS";
-                    $status_desc = get_setting('narasi_tidak_lulus_test_akademik', "Mohon maaf, Ananda tidak lulus tes akademik di MTsN 1 Kota Pekanbaru.");
+                    
+                    // Cek apakah siswa pernah dijadwalkan ujian. Jika iya, berarti gagalnya di tes. Jika tidak, gagal di administrasi.
+                    $took_exam = (!empty($siswa['test_hari']) || !empty($siswa['test_ruangan']));
+                    
+                    if ($took_exam || $status == 'Tidak Lulus') {
+                        $status_desc = get_setting('narasi_tidak_lulus_test_akademik', "Mohon maaf, Ananda tidak lulus tes akademik di MTsN 1 Kota Pekanbaru.");
+                    } else {
+                        $status_desc = get_setting('narasi_tidak_lulus_administrasi', "Mohon Maaf Ananda Tidak Lulus Seleksi Administrasi");
+                    }
                 }
             }
             ?>
@@ -65,7 +87,14 @@ if ($tahap_admin != 'pengumuman' || !$is_verified) {
                 <?= $status_desc ?>
             </p>
 
-            
+            <?php if (isset($status_class) && $status_class == 'text-success'): ?>
+                <?php $wa_link = get_setting('wa_group_link', ''); ?>
+                <?php if (!empty($wa_link)): ?>
+                    <a href="<?= htmlspecialchars($wa_link) ?>" target="_blank" class="btn btn-success btn-lg rounded-pill shadow-sm px-4 fw-bold mt-2">
+                        <i class="fab fa-whatsapp me-2 fs-5"></i> Gabung Grup WhatsApp
+                    </a>
+                <?php endif; ?>
+            <?php endif; ?>
     </div>
 </div>
 
